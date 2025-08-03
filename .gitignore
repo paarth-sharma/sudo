@@ -1,0 +1,12 @@
+# local configs
+/.vscode
+
+
+# dependencies
+/node_modules
+
+# builds (local)
+/bin
+
+# super secret keys
+.env

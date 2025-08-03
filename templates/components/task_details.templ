@@ -1,0 +1,225 @@
+package components
+
+import "sudo/internal/models"
+import "fmt"
+import "time"
+
+templ TaskDetailsModal(task models.Task, boardMembers []models.BoardMember) {
+    <div class="space-y-6">
+        <!-- Task Header -->
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <input 
+                    type="text" 
+                    value={task.Title}
+                    class="text-xl font-semibold text-gray-900 bg-transparent border-none p-0 w-full focus:ring-0 focus:outline-none"
+                    hx-put={"/tasks/" + task.ID.String()}
+                    hx-trigger="blur"
+                    hx-vals={`{"title": "this.value"}`}
+                />
+            </div>
+            
+            <div class="flex items-center space-x-2 ml-4">
+                @PriorityBadge(task.Priority)
+                <button 
+                    hx-delete={"/tasks/" + task.ID.String()}
+                    hx-confirm="Are you sure you want to delete this task?"
+                    hx-on::after-request="document.getElementById('task-modal').classList.add('hidden')"
+                    class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                    title="Delete task"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Task Description -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows="4"
+                placeholder="Add a description..."
+                hx-put={"/tasks/" + task.ID.String()}
+                hx-trigger="blur"
+                hx-vals={`{"description": "this.value"}`}
+            >{task.Description}</textarea>
+        </div>
+        
+        <!-- Task Details Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Priority -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                <select 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    hx-put={"/tasks/" + task.ID.String()}
+                    hx-trigger="change"
+                    hx-vals={`{"priority": "this.value"}`}
+                >
+                    <option value="Low" if task.Priority == "Low" { selected }>Low Priority</option>
+                    <option value="Medium" if task.Priority == "Medium" { selected }>Medium Priority</option>
+                    <option value="High" if task.Priority == "High" { selected }>High Priority</option>
+                    <option value="Urgent" if task.Priority == "Urgent" { selected }>Urgent</option>
+                </select>
+            </div>
+            
+            <!-- Deadline -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Deadline</label>
+                <input 
+                    type="datetime-local" 
+                    value={formatDateTimeLocal(task.Deadline)}
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    hx-put={"/tasks/" + task.ID.String()}
+                    hx-trigger="change"
+                    hx-vals={`{"deadline": "this.value"}`}
+                />
+            </div>
+            
+            <!-- Assignee -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Assignee</label>
+                <select 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    hx-put={"/tasks/" + task.ID.String()}
+                    hx-trigger="change"
+                    hx-vals={`{"assignee_id": "this.value"}`}
+                >
+                    <option value="">Unassigned</option>
+                    for _, member := range boardMembers {
+                        <option 
+                            value={member.UserID.String()} 
+                            if task.AssigneeID != nil && *task.AssigneeID == member.UserID { selected }
+                        >
+                            {getDisplayName(member.User)}
+                        </option>
+                    }
+                </select>
+            </div>
+            
+            <!-- Status -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <label class="flex items-center">
+                    <input 
+                        type="checkbox" 
+                        if task.Completed { checked }
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        hx-put={"/tasks/" + task.ID.String()}
+                        hx-trigger="change"
+                        hx-vals={`{"completed": "this.checked"}`}
+                    />
+                    <span class="ml-2 text-sm text-gray-700">Mark as completed</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Task Actions -->
+        <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+            <button 
+                hx-post="/tasks/nested-board"
+                hx-vals={`{"task_id": "` + task.ID.String() + `"}`}
+                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Convert to Sub-board
+            </button>
+            
+            <button 
+                onclick="copyTaskLink()"
+                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                Copy Link
+            </button>
+            
+            if task.Deadline != nil {
+                <div class="flex items-center text-sm text-gray-500">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Due {formatRelativeTime(*task.Deadline)}</span>
+                </div>
+            }
+        </div>
+        
+        <!-- Task Metadata -->
+        <div class="pt-4 border-t border-gray-200 text-sm text-gray-500">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <span class="font-medium">Created:</span> {task.CreatedAt.Format("Jan 2, 2006 at 3:04 PM")}
+                </div>
+                <div>
+                    <span class="font-medium">Updated:</span> {task.UpdatedAt.Format("Jan 2, 2006 at 3:04 PM")}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function copyTaskLink() {
+            const taskId = '{task.ID.String()}';
+            const url = `${window.location.origin}/tasks/${taskId}`;
+            navigator.clipboard.writeText(url).then(() => {
+                // Show success message
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Copied!';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+}
+
+// Helper functions for the template
+func formatDateTimeLocal(t *time.Time) string {
+    if t == nil {
+        return ""
+    }
+    return t.Format("2006-01-02T15:04")
+}
+
+func formatRelativeTime(t time.Time) string {
+    now := time.Now()
+    diff := t.Sub(now)
+    
+    if diff < 0 {
+        // Past
+        diff = -diff
+        if diff < time.Hour {
+            return fmt.Sprintf("%d minutes ago", int(diff.Minutes()))
+        } else if diff < 24*time.Hour {
+            return fmt.Sprintf("%d hours ago", int(diff.Hours()))
+        } else {
+            return fmt.Sprintf("%d days ago", int(diff.Hours()/24))
+        }
+    } else {
+        // Future
+        if diff < time.Hour {
+            return fmt.Sprintf("in %d minutes", int(diff.Minutes()))
+        } else if diff < 24*time.Hour {
+            return fmt.Sprintf("in %d hours", int(diff.Hours()))
+        } else {
+            return fmt.Sprintf("in %d days", int(diff.Hours()/24))
+        }
+    }
+}
+
+func getDisplayName(user *models.User) string {
+    if user == nil {
+        return "Unknown User"
+    }
+    if user.Name != "" {
+        return user.Name
+    }
+    return user.Email
+}
