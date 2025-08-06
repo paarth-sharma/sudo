@@ -2,7 +2,9 @@ package models
 
 import (
     "fmt"
+    "strings"
     "time"
+    
     "github.com/google/uuid"
 )
 
@@ -10,6 +12,7 @@ type User struct {
     ID        uuid.UUID `json:"id" db:"id"`
     Email     string    `json:"email" db:"email"`
     Name      string    `json:"name" db:"name"`
+    AvatarURL string    `json:"avatar_url" db:"avatar_url"`
     CreatedAt time.Time `json:"created_at" db:"created_at"`
     UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
@@ -20,26 +23,40 @@ type Board struct {
     Description   string     `json:"description" db:"description"`
     OwnerID       uuid.UUID  `json:"owner_id" db:"owner_id"`
     ParentBoardID *uuid.UUID `json:"parent_board_id" db:"parent_board_id"`
+    Settings      map[string]interface{} `json:"settings" db:"settings"`
     CreatedAt     time.Time  `json:"created_at" db:"created_at"`
     UpdatedAt     time.Time  `json:"updated_at" db:"updated_at"`
     
     // Relationships
-    Columns []Column `json:"columns,omitempty"`
     Owner   *User    `json:"owner,omitempty"`
+    Columns []Column `json:"columns,omitempty"`
     Members []User   `json:"members,omitempty"`
 }
 
+type BoardMember struct {
+    ID       uuid.UUID `json:"id" db:"id"`
+    BoardID  uuid.UUID `json:"board_id" db:"board_id"`
+    UserID   uuid.UUID `json:"user_id" db:"user_id"`
+    Role     string    `json:"role" db:"role"`
+    JoinedAt time.Time `json:"joined_at" db:"joined_at"`
+    
+    // Relationships
+    Board *Board `json:"board,omitempty"`
+    User  *User  `json:"user,omitempty"`
+}
+
 type Column struct {
-    ID        uuid.UUID `json:"id" db:"id"`
-    BoardID   uuid.UUID `json:"board_id" db:"board_id"`
-    Title     string    `json:"title" db:"title"`
-    Position  int       `json:"position" db:"position"`
+    ID       uuid.UUID `json:"id" db:"id"`
+    BoardID  uuid.UUID `json:"board_id" db:"board_id"`
+    Title    string    `json:"title" db:"title"`
+    Position int       `json:"position" db:"position"`
+    Settings map[string]interface{} `json:"settings" db:"settings"`
     CreatedAt time.Time `json:"created_at" db:"created_at"`
     UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
     
     // Relationships
-    Tasks []Task `json:"tasks,omitempty"`
     Board *Board `json:"board,omitempty"`
+    Tasks []Task `json:"tasks,omitempty"`
 }
 
 type Task struct {
@@ -48,11 +65,14 @@ type Task struct {
     Description string     `json:"description" db:"description"`
     ColumnID    uuid.UUID  `json:"column_id" db:"column_id"`
     BoardID     uuid.UUID  `json:"board_id" db:"board_id"`
-    AssigneeID  *uuid.UUID `json:"assignee_id" db:"assignee_id"`
+    AssignedTo  *uuid.UUID `json:"assigned_to" db:"assigned_to"`
     Priority    string     `json:"priority" db:"priority"`
-    Deadline    *time.Time `json:"deadline" db:"deadline"`
     Position    int        `json:"position" db:"position"`
+    Deadline    *time.Time `json:"deadline" db:"deadline"`
     Completed   bool       `json:"completed" db:"completed"`
+    CompletedAt *time.Time `json:"completed_at" db:"completed_at"`
+    Tags        []string   `json:"tags" db:"tags"`
+    Attachments []map[string]interface{} `json:"attachments" db:"attachments"`
     CreatedAt   time.Time  `json:"created_at" db:"created_at"`
     UpdatedAt   time.Time  `json:"updated_at" db:"updated_at"`
     
@@ -60,18 +80,7 @@ type Task struct {
     Column   *Column `json:"column,omitempty"`
     Board    *Board  `json:"board,omitempty"`
     Assignee *User   `json:"assignee,omitempty"`
-}
-
-type BoardMember struct {
-    ID        uuid.UUID `json:"id" db:"id"`
-    BoardID   uuid.UUID `json:"board_id" db:"board_id"`
-    UserID    uuid.UUID `json:"user_id" db:"user_id"`
-    Role      string    `json:"role" db:"role"` // owner, admin, member
-    CreatedAt time.Time `json:"created_at" db:"created_at"`
-    
-    // Relationships
-    Board *Board `json:"board,omitempty"`
-    User  *User  `json:"user,omitempty"`
+    Comments []Comment `json:"comments,omitempty"`
 }
 
 type OTPToken struct {
@@ -97,13 +106,14 @@ type Comment struct {
 }
 
 type Activity struct {
-    ID          uuid.UUID `json:"id" db:"id"`
-    UserID      uuid.UUID `json:"user_id" db:"user_id"`
-    BoardID     uuid.UUID `json:"board_id" db:"board_id"`
-    TaskID      *uuid.UUID `json:"task_id" db:"task_id"`
-    Action      string    `json:"action" db:"action"` // created, updated, moved, deleted, etc.
-    Description string    `json:"description" db:"description"`
-    CreatedAt   time.Time `json:"created_at" db:"created_at"`
+    ID          uuid.UUID              `json:"id" db:"id"`
+    UserID      uuid.UUID              `json:"user_id" db:"user_id"`
+    BoardID     uuid.UUID              `json:"board_id" db:"board_id"`
+    TaskID      *uuid.UUID             `json:"task_id" db:"task_id"`
+    Action      string                 `json:"action" db:"action"`
+    Description string                 `json:"description" db:"description"`
+    Metadata    map[string]interface{} `json:"metadata" db:"metadata"`
+    CreatedAt   time.Time              `json:"created_at" db:"created_at"`
     
     // Relationships
     User  *User  `json:"user,omitempty"`
@@ -146,7 +156,7 @@ const (
 func (u *User) GetInitials() string {
     if u.Name == "" {
         if u.Email != "" {
-            return string(u.Email[0])
+            return strings.ToUpper(string(u.Email[0]))
         }
         return "?"
     }
@@ -155,7 +165,7 @@ func (u *User) GetInitials() string {
     words := splitName(u.Name)
     for i, word := range words {
         if i < 2 && len(word) > 0 {
-            initials += string(word[0])
+            initials += strings.ToUpper(string(word[0]))
         }
     }
     
@@ -166,33 +176,60 @@ func (u *User) GetInitials() string {
     return initials
 }
 
+func (u *User) GetDisplayName() string {
+    if u.Name != "" {
+        return u.Name
+    }
+    return u.Email
+}
+
+func (t *Task) GetPriorityColor() string {
+    switch t.Priority {
+    case PriorityUrgent:
+        return "red"
+    case PriorityHigh:
+        return "orange"
+    case PriorityMedium:
+        return "yellow"
+    case PriorityLow:
+        return "green"
+    default:
+        return "gray"
+    }
+}
+
 func (t *Task) IsOverdue() bool {
     if t.Deadline == nil || t.Completed {
         return false
     }
-    return t.Deadline.Before(time.Now())
+    return time.Now().After(*t.Deadline)
 }
 
-func (t *Task) IsDueSoon() bool {
-    if t.Deadline == nil || t.Completed {
-        return false
+func (t *Task) GetDeadlineStatus() string {
+    if t.Deadline == nil {
+        return ""
     }
-    return t.Deadline.Before(time.Now().Add(24 * time.Hour))
+    
+    if t.Completed {
+        return "completed"
+    }
+    
+    now := time.Now()
+    diff := t.Deadline.Sub(now)
+    
+    if diff < 0 {
+        return "overdue"
+    } else if diff < 24*time.Hour {
+        return "due-soon"
+    } else if diff < 7*24*time.Hour {
+        return "due-this-week"
+    }
+    
+    return "due-later"
 }
 
-func (t *Task) GetPriorityWeight() int {
-    switch t.Priority {
-    case PriorityUrgent:
-        return 4
-    case PriorityHigh:
-        return 3
-    case PriorityMedium:
-        return 2
-    case PriorityLow:
-        return 1
-    default:
-        return 2
-    }
+func (b *Board) IsSubBoard() bool {
+    return b.ParentBoardID != nil
 }
 
 func (b *Board) GetTaskCount() int {
@@ -215,82 +252,101 @@ func (b *Board) GetCompletedTaskCount() int {
     return count
 }
 
-func (c *Column) GetTaskCount() int {
-    return len(c.Tasks)
+func (bm *BoardMember) CanEdit() bool {
+    return bm.Role == RoleOwner || bm.Role == RoleAdmin
 }
 
-func (c *Column) GetCompletedTaskCount() int {
-    count := 0
-    for _, task := range c.Tasks {
-        if task.Completed {
-            count++
-        }
-    }
-    return count
+func (bm *BoardMember) CanDelete() bool {
+    return bm.Role == RoleOwner
+}
+
+func (bm *BoardMember) CanInvite() bool {
+    return bm.Role == RoleOwner || bm.Role == RoleAdmin
 }
 
 // Helper functions
 func splitName(name string) []string {
-    var words []string
-    var current string
-    
-    for _, r := range name {
-        if r == ' ' || r == '\t' || r == '\n' {
-            if current != "" {
-                words = append(words, current)
-                current = ""
-            }
-        } else {
-            current += string(r)
-        }
-    }
-    
-    if current != "" {
-        words = append(words, current)
-    }
-    
-    return words
+    return strings.Fields(strings.TrimSpace(name))
 }
 
-// Validation helpers
-func (u *User) Validate() error {
-    if u.Email == "" {
-        return fmt.Errorf("email is required")
-    }
-    return nil
-}
-
-func (b *Board) Validate() error {
-    if b.Title == "" {
-        return fmt.Errorf("board title is required")
-    }
-    return nil
-}
-
-func (c *Column) Validate() error {
-    if c.Title == "" {
-        return fmt.Errorf("column title is required")
-    }
-    return nil
-}
-
-func (t *Task) Validate() error {
-    if t.Title == "" {
-        return fmt.Errorf("task title is required")
-    }
-    
+func ValidatePriority(priority string) bool {
     validPriorities := []string{PriorityLow, PriorityMedium, PriorityHigh, PriorityUrgent}
-    valid := false
     for _, p := range validPriorities {
-        if t.Priority == p {
-            valid = true
-            break
+        if priority == p {
+            return true
         }
     }
+    return false
+}
+
+func ValidateRole(role string) bool {
+    validRoles := []string{RoleOwner, RoleAdmin, RoleMember}
+    for _, r := range validRoles {
+        if role == r {
+            return true
+        }
+    }
+    return false
+}
+
+func GetPriorityList() []string {
+    return []string{PriorityLow, PriorityMedium, PriorityHigh, PriorityUrgent}
+}
+
+func GetRoleList() []string {
+    return []string{RoleMember, RoleAdmin, RoleOwner}
+}
+
+// Format time helpers
+func FormatRelativeTime(t time.Time) string {
+    now := time.Now()
+    diff := now.Sub(t)
     
-    if !valid {
-        return fmt.Errorf("invalid priority: %s", t.Priority)
+    if diff < time.Minute {
+        return "just now"
+    } else if diff < time.Hour {
+        minutes := int(diff.Minutes())
+        if minutes == 1 {
+            return "1 minute ago"
+        }
+        return fmt.Sprintf("%d minutes ago", minutes)
+    } else if diff < 24*time.Hour {
+        hours := int(diff.Hours())
+        if hours == 1 {
+            return "1 hour ago"
+        }
+        return fmt.Sprintf("%d hours ago", hours)
+    } else if diff < 7*24*time.Hour {
+        days := int(diff.Hours() / 24)
+        if days == 1 {
+            return "1 day ago"
+        }
+        return fmt.Sprintf("%d days ago", days)
+    } else {
+        return t.Format("Jan 2, 2006")
+    }
+}
+
+func FormatDeadline(deadline *time.Time) string {
+    if deadline == nil {
+        return ""
     }
     
-    return nil
+    now := time.Now()
+    diff := deadline.Sub(now)
+    
+    if diff < 0 {
+        return "Overdue"
+    } else if diff < 24*time.Hour {
+        hours := int(diff.Hours())
+        if hours < 1 {
+            return "Due very soon"
+        }
+        return fmt.Sprintf("Due in %d hours", hours)
+    } else if diff < 7*24*time.Hour {
+        days := int(diff.Hours() / 24)
+        return fmt.Sprintf("Due in %d days", days)
+    } else {
+        return deadline.Format("Due Jan 2")
+    }
 }

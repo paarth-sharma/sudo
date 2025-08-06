@@ -4,9 +4,11 @@ import (
     "context"
     "net/http"
     "fmt"
+    "strings"
     
     "sudo/internal/database"
     "sudo/internal/email"
+    "sudo/internal/models"
     "sudo/templates/pages"
     "sudo/templates/components"
     
@@ -125,17 +127,16 @@ func (h *BoardHandler) CreateColumn(c *gin.Context) {
         return
     }
     
-    boardIDStr := c.PostForm("board_id")
-    title := c.PostForm("title")
-    
-    if boardIDStr == "" || title == "" {
-        c.String(http.StatusBadRequest, "Board ID and title are required")
-        return
-    }
-    
+    boardIDStr := c.Param("id")
     boardID, err := uuid.Parse(boardIDStr)
     if err != nil {
         c.String(http.StatusBadRequest, "Invalid board ID")
+        return
+    }
+    
+    title := c.PostForm("title")
+    if title == "" {
+        c.String(http.StatusBadRequest, "Column title is required")
         return
     }
     
@@ -151,7 +152,7 @@ func (h *BoardHandler) CreateColumn(c *gin.Context) {
         return
     }
     
-    // Get current column count for position
+    // Get position (add to end)
     columns, err := h.db.GetBoardColumns(context.Background(), boardID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to get columns: %v", err)
@@ -159,13 +160,14 @@ func (h *BoardHandler) CreateColumn(c *gin.Context) {
     }
     
     position := len(columns)
+    
     column, err := h.db.CreateColumn(context.Background(), boardID, title, position)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to create column: %v", err)
         return
     }
     
-    component := components.Column(*column, boardIDStr)
+    component := components.BoardColumn(*column)
     handler := templ.Handler(component)
     handler.ServeHTTP(c.Writer, c.Request)
 }
@@ -250,7 +252,7 @@ func (h *BoardHandler) InviteMember(c *gin.Context) {
     
     // Send invitation email
     inviteURL := fmt.Sprintf("%s/boards/%s", getBaseURL(c), boardID.String())
-    err = h.emailService.SendInvitationEmail(email, board.Title, currentUser.Name, inviteURL)
+    err = h.emailService.SendInvitation(email, currentUser.Name, board.Title, inviteURL)
     if err != nil {
         // Log error but don't fail the request
         fmt.Printf("Failed to send invitation email: %v\n", err)
@@ -273,26 +275,32 @@ func (h *BoardHandler) UpdateBoard(c *gin.Context) {
         return
     }
     
-    // Check if user owns this board
-    isOwner, err := h.checkBoardOwnership(userID, boardID)
+    // Check if user has access to this board
+    hasAccess, err := h.checkBoardAccess(userID, boardID)
     if err != nil {
-        c.String(http.StatusInternalServerError, "Failed to check board ownership: %v", err)
+        c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
         return
     }
     
-    if !isOwner {
-        c.String(http.StatusForbidden, "Only board owners can update the board")
+    if !hasAccess {
+        c.String(http.StatusForbidden, "You don't have access to this board")
         return
     }
     
-    updates := make(map[string]interface{})
+    title := c.PostForm("title")
+    description := c.PostForm("description")
     
-    if title := c.PostForm("title"); title != "" {
+    updates := map[string]interface{}{}
+    if title != "" {
         updates["title"] = title
     }
-    
-    if description := c.PostForm("description"); description != "" {
+    if description != "" {
         updates["description"] = description
+    }
+    
+    if len(updates) == 0 {
+        c.String(http.StatusBadRequest, "No updates provided")
+        return
     }
     
     err = h.db.UpdateBoard(context.Background(), boardID, updates)
@@ -337,6 +345,97 @@ func (h *BoardHandler) DeleteBoard(c *gin.Context) {
     }
     
     c.Header("HX-Redirect", "/dashboard")
+    c.Status(http.StatusOK)
+}
+
+func (h *BoardHandler) GetBoardMembers(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.String(http.StatusUnauthorized, "Unauthorized")
+        return
+    }
+    
+    boardIDStr := c.Param("id")
+    boardID, err := uuid.Parse(boardIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid board ID")
+        return
+    }
+    
+    // Check if user has access to this board
+    hasAccess, err := h.checkBoardAccess(userID, boardID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
+        return
+    }
+    
+    if !hasAccess {
+        c.String(http.StatusForbidden, "You don't have access to this board")
+        return
+    }
+    
+    members, err := h.db.GetBoardMembers(context.Background(), boardID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to get board members: %v", err)
+        return
+    }
+    
+    c.JSON(http.StatusOK, members)
+}
+
+func (h *BoardHandler) UpdateColumn(c *gin.Context) {
+    _, err := getUserFromSession(c)
+    if err != nil {
+        c.String(http.StatusUnauthorized, "Unauthorized")
+        return
+    }
+    
+    columnIDStr := c.Param("id")
+    columnID, err := uuid.Parse(columnIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid column ID")
+        return
+    }
+    
+    title := c.PostForm("title")
+    if title == "" {
+        c.String(http.StatusBadRequest, "Column title is required")
+        return
+    }
+    
+    updates := map[string]interface{}{
+        "title": title,
+    }
+    
+    err = h.db.UpdateColumn(context.Background(), columnID, updates)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to update column: %v", err)
+        return
+    }
+    
+    c.Status(http.StatusOK)
+}
+
+func (h *BoardHandler) DeleteColumn(c *gin.Context) {
+    _, err := getUserFromSession(c)
+    if err != nil {
+        c.String(http.StatusUnauthorized, "Unauthorized")
+        return
+    }
+    
+    columnIDStr := c.Param("id")
+    columnID, err := uuid.Parse(columnIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid column ID")
+        return
+    }
+    
+    err = h.db.DeleteColumn(context.Background(), columnID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to delete column: %v", err)
+        return
+    }
+    
     c.Status(http.StatusOK)
 }
 
@@ -386,6 +485,106 @@ func (h *BoardHandler) RemoveBoardMember(c *gin.Context) {
     }
     
     c.Status(http.StatusOK)
+}
+
+func (h *BoardHandler) GetBoardTasks(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.String(http.StatusUnauthorized, "Unauthorized")
+        return
+    }
+    
+    boardIDStr := c.Param("id")
+    boardID, err := uuid.Parse(boardIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid board ID")
+        return
+    }
+    
+    // Check if user has access to this board
+    hasAccess, err := h.checkBoardAccess(userID, boardID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
+        return
+    }
+    
+    if !hasAccess {
+        c.String(http.StatusForbidden, "You don't have access to this board")
+        return
+    }
+    
+    board, err := h.db.GetBoardWithColumns(context.Background(), boardID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to get board: %v", err)
+        return
+    }
+    
+    // Flatten all tasks from all columns
+    var allTasks []models.Task
+    for _, column := range board.Columns {
+        allTasks = append(allTasks, column.Tasks...)
+    }
+    
+    c.JSON(http.StatusOK, allTasks)
+}
+
+func (h *BoardHandler) SearchContent(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.String(http.StatusUnauthorized, "Unauthorized")
+        return
+    }
+    
+    query := c.Query("q")
+    if query == "" {
+        c.JSON(http.StatusOK, gin.H{"boards": []models.Board{}, "tasks": []models.Task{}})
+        return
+    }
+    
+    // Get user's boards
+    boards, err := h.db.GetUserBoards(context.Background(), userID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to search: %v", err)
+        return
+    }
+    
+    // Simple search implementation - in production, use full-text search
+    var matchingBoards []models.Board
+    var matchingTasks []models.Task
+    
+    for _, board := range boards {
+        // Search board titles and descriptions
+        if strings.Contains(strings.ToLower(board.Title), strings.ToLower(query)) ||
+           strings.Contains(strings.ToLower(board.Description), strings.ToLower(query)) {
+            matchingBoards = append(matchingBoards, board)
+        }
+        
+        // Search tasks in this board
+        boardWithColumns, err := h.db.GetBoardWithColumns(context.Background(), board.ID)
+        if err != nil {
+            continue
+        }
+        
+        for _, column := range boardWithColumns.Columns {
+            for _, task := range column.Tasks {
+                if strings.Contains(strings.ToLower(task.Title), strings.ToLower(query)) ||
+                   strings.Contains(strings.ToLower(task.Description), strings.ToLower(query)) {
+                    matchingTasks = append(matchingTasks, task)
+                }
+            }
+        }
+    }
+    
+    c.JSON(http.StatusOK, gin.H{
+        "boards": matchingBoards,
+        "tasks":  matchingTasks,
+    })
+}
+
+func (h *BoardHandler) HandleWebSocket(c *gin.Context) {
+    // WebSocket implementation for real-time updates
+    // This is a placeholder - implement with gorilla/websocket or similar
+    c.String(http.StatusNotImplemented, "WebSocket endpoint not implemented yet")
 }
 
 // Helper functions

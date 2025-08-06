@@ -1,9 +1,11 @@
 package pages
 
-import "sudo/internal/models"
-import "sudo/templates/layouts"
-import "sudo/templates/components"
-import "fmt"
+import (
+    "fmt"
+    "time"
+    "sudo/internal/models"
+    "sudo/templates/layouts"
+)
 
 templ Dashboard(boards []models.Board) {
     @layouts.Base("Dashboard - SUDO Kanban") {

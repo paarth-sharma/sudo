@@ -8,6 +8,7 @@ import (
     "fmt"
    
     "sudo/internal/database"
+    "sudo/internal/models"
     "sudo/templates/components"
    
     "github.com/gin-gonic/gin"
@@ -306,10 +307,20 @@ func (h *TaskHandler) GetTask(c *gin.Context) {
     }
     
     // Get board members for assignment options
-    members, err := h.db.GetBoardMembers(context.Background(), task.BoardID)
+    users, err := h.db.GetBoardMembers(context.Background(), task.BoardID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to get board members: %v", err)
         return
+    }
+    
+    // Convert []User to []BoardMember for the template
+    var members []models.BoardMember
+    for _, user := range users {
+        member := models.BoardMember{
+            UserID: user.ID,
+            User:   &user,
+        }
+        members = append(members, member)
     }
     
     component := components.TaskDetailsModal(*task, members)
@@ -479,5 +490,99 @@ func (h *TaskHandler) CreateNestedBoard(c *gin.Context) {
     
     // Redirect to the new board
     c.Header("HX-Redirect", fmt.Sprintf("/boards/%s", board.ID.String()))
+    c.Status(http.StatusOK)
+}
+
+func (h *TaskHandler) CompleteTask(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.String(http.StatusUnauthorized, "Unauthorized")
+        return
+    }
+    
+    taskIDStr := c.Param("id")
+    taskID, err := uuid.Parse(taskIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid task ID")
+        return
+    }
+    
+    // Get task to check board access
+    task, err := h.db.GetTask(context.Background(), taskID)
+    if err != nil {
+        c.String(http.StatusNotFound, "Task not found")
+        return
+    }
+    
+    // Check if user has access to this board
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, task.BoardID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
+        return
+    }
+    
+    if !hasAccess {
+        c.String(http.StatusForbidden, "You don't have access to this board")
+        return
+    }
+    
+    updates := map[string]interface{}{
+        "completed": true,
+        "completed_at": time.Now(),
+    }
+    
+    err = h.db.UpdateTask(context.Background(), taskID, updates)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to complete task: %v", err)
+        return
+    }
+    
+    c.Status(http.StatusOK)
+}
+
+func (h *TaskHandler) ReopenTask(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.String(http.StatusUnauthorized, "Unauthorized")
+        return
+    }
+    
+    taskIDStr := c.Param("id")
+    taskID, err := uuid.Parse(taskIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid task ID")
+        return
+    }
+    
+    // Get task to check board access
+    task, err := h.db.GetTask(context.Background(), taskID)
+    if err != nil {
+        c.String(http.StatusNotFound, "Task not found")
+        return
+    }
+    
+    // Check if user has access to this board
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, task.BoardID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
+        return
+    }
+    
+    if !hasAccess {
+        c.String(http.StatusForbidden, "You don't have access to this board")
+        return
+    }
+    
+    updates := map[string]interface{}{
+        "completed": false,
+        "completed_at": nil,
+    }
+    
+    err = h.db.UpdateTask(context.Background(), taskID, updates)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to reopen task: %v", err)
+        return
+    }
+    
     c.Status(http.StatusOK)
 }

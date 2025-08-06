@@ -18,7 +18,7 @@ templ Column(column models.Column, boardID string) {
                 <div class="flex items-center space-x-1">
                     <!-- Add Task Button -->
                     <button 
-                        onclick={`showAddTaskForm('` + column.ID.String() + `')`}
+                        onclick={ showAddTaskFormScript(column.ID.String()) }
                         class="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
                         title="Add task"
                     >
@@ -30,7 +30,7 @@ templ Column(column models.Column, boardID string) {
                     <!-- Column Menu -->
                     <div class="relative">
                         <button 
-                            onclick={`toggleColumnMenu('` + column.ID.String() + `')`}
+                            onclick={ toggleColumnMenuScript(column.ID.String()) }
                             class="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@ templ Column(column models.Column, boardID string) {
                     hx-post="/tasks" 
                     hx-target={`#tasks-` + column.ID.String()}
                     hx-swap="afterbegin"
-                    hx-on::after-request={`hideAddTaskForm('` + column.ID.String() + `')`}
+                    hx-on::after-request={ hideAddTaskFormScript(column.ID.String()) }
                     class="space-y-3"
                 >
                     <input type="hidden" name="column_id" value={column.ID.String()}/>
@@ -106,7 +106,7 @@ templ Column(column models.Column, boardID string) {
                         </button>
                         <button 
                             type="button"
-                            onclick={`hideAddTaskForm('` + column.ID.String() + `')`}
+                            onclick={ hideAddTaskFormScript(column.ID.String()) }
                             class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
                         >
                             Cancel
@@ -134,7 +134,7 @@ templ Column(column models.Column, boardID string) {
                             </svg>
                             <p class="text-sm">Drop tasks here or</p>
                             <button 
-                                onclick={`showAddTaskForm('` + column.ID.String() + `')`}
+                                onclick={ showAddTaskFormScript(column.ID.String()) }
                                 class="text-blue-600 hover:text-blue-800 text-sm font-medium"
                             >
                                 add a new task
@@ -145,6 +145,18 @@ templ Column(column models.Column, boardID string) {
             </div>
         </div>
     </div>
+}
+
+script showAddTaskFormScript(columnID string) {
+    showAddTaskForm(columnID);
+}
+
+script toggleColumnMenuScript(columnID string) {
+    toggleColumnMenu(columnID);
+}
+
+script hideAddTaskFormScript(columnID string) {
+    hideAddTaskForm(columnID);
 }
 
 templ TaskModal() {

@@ -3,7 +3,6 @@ package handlers
 import (
     "context"
     "crypto/rand"
-    "fmt"
     "math/big"
     "net/http"
     "time"
@@ -65,19 +64,8 @@ func (h *AuthHandler) SendOTP(c *gin.Context) {
         return
     }
     
-    // Send email
-    subject := "Your SUDO Kanban Login Code"
-    body := fmt.Sprintf(`
-        <h2>Your Login Code for SUDO Kanban</h2>
-        <p>Your verification code is: <strong style="font-size: 24px; color: #2563eb;">%s</strong></p>
-        <p>This code will expire in 10 minutes.</p>
-        <p>If you didn't request this code, please ignore this email.</p>
-        <br>
-        <p>Happy organizing!</p>
-        <p>The SUDO Team</p>
-    `, otp)
-    
-    err = h.emailService.SendEmail(email, subject, body)
+    // Send OTP email using the email service
+    err = h.emailService.SendOTP(email, otp)
     if err != nil {
         component := components.AuthError("Failed to send email. Please check your email address and try again.")
         handler := templ.Handler(component)
@@ -116,11 +104,13 @@ func (h *AuthHandler) VerifyOTP(c *gin.Context) {
     session.Set("user_id", user.ID.String())
     session.Set("user_email", user.Email)
     session.Set("user_name", user.Name)
+    
     session.Options(sessions.Options{
         MaxAge:   86400 * 30, // 30 days
         HttpOnly: true,
-        Secure:   c.Request.Header.Get("X-Forwarded-Proto") == "https",
-        SameSite: http.SameSiteStrictMode,
+        Secure:   false, // Disable for local development
+        SameSite: http.SameSiteLaxMode,
+        Path:     "/",
     })
     
     err = session.Save()
@@ -131,9 +121,9 @@ func (h *AuthHandler) VerifyOTP(c *gin.Context) {
         return
     }
     
-    // Redirect to dashboard
-    c.Header("HX-Redirect", "/dashboard")
-    c.Status(http.StatusOK)
+    // Use window.location instead of HX-Redirect to ensure session cookies are sent
+    c.Header("Content-Type", "text/html")
+    c.String(http.StatusOK, `<script>window.location.href = "/dashboard";</script>`)
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {
