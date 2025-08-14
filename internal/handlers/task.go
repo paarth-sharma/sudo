@@ -12,6 +12,7 @@ import (
     "sudo/templates/components"
    
     "github.com/gin-gonic/gin"
+    "github.com/gin-contrib/sessions"
     "github.com/google/uuid"
     "github.com/a-h/templ"
 )
@@ -24,12 +25,36 @@ func NewTaskHandler(db *database.DB) *TaskHandler {
     return &TaskHandler{db: db}
 }
 
-func (h *TaskHandler) CreateTask(c *gin.Context) {
+func (h *TaskHandler) validateUserSession(c *gin.Context) (*models.User, error) {
     userID, err := getUserFromSession(c)
     if err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
+        return nil, err
+    }
+    
+    // Verify user exists in database
+    user, err := h.db.GetUserByID(context.Background(), userID)
+    if err != nil {
+        // User doesn't exist - clear the invalid session
+        session := sessions.Default(c)
+        session.Clear()
+        session.Options(sessions.Options{MaxAge: -1})
+        session.Save()
+        return nil, fmt.Errorf("invalid session - user not found")
+    }
+    
+    return user, nil
+}
+
+func (h *TaskHandler) CreateTask(c *gin.Context) {
+    user, err := h.validateUserSession(c)
+    if err != nil {
+        fmt.Printf("❌ Task creation session error: %v\n", err)
+        c.Header("HX-Redirect", "/")
+        c.Status(http.StatusUnauthorized)
         return
     }
+    
+    fmt.Printf("✅ Valid user creating task: %s (%s)\n", user.Email, user.ID.String())
     
     title := c.PostForm("title")
     description := c.PostForm("description")
@@ -60,7 +85,7 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
     }
     
     // Check if user has access to this board
-    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, boardID)
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), user.ID, boardID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
         return

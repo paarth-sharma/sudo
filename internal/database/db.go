@@ -85,15 +85,19 @@ func (db *DB) GetUserByID(ctx context.Context, userID uuid.UUID) (*models.User, 
 
 // Board operations
 func (db *DB) CreateBoard(ctx context.Context, title, description string, ownerID uuid.UUID, parentBoardID *uuid.UUID) (*models.Board, error) {
-    board := models.Board{
-        Title:         title,
-        Description:   description,
-        OwnerID:       ownerID,
-        ParentBoardID: parentBoardID,
+    // Use map instead of struct to let database generate UUID
+    boardData := map[string]interface{}{
+        "title":       title,
+        "description": description,
+        "owner_id":    ownerID.String(),
+    }
+    
+    if parentBoardID != nil {
+        boardData["parent_board_id"] = parentBoardID.String()
     }
     
     var result []models.Board
-    _, err := db.client.From("boards").Insert(board, false, "", "", "").ExecuteTo(&result)
+    _, err := db.client.From("boards").Insert(boardData, false, "", "", "").ExecuteTo(&result)
     if err != nil {
         return nil, fmt.Errorf("failed to create board: %w", err)
     }
@@ -111,7 +115,7 @@ func (db *DB) CreateBoard(ctx context.Context, title, description string, ownerI
         return &result[0], nil
     }
     
-    return &board, nil
+    return nil, fmt.Errorf("failed to get created board data")
 }
 
 func (db *DB) GetUserBoards(ctx context.Context, userID uuid.UUID) ([]models.Board, error) {
@@ -318,14 +322,15 @@ func (db *DB) GetBoardMembers(ctx context.Context, boardID uuid.UUID) ([]models.
 
 // Column operations
 func (db *DB) CreateColumn(ctx context.Context, boardID uuid.UUID, title string, position int) (*models.Column, error) {
-    column := models.Column{
-        BoardID:  boardID,
-        Title:    title,
-        Position: position,
+    // Use map instead of struct to let database generate UUID
+    columnData := map[string]interface{}{
+        "board_id": boardID.String(),
+        "title":    title,
+        "position": position,
     }
     
     var result []models.Column
-    _, err := db.client.From("columns").Insert(column, false, "", "", "").ExecuteTo(&result)
+    _, err := db.client.From("columns").Insert(columnData, false, "", "", "").ExecuteTo(&result)
     if err != nil {
         return nil, fmt.Errorf("failed to create column: %w", err)
     }
@@ -334,7 +339,7 @@ func (db *DB) CreateColumn(ctx context.Context, boardID uuid.UUID, title string,
         return &result[0], nil
     }
     
-    return &column, nil
+    return nil, fmt.Errorf("failed to get created column data")
 }
 
 func (db *DB) GetBoardColumns(ctx context.Context, boardID uuid.UUID) ([]models.Column, error) {
@@ -406,17 +411,18 @@ func (db *DB) CreateTask(ctx context.Context, title, description string, columnI
         position = tasks[0].Position + 1
     }
     
-    task := models.Task{
-        Title:       title,
-        Description: description,
-        ColumnID:    columnID,
-        BoardID:     boardID,
-        Priority:    priority,
-        Position:    position,
+    // Use map instead of struct to let database generate UUID
+    taskData := map[string]interface{}{
+        "title":       title,
+        "description": description,
+        "column_id":   columnID.String(),
+        "board_id":    boardID.String(),
+        "priority":    priority,
+        "position":    position,
     }
     
     var result []models.Task
-    _, err := db.client.From("tasks").Insert(task, false, "", "", "").ExecuteTo(&result)
+    _, err := db.client.From("tasks").Insert(taskData, false, "", "", "").ExecuteTo(&result)
     if err != nil {
         return nil, fmt.Errorf("failed to create task: %w", err)
     }
@@ -425,7 +431,7 @@ func (db *DB) CreateTask(ctx context.Context, title, description string, columnI
         return &result[0], nil
     }
     
-    return &task, nil
+    return nil, fmt.Errorf("failed to get created task data")
 }
 
 func (db *DB) GetTask(ctx context.Context, taskID uuid.UUID) (*models.Task, error) {

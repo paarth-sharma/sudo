@@ -19,6 +19,7 @@ CREATE TABLE boards (
     description TEXT,
     owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     parent_board_id UUID REFERENCES boards(id) ON DELETE SET NULL,
+    settings JSONB DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -29,6 +30,7 @@ CREATE TABLE columns (
     board_id UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     position INTEGER NOT NULL,
+    settings JSONB DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(board_id, position)
@@ -42,9 +44,11 @@ CREATE TABLE tasks (
     column_id UUID NOT NULL REFERENCES columns(id) ON DELETE CASCADE,
     board_id UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
     assignee_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    priority VARCHAR(50) DEFAULT 'Medium' CHECK (priority IN ('Low', 'Medium', 'High', 'Critical')),
+    priority VARCHAR(50) DEFAULT 'Medium' CHECK (priority IN ('Low', 'Medium', 'High', 'Urgent')),
     deadline TIMESTAMP WITH TIME ZONE,
     position INTEGER NOT NULL,
+    completed BOOLEAN DEFAULT FALSE,
+    completed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

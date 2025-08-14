@@ -100,32 +100,32 @@ func Dashboard(boards []models.Board) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><p class=\"text-sm text-gray-600\">Collaborators</p></div></div></div></div><!-- Boards Grid --><div class=\"mb-6\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-medium text-gray-900\">Your Boards</h2><div class=\"flex items-center space-x-2\"><button onclick=\"toggleView(&#39;grid&#39;)\" id=\"grid-view-btn\" class=\"p-2 text-gray-400 hover:text-gray-600 view-btn active\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z\"></path></svg></button> <button onclick=\"toggleView(&#39;list&#39;)\" id=\"list-view-btn\" class=\"p-2 text-gray-400 hover:text-gray-600 view-btn\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 10h16M4 14h16M4 18h16\"></path></svg></button></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><p class=\"text-sm text-gray-600\">Collaborators</p></div></div></div></div><!-- Boards Grid --><div class=\"mb-6\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-medium text-gray-900\">Your Boards</h2><div class=\"flex items-center space-x-2\"><button onclick=\"toggleView(&#39;grid&#39;)\" id=\"grid-view-btn\" class=\"p-2 text-gray-400 hover:text-gray-600 view-btn active\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z\"></path></svg></button> <button onclick=\"toggleView(&#39;list&#39;)\" id=\"list-view-btn\" class=\"p-2 text-gray-400 hover:text-gray-600 view-btn\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 10h16M4 14h16M4 18h16\"></path></svg></button></div></div><div id=\"boards-container\" class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(boards) == 0 {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col-span-full\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 				templ_7745c5c3_Err = EmptyState().Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"boards-container\" class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
+			} else {
 				for _, board := range boards {
 					templ_7745c5c3_Err = BoardCard(board).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></main><!-- Create Board Modal -->")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></main><!-- Create Board Modal -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -197,7 +197,7 @@ func CreateBoardModal() templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"create-board-modal\" class=\"hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50\"><div class=\"bg-white rounded-lg shadow-xl max-w-lg w-full mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-gray-200\"><h3 class=\"text-lg font-semibold text-gray-900\">Create New Board</h3><button onclick=\"document.getElementById(&#39;create-board-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/boards\" hx-target=\"#boards-container\" hx-swap=\"afterbegin\" hx-on::after-request=\"document.getElementById(&#39;create-board-modal&#39;).classList.add(&#39;hidden&#39;); this.reset()\" class=\"p-6 space-y-4\"><div><label for=\"board-title\" class=\"block text-sm font-medium text-gray-700 mb-2\">Board Title</label> <input type=\"text\" id=\"board-title\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"My Awesome Project\"></div><div><label for=\"board-description\" class=\"block text-sm font-medium text-gray-700 mb-2\">Description (Optional)</label> <textarea id=\"board-description\" name=\"description\" rows=\"3\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Describe what this board is for...\"></textarea></div><div class=\"flex justify-end space-x-3 pt-4\"><button type=\"button\" onclick=\"document.getElementById(&#39;create-board-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors\">Create Board</button></div></form></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"create-board-modal\" class=\"hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50\"><div class=\"bg-white rounded-lg shadow-xl max-w-lg w-full mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-gray-200\"><h3 class=\"text-lg font-semibold text-gray-900\">Create New Board</h3><button onclick=\"document.getElementById(&#39;create-board-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/boards\" hx-target=\"#boards-container\" hx-swap=\"afterbegin\" hx-on::after-request=\"document.getElementById(&#39;create-board-modal&#39;).classList.add(&#39;hidden&#39;); this.reset()\" hx-trigger=\"submit\" class=\"p-6 space-y-4\"><div><label for=\"board-title\" class=\"block text-sm font-medium text-gray-700 mb-2\">Board Title</label> <input type=\"text\" id=\"board-title\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"My Awesome Project\"></div><div><label for=\"board-description\" class=\"block text-sm font-medium text-gray-700 mb-2\">Description (Optional)</label> <textarea id=\"board-description\" name=\"description\" rows=\"3\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Describe what this board is for...\"></textarea></div><div class=\"flex justify-end space-x-3 pt-4\"><button type=\"button\" onclick=\"document.getElementById(&#39;create-board-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors\">Create Board</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

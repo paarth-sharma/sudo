@@ -262,8 +262,127 @@ document.body.addEventListener('htmx:afterRequest', function(evt) {
     }
 });
 
+// Column Menu Functions
+function toggleColumnMenu(columnId) {
+    // Hide all other column menus first
+    const allMenus = document.querySelectorAll('[id^="column-menu-"]');
+    allMenus.forEach(menu => {
+        if (menu.id !== `column-menu-${columnId}`) {
+            menu.classList.add('hidden');
+        }
+    });
+    
+    // Toggle the specific menu
+    const menu = document.getElementById(`column-menu-${columnId}`);
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+
+// Task Modal Functions
+function openTaskModal(columnId) {
+    const modal = document.getElementById('task-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        // Store the column ID for form submission
+        modal.dataset.columnId = columnId;
+    }
+}
+
+// Task completion toggle
+function toggleTaskComplete(taskId) {
+    const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (!taskCard) return;
+    
+    // Get current completion status from UI
+    const isCompleted = taskCard.querySelector('.text-green-500') !== null;
+    const endpoint = isCompleted ? `/api/tasks/${taskId}/reopen` : `/api/tasks/${taskId}/complete`;
+    
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    }).then(response => {
+        if (response.ok) {
+            // Refresh the board or update UI
+            location.reload();
+        } else {
+            console.error('Failed to toggle task completion');
+        }
+    }).catch(error => {
+        console.error('Error toggling task completion:', error);
+    });
+}
+
+// Open task details modal
+function openTaskDetails(taskId) {
+    const modal = document.getElementById('task-modal');
+    const modalContent = document.getElementById('task-modal-content');
+    
+    if (!modal || !modalContent) return;
+    
+    // Show modal with loading state
+    modal.classList.remove('hidden');
+    modalContent.innerHTML = `
+        <div class="animate-pulse space-y-4">
+            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div class="h-20 bg-gray-200 rounded"></div>
+        </div>
+    `;
+    
+    // Fetch task details
+    fetch(`/tasks/${taskId}`, {
+        method: 'GET',
+        headers: {
+            'HX-Request': 'true'
+        }
+    }).then(response => {
+        if (response.ok) {
+            return response.text();
+        }
+        throw new Error('Failed to load task details');
+    }).then(html => {
+        modalContent.innerHTML = html;
+    }).catch(error => {
+        console.error('Error loading task details:', error);
+        modalContent.innerHTML = '<p class="text-red-600">Failed to load task details</p>';
+    });
+}
+
+// Board Menu Functions (for dashboard)
+function toggleBoardMenu(button) {
+    // Close all other menus
+    document.querySelectorAll('.board-menu').forEach(menu => {
+        if (menu !== button.parentElement.querySelector('.board-menu')) {
+            menu.classList.add('hidden');
+        }
+    });
+    
+    // Toggle this menu
+    const menu = button.parentElement.querySelector('.board-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+
+// Close menus when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.board-menu') && !event.target.closest('button')) {
+        document.querySelectorAll('.board-menu').forEach(menu => {
+            menu.classList.add('hidden');
+        });
+    }
+});
+
 // Export functions for global access
 window.showAddTaskForm = showAddTaskForm;
 window.hideAddTaskForm = hideAddTaskForm;
 window.showTaskModal = showTaskModal;
+window.openTaskModal = openTaskModal;
+window.toggleColumnMenu = toggleColumnMenu;
+window.toggleTaskComplete = toggleTaskComplete;
+window.openTaskDetails = openTaskDetails;
 window.createNestedBoard = createNestedBoard;
+window.toggleBoardMenu = toggleBoardMenu;

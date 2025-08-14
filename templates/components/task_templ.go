@@ -154,20 +154,20 @@ func AddColumnModal(boardID string) templ.Component {
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"add-column-modal\" class=\"hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50\"><div class=\"bg-white rounded-lg shadow-xl max-w-md w-full mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-gray-200\"><h3 class=\"text-lg font-semibold text-gray-900\">Add Column</h3><button onclick=\"document.getElementById(&#39;add-column-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/columns\" hx-target=\"#board-columns\" hx-swap=\"beforeend\" hx-on::after-request=\"document.getElementById(&#39;add-column-modal&#39;).classList.add(&#39;hidden&#39;); this.reset()\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"board_id\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"add-column-modal\" class=\"hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50\"><div class=\"bg-white rounded-lg shadow-xl max-w-md w-full mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-gray-200\"><h3 class=\"text-lg font-semibold text-gray-900\">Add Column</h3><button onclick=\"document.getElementById(&#39;add-column-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(boardID)
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(`/boards/` + boardID + `/columns`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/task.templ`, Line: 46, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/task.templ`, Line: 40, Col: 58}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div><label for=\"column-title\" class=\"block text-sm font-medium text-gray-700 mb-2\">Column Title</label> <input type=\"text\" id=\"column-title\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Enter column title\"></div><div class=\"flex justify-end space-x-3 pt-4\"><button type=\"button\" onclick=\"document.getElementById(&#39;add-column-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors\">Add Column</button></div></form></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#board-columns\" hx-swap=\"beforeend\" hx-on::after-request=\"document.getElementById(&#39;add-column-modal&#39;).classList.add(&#39;hidden&#39;); this.reset()\" class=\"p-6 space-y-4\"><div><label for=\"column-title\" class=\"block text-sm font-medium text-gray-700 mb-2\">Column Title</label> <input type=\"text\" id=\"column-title\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Enter column title\"></div><div class=\"flex justify-end space-x-3 pt-4\"><button type=\"button\" onclick=\"document.getElementById(&#39;add-column-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors\">Add Column</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -175,7 +175,7 @@ func AddColumnModal(boardID string) templ.Component {
 	})
 }
 
-func InviteModal() templ.Component {
+func InviteModal(boardID string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -196,7 +196,33 @@ func InviteModal() templ.Component {
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"invite-modal\" class=\"hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50\"><div class=\"bg-white rounded-lg shadow-xl max-w-md w-full mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-gray-200\"><h3 class=\"text-lg font-semibold text-gray-900\">Invite Team Members</h3><button onclick=\"document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/board-members\" hx-on::after-request=\"document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;); this.reset()\" class=\"p-6 space-y-4\"><div><label for=\"member-email\" class=\"block text-sm font-medium text-gray-700 mb-2\">Email Address</label> <input type=\"email\" id=\"member-email\" name=\"email\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"colleague@example.com\"></div><div><label for=\"member-role\" class=\"block text-sm font-medium text-gray-700 mb-2\">Role</label> <select id=\"member-role\" name=\"role\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\"><option value=\"member\">Member</option> <option value=\"admin\">Admin</option></select></div><div class=\"flex justify-end space-x-3 pt-4\"><button type=\"button\" onclick=\"document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors\">Send Invite</button></div></form></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"invite-modal\" class=\"hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50\"><div class=\"bg-white rounded-lg shadow-xl max-w-md w-full mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-gray-200\"><h3 class=\"text-lg font-semibold text-gray-900\">Invite Team Members</h3><button onclick=\"document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(`/boards/` + boardID + `/invite`)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/task.templ`, Line: 97, Col: 57}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-on::after-request=\"document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;); this.reset()\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"board_id\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(boardID)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/task.templ`, Line: 101, Col: 67}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div><label for=\"member-email\" class=\"block text-sm font-medium text-gray-700 mb-2\">Email Address</label> <input type=\"email\" id=\"member-email\" name=\"email\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"colleague@example.com\"></div><div><label for=\"member-role\" class=\"block text-sm font-medium text-gray-700 mb-2\">Role</label> <select id=\"member-role\" name=\"role\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\"><option value=\"member\">Member</option> <option value=\"admin\">Admin</option></select></div><div class=\"flex justify-end space-x-3 pt-4\"><button type=\"button\" onclick=\"document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;)\" class=\"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors\">Send Invite</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

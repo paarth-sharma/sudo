@@ -106,7 +106,7 @@ templ Board(board models.Board) {
             
             <!-- Modals -->
             @components.AddColumnModal(board.ID.String())
-            @components.InviteModal()
+            @components.InviteModal(board.ID.String())
             @components.TaskModal()
         </div>
         

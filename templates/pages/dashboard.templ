@@ -166,15 +166,17 @@ templ Dashboard(boards []models.Board) {
                             </div>
                         </div>
                         
-                        if len(boards) == 0 {
-                            @EmptyState()
-                        } else {
-                            <div id="boards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div id="boards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            if len(boards) == 0 {
+                                <div class="col-span-full">
+                                    @EmptyState()
+                                </div>
+                            } else {
                                 for _, board := range boards {
                                     @BoardCard(board)
                                 }
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
             </main>
@@ -277,6 +279,7 @@ templ CreateBoardModal() {
                 hx-target="#boards-container" 
                 hx-swap="afterbegin"
                 hx-on::after-request="document.getElementById('create-board-modal').classList.add('hidden'); this.reset()"
+                hx-trigger="submit"
                 class="p-6 space-y-4"
             >
                 <div>

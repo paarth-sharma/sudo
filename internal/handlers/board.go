@@ -31,17 +31,23 @@ func NewBoardHandler(db *database.DB) *BoardHandler {
 }
 
 func (h *BoardHandler) Dashboard(c *gin.Context) {
-    userID, err := getUserFromSession(c)
+    user, err := h.validateUserSession(c)
     if err != nil {
+        fmt.Printf("❌ Dashboard session error: %v\n", err)
         c.Redirect(http.StatusSeeOther, "/")
         return
     }
     
-    boards, err := h.db.GetUserBoards(context.Background(), userID)
+    fmt.Printf("🏠 Loading dashboard for user: %s (%s)\n", user.Email, user.ID.String())
+    
+    boards, err := h.db.GetUserBoards(context.Background(), user.ID)
     if err != nil {
+        fmt.Printf("❌ Failed to load boards: %v\n", err)
         c.String(http.StatusInternalServerError, "Failed to load boards: %v", err)
         return
     }
+    
+    fmt.Printf("📊 Found %d boards for user\n", len(boards))
     
     component := pages.Dashboard(boards)
     handler := templ.Handler(component)
@@ -49,17 +55,26 @@ func (h *BoardHandler) Dashboard(c *gin.Context) {
 }
 
 func (h *BoardHandler) CreateBoard(c *gin.Context) {
-    userID, err := getUserFromSession(c)
+    fmt.Printf("🔄 CreateBoard handler called\n")
+    
+    user, err := h.validateUserSession(c)
     if err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
+        fmt.Printf("❌ Session error: %v\n", err)
+        c.Header("HX-Redirect", "/")
+        c.Status(http.StatusUnauthorized)
         return
     }
+    
+    fmt.Printf("✅ Valid user session: %s (%s)\n", user.Email, user.ID.String())
     
     title := c.PostForm("title")
     description := c.PostForm("description")
     parentBoardIDStr := c.PostForm("parent_board_id")
     
+    fmt.Printf("📝 Form data - Title: %s, Description: %s\n", title, description)
+    
     if title == "" {
+        fmt.Printf("❌ No title provided\n")
         c.String(http.StatusBadRequest, "Board title is required")
         return
     }
@@ -72,11 +87,14 @@ func (h *BoardHandler) CreateBoard(c *gin.Context) {
         }
     }
     
-    board, err := h.db.CreateBoard(context.Background(), title, description, userID, parentBoardID)
+    board, err := h.db.CreateBoard(context.Background(), title, description, user.ID, parentBoardID)
     if err != nil {
+        fmt.Printf("❌ Database error: %v\n", err)
         c.String(http.StatusInternalServerError, "Failed to create board: %v", err)
         return
     }
+    
+    fmt.Printf("✅ Board created successfully: %s (ID: %s)\n", board.Title, board.ID.String())
     
     component := pages.BoardCard(*board)
     handler := templ.Handler(component)
@@ -121,11 +139,15 @@ func (h *BoardHandler) ViewBoard(c *gin.Context) {
 }
 
 func (h *BoardHandler) CreateColumn(c *gin.Context) {
-    userID, err := getUserFromSession(c)
+    user, err := h.validateUserSession(c)
     if err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
+        fmt.Printf("❌ Column creation session error: %v\n", err)
+        c.Header("HX-Redirect", "/")
+        c.Status(http.StatusUnauthorized)
         return
     }
+    
+    fmt.Printf("✅ Valid user creating column: %s (%s)\n", user.Email, user.ID.String())
     
     boardIDStr := c.Param("id")
     boardID, err := uuid.Parse(boardIDStr)
@@ -141,7 +163,7 @@ func (h *BoardHandler) CreateColumn(c *gin.Context) {
     }
     
     // Check if user has access to this board
-    hasAccess, err := h.checkBoardAccess(userID, boardID)
+    hasAccess, err := h.checkBoardAccess(user.ID, boardID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
         return
@@ -167,7 +189,7 @@ func (h *BoardHandler) CreateColumn(c *gin.Context) {
         return
     }
     
-    component := components.BoardColumn(*column)
+    component := components.Column(*column, boardIDStr)
     handler := templ.Handler(component)
     handler.ServeHTTP(c.Writer, c.Request)
 }
@@ -608,6 +630,26 @@ func getUserFromSession(c *gin.Context) (uuid.UUID, error) {
     }
     
     return uuid.Parse(userIDStr.(string))
+}
+
+func (h *BoardHandler) validateUserSession(c *gin.Context) (*models.User, error) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Verify user exists in database
+    user, err := h.db.GetUserByID(context.Background(), userID)
+    if err != nil {
+        // User doesn't exist - clear the invalid session
+        session := sessions.Default(c)
+        session.Clear()
+        session.Options(sessions.Options{MaxAge: -1})
+        session.Save()
+        return nil, fmt.Errorf("invalid session - user not found")
+    }
+    
+    return user, nil
 }
 
 func getBaseURL(c *gin.Context) string {
