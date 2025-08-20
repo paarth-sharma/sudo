@@ -258,9 +258,10 @@ func (h *TaskHandler) UpdateTask(c *gin.Context) {
 }
 
 func (h *TaskHandler) DeleteTask(c *gin.Context) {
-    userID, err := getUserFromSession(c)
+    user, err := h.validateUserSession(c)
     if err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
+        fmt.Printf("❌ Task deletion session error: %v\n", err)
+        c.Status(http.StatusUnauthorized)
         return
     }
     
@@ -279,7 +280,7 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
     }
     
     // Check if user has access to this board
-    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, task.BoardID)
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), user.ID, task.BoardID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
         return
@@ -290,6 +291,7 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
         return
     }
     
+    fmt.Printf("🗑️ Deleting task: %s by user %s\n", taskID.String(), user.Email)
     err = h.db.DeleteTask(context.Background(), taskID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to delete task: %v", err)

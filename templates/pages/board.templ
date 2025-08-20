@@ -81,12 +81,14 @@ templ Board(board models.Board) {
             <!-- Board Content -->
             <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div class="px-4 py-6 sm:px-0">
-                    <div id="board-columns" class="flex space-x-6 overflow-x-auto pb-6">
-                        for _, column := range board.Columns {
-                            @components.Column(column, board.ID.String())
-                        }
+                    <div class="flex gap-6 overflow-x-auto pb-6">
+                        <div id="board-columns" class="flex gap-6">
+                            for _, column := range board.Columns {
+                                @components.Column(column, board.ID.String())
+                            }
+                        </div>
                         
-                        <!-- Add Column Placeholder -->
+                        <!-- Add Column Placeholder - Always on the right -->
                         <div class="flex-shrink-0 w-80">
                             <button 
                                 onclick="document.getElementById('add-column-modal').classList.remove('hidden')"

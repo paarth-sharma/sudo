@@ -26,6 +26,7 @@ function initializeDragAndDrop() {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
+                    credentials: 'include',
                     body: new URLSearchParams({
                         task_id: taskId,
                         column_id: newColumnId,
@@ -89,10 +90,23 @@ function showAddTaskForm(columnId) {
 }
 
 function hideAddTaskForm(columnId) {
-    const form = document.getElementById(`add-task-form-${columnId}`);
-    if (form) {
-        form.classList.add('hidden');
-        form.reset();
+    const formContainer = document.getElementById(`add-task-form-${columnId}`);
+    if (formContainer) {
+        formContainer.classList.add('hidden');
+        const form = formContainer.querySelector('form');
+        if (form) {
+            // Reset form to clear all field values
+            form.reset();
+            // Clear any manually set values that reset() might miss
+            const inputs = form.querySelectorAll('input[type="text"], input[type="datetime-local"], textarea, select');
+            inputs.forEach(input => {
+                if (input.type === 'text' || input.type === 'datetime-local' || input.tagName.toLowerCase() === 'textarea') {
+                    input.value = '';
+                } else if (input.tagName.toLowerCase() === 'select') {
+                    input.selectedIndex = 1; // Reset to "Medium" (index 1)
+                }
+            });
+        }
     }
 }
 
@@ -302,7 +316,8 @@ function toggleTaskComplete(taskId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-        }
+        },
+        credentials: 'include'
     }).then(response => {
         if (response.ok) {
             // Refresh the board or update UI
@@ -337,7 +352,8 @@ function openTaskDetails(taskId) {
         method: 'GET',
         headers: {
             'HX-Request': 'true'
-        }
+        },
+        credentials: 'include'
     }).then(response => {
         if (response.ok) {
             return response.text();
@@ -376,6 +392,118 @@ document.addEventListener('click', function(event) {
     }
 });
 
+// Delete Functions
+function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+        fetch(`/tasks/${taskId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        }).then(response => {
+            if (response.ok) {
+                // Remove the task card from DOM
+                const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                if (taskCard) {
+                    taskCard.remove();
+                    // Update task counts in column headers
+                    document.querySelectorAll('[data-column-id]').forEach(column => {
+                        updateTaskCount(column.dataset.columnId);
+                    });
+                }
+            } else {
+                alert('Failed to delete task. Please try again.');
+            }
+        }).catch(error => {
+            console.error('Error deleting task:', error);
+            alert('Failed to delete task. Please try again.');
+        });
+    }
+}
+
+function deleteColumn(columnId) {
+    const column = document.querySelector(`[data-column-id="${columnId}"]`);
+    const taskCount = column ? column.querySelectorAll('[data-task-id]').length : 0;
+    
+    let confirmMessage = 'Are you sure you want to delete this column?';
+    if (taskCount > 0) {
+        confirmMessage = `Are you sure you want to delete this column and all ${taskCount} tasks in it? This action cannot be undone.`;
+    }
+    
+    if (confirm(confirmMessage)) {
+        fetch(`/columns/${columnId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        }).then(response => {
+            if (response.ok) {
+                // Remove the column from DOM
+                if (column) {
+                    column.remove();
+                }
+            } else {
+                alert('Failed to delete column. Please try again.');
+            }
+        }).catch(error => {
+            console.error('Error deleting column:', error);
+            alert('Failed to delete column. Please try again.');
+        });
+    }
+}
+
+function deleteBoard(boardId) {
+    console.log('deleteBoard called with boardId:', boardId);
+    console.log('boardId type:', typeof boardId);
+    console.log('boardId length:', boardId ? boardId.length : 'undefined');
+    
+    if (confirm('Are you sure you want to delete this entire board? This will permanently delete all columns and tasks. This action cannot be undone.')) {
+        console.log('User confirmed deletion, making request to:', `/boards/${boardId}`);
+        
+        // Check if we have a valid session
+        console.log('Document cookies:', document.cookie);
+        
+        const requestUrl = `/boards/${boardId}`;
+        console.log('Full request URL:', window.location.origin + requestUrl);
+        
+        fetch(requestUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        }).then(response => {
+            console.log('Response received!');
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+            console.log('Response headers:', [...response.headers.entries()]);
+            
+            if (response.ok) {
+                // Redirect to dashboard
+                console.log('Deletion successful, redirecting to dashboard');
+                window.location.href = '/dashboard';
+            } else {
+                return response.text().then(text => {
+                    console.error('Deletion failed with status:', response.status);
+                    console.error('Deletion failed with response:', text);
+                    alert(`Failed to delete board. Status: ${response.status}. Please try again.`);
+                });
+            }
+        }).catch(error => {
+            console.error('Network error details:');
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            console.error('Full error object:', error);
+            alert('Failed to delete board. Network error. Please try again.');
+        });
+    } else {
+        console.log('User cancelled deletion');
+    }
+}
+
 // Export functions for global access
 window.showAddTaskForm = showAddTaskForm;
 window.hideAddTaskForm = hideAddTaskForm;
@@ -386,3 +514,6 @@ window.toggleTaskComplete = toggleTaskComplete;
 window.openTaskDetails = openTaskDetails;
 window.createNestedBoard = createNestedBoard;
 window.toggleBoardMenu = toggleBoardMenu;
+window.deleteTask = deleteTask;
+window.deleteColumn = deleteColumn;
+window.deleteBoard = deleteBoard;

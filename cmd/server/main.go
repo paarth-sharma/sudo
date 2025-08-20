@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "log"
     "os"
     
@@ -95,6 +96,18 @@ func main() {
         public.POST("/auth/logout", authHandler.Logout)
     }
     
+    // Add request logging middleware
+    r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+        return fmt.Sprintf("[GIN] %v | %3d | %13v | %15s | %-7s %#v\n",
+            param.TimeStamp.Format("2006/01/02 - 15:04:05"),
+            param.StatusCode,
+            param.Latency,
+            param.ClientIP,
+            param.Method,
+            param.Path,
+        )
+    }))
+
     // Protected routes (auth required)
     protected := r.Group("/")
     protected.Use(AuthMiddleware())

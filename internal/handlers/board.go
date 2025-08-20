@@ -335,37 +335,49 @@ func (h *BoardHandler) UpdateBoard(c *gin.Context) {
 }
 
 func (h *BoardHandler) DeleteBoard(c *gin.Context) {
-    userID, err := getUserFromSession(c)
+    fmt.Printf("🔥 DeleteBoard handler called\n")
+    
+    user, err := h.validateUserSession(c)
     if err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
+        fmt.Printf("❌ Board deletion session error: %v\n", err)
+        c.Status(http.StatusUnauthorized)
         return
     }
     
     boardIDStr := c.Param("id")
+    fmt.Printf("🔍 Attempting to delete board: %s\n", boardIDStr)
     boardID, err := uuid.Parse(boardIDStr)
     if err != nil {
+        fmt.Printf("❌ Invalid board ID: %s\n", boardIDStr)
         c.String(http.StatusBadRequest, "Invalid board ID")
         return
     }
     
     // Check if user owns this board
-    isOwner, err := h.checkBoardOwnership(userID, boardID)
+    fmt.Printf("🔍 Checking ownership for user %s on board %s\n", user.ID.String(), boardID.String())
+    isOwner, err := h.checkBoardOwnership(user.ID, boardID)
     if err != nil {
+        fmt.Printf("❌ Error checking board ownership: %v\n", err)
         c.String(http.StatusInternalServerError, "Failed to check board ownership: %v", err)
         return
     }
     
+    fmt.Printf("🔐 Ownership check result: %v\n", isOwner)
     if !isOwner {
+        fmt.Printf("❌ User %s does not own board %s\n", user.ID.String(), boardID.String())
         c.String(http.StatusForbidden, "Only board owners can delete the board")
         return
     }
     
+    fmt.Printf("🗑️ Deleting board: %s by user %s\n", boardID.String(), user.Email)
     err = h.db.DeleteBoard(context.Background(), boardID)
     if err != nil {
+        fmt.Printf("❌ Failed to delete board: %v\n", err)
         c.String(http.StatusInternalServerError, "Failed to delete board: %v", err)
         return
     }
     
+    fmt.Printf("✅ Board deleted successfully, redirecting to dashboard\n")
     c.Header("HX-Redirect", "/dashboard")
     c.Status(http.StatusOK)
 }
@@ -439,9 +451,10 @@ func (h *BoardHandler) UpdateColumn(c *gin.Context) {
 }
 
 func (h *BoardHandler) DeleteColumn(c *gin.Context) {
-    _, err := getUserFromSession(c)
+    user, err := h.validateUserSession(c)
     if err != nil {
-        c.String(http.StatusUnauthorized, "Unauthorized")
+        fmt.Printf("❌ Column deletion session error: %v\n", err)
+        c.Status(http.StatusUnauthorized)
         return
     }
     
@@ -452,6 +465,7 @@ func (h *BoardHandler) DeleteColumn(c *gin.Context) {
         return
     }
     
+    fmt.Printf("🗑️ Deleting column: %s by user %s\n", columnID.String(), user.Email)
     err = h.db.DeleteColumn(context.Background(), columnID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to delete column: %v", err)

@@ -9,6 +9,7 @@ import (
     
     "github.com/google/uuid"
     "github.com/supabase-community/supabase-go"
+    "github.com/supabase-community/postgrest-go"
 
     "sudo/internal/models"
 )
@@ -347,7 +348,7 @@ func (db *DB) GetBoardColumns(ctx context.Context, boardID uuid.UUID) ([]models.
     _, err := db.client.From("columns").
         Select("*", "", false).
         Eq("board_id", boardID.String()).
-        Order("position", nil).
+        Order("position", &postgrest.OrderOpts{Ascending: true}).
         ExecuteTo(&columns)
     
     if err != nil {
@@ -402,7 +403,7 @@ func (db *DB) CreateTask(ctx context.Context, title, description string, columnI
     _, _ = db.client.From("tasks").
         Select("position", "", false).
         Eq("column_id", columnID.String()).
-        Order("position", nil).
+        Order("position", &postgrest.OrderOpts{Ascending: false}).
         Limit(1, "").
         ExecuteTo(&tasks)
     
@@ -457,7 +458,7 @@ func (db *DB) GetColumnTasks(ctx context.Context, columnID uuid.UUID) ([]models.
     _, err := db.client.From("tasks").
         Select("*", "", false).
         Eq("column_id", columnID.String()).
-        Order("position", nil).
+        Order("position", &postgrest.OrderOpts{Ascending: true}).
         ExecuteTo(&tasks)
     
     if err != nil {
