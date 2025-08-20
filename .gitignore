@@ -1,6 +1,8 @@
-# local configs
+# local configs and air
 /.vscode
 
+#local folder for AIR, to hot reload app
+tmp
 
 # dependencies
 /node_modules
