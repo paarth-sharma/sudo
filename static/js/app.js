@@ -504,6 +504,109 @@ function deleteBoard(boardId) {
     }
 }
 
+// Close task modal
+function closeTaskModal() {
+    const modal = document.getElementById('task-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+// Save task changes from modal
+function saveTaskChanges(taskId) {
+    const form = document.getElementById('task-modal');
+    if (!form) return;
+
+    // Gather form data
+    const title = document.getElementById('task-title')?.value || '';
+    const description = document.getElementById('task-description')?.value || '';
+    const priority = document.getElementById('task-priority')?.value || '';
+    const deadline = document.getElementById('task-deadline')?.value || '';
+    const assigneeId = document.getElementById('task-assignee')?.value || '';
+    const completed = document.getElementById('task-completed')?.checked || false;
+
+    // Build form data
+    const formData = new URLSearchParams();
+    if (title) formData.append('title', title);
+    if (description) formData.append('description', description);
+    if (priority) formData.append('priority', priority);
+    if (deadline) formData.append('deadline', deadline);
+    if (assigneeId) formData.append('assignee_id', assigneeId === '' ? 'unassign' : assigneeId);
+    formData.append('completed', completed);
+
+    // Send update request
+    fetch(`/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        credentials: 'include',
+        body: formData
+    }).then(response => {
+        if (response.ok) {
+            // Close modal and refresh the page to show changes
+            closeTaskModal();
+            location.reload();
+        } else {
+            console.error('Failed to save task changes');
+            alert('Failed to save task changes. Please try again.');
+        }
+    }).catch(error => {
+        console.error('Error saving task changes:', error);
+        alert('Failed to save task changes. Please try again.');
+    });
+}
+
+// Convert task to sub-board
+function convertToSubBoard(taskId) {
+    if (confirm('Convert this task to a sub-board? This will create a new board based on this task.')) {
+        fetch(`/tasks/${taskId}/convert-to-board`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            credentials: 'include'
+        }).then(response => {
+            if (response.ok) {
+                // The response should contain a redirect header
+                const redirect = response.headers.get('HX-Redirect');
+                if (redirect) {
+                    window.location.href = redirect;
+                } else {
+                    location.reload();
+                }
+            } else {
+                console.error('Failed to convert to sub-board');
+                alert('Failed to convert to sub-board. Please try again.');
+            }
+        }).catch(error => {
+            console.error('Error converting to sub-board:', error);
+            alert('Failed to convert to sub-board. Please try again.');
+        });
+    }
+}
+
+// Copy task link to clipboard
+function copyTaskLink() {
+    const taskId = document.getElementById('task-modal')?.dataset?.taskId;
+    if (!taskId) return;
+    
+    const taskUrl = `${window.location.origin}${window.location.pathname}#task-${taskId}`;
+    
+    navigator.clipboard.writeText(taskUrl).then(() => {
+        // Show temporary feedback
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Copied!';
+        setTimeout(() => {
+            button.innerHTML = originalText;
+        }, 2000);
+    }).catch(error => {
+        console.error('Failed to copy link:', error);
+        alert('Failed to copy link to clipboard');
+    });
+}
+
 // Export functions for global access
 window.showAddTaskForm = showAddTaskForm;
 window.hideAddTaskForm = hideAddTaskForm;
@@ -517,3 +620,7 @@ window.toggleBoardMenu = toggleBoardMenu;
 window.deleteTask = deleteTask;
 window.deleteColumn = deleteColumn;
 window.deleteBoard = deleteBoard;
+window.closeTaskModal = closeTaskModal;
+window.saveTaskChanges = saveTaskChanges;
+window.convertToSubBoard = convertToSubBoard;
+window.copyTaskLink = copyTaskLink;
