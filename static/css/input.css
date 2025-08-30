@@ -27,7 +27,7 @@
 
 /* Task card hover effects */
 .task-card {
-    @apply bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-all duration-200;
+    @apply bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow;
 }
 
 .task-card:hover {
@@ -36,15 +36,104 @@
 
 /* Drag and drop states */
 .sortable-ghost {
-    @apply opacity-50;
+    @apply opacity-40;
+    background: rgba(59, 130, 246, 0.1) !important;
+    border: 2px dashed rgba(59, 130, 246, 0.4) !important;
+    transform: scale(0.95) !important;
 }
 
 .sortable-chosen {
     @apply transform scale-105 shadow-lg;
+    cursor: grabbing !important;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 }
 
 .sortable-drag {
     @apply transform rotate-2;
+    cursor: grabbing !important;
+    z-index: 9999;
+}
+
+/* Enhanced dropzone styles */
+.tasks-container {
+    @apply relative;
+    min-height: 300px;
+    padding: 8px;
+    transition: all 0.2s ease;
+    flex: 1;
+}
+
+.tasks-container > * + * {
+    margin-top: 12px;
+}
+
+/* Empty state dropzone */
+.empty-state-dropzone {
+    @apply mt-auto;
+    padding: 8px;
+}
+
+/* Column layout adjustments */
+.column-content {
+    @apply flex flex-col bg-gray-100 rounded-lg p-4;
+    min-height: 500px;
+}
+
+[data-sortable="tasks"] {
+    @apply relative transition-all duration-200;
+    min-height: 400px;
+    padding: 8px;
+}
+
+/* Visual feedback during drag */
+[data-sortable="tasks"].drag-active {
+    min-height: 400px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 2px dashed rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+}
+
+/* Visual feedback for entire column during drag */
+.drag-active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(59, 130, 246, 0.05) 100%);
+}
+
+/* Empty column drop indicator */
+[data-sortable="tasks"]:empty::after {
+    content: "Drop tasks here";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(107, 114, 128, 0.6);
+    font-size: 0.875rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+[data-sortable="tasks"].drag-active:empty::after {
+    content: "Drop task here";
+    color: rgba(59, 130, 246, 0.8);
+    font-weight: 500;
+}
+
+/* Prevent text selection during dragging */
+body.dragging {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+body.dragging * {
+    cursor: grabbing !important;
+}
+
+/* Task card hover effects during drag */
+.drag-active [data-task-id]:not(.sortable-ghost):not(.sortable-chosen):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Column styles */

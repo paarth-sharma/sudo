@@ -4,6 +4,7 @@ import (
     "fmt"
     "log"
     "os"
+    "strings"
     
     "sudo/internal/database"
     "sudo/internal/email"
@@ -70,7 +71,18 @@ func main() {
     store := cookie.NewStore([]byte(jwtSecret))
     r.Use(sessions.Sessions("kanban-session", store))
     
-    // Serve static files
+    // Serve static files with cache control headers for development
+    if os.Getenv("GIN_MODE") != "release" {
+        r.Use(func(c *gin.Context) {
+            // Add no-cache headers for development to ensure fresh assets
+            if strings.HasPrefix(c.Request.URL.Path, "/static/") {
+                c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+                c.Header("Pragma", "no-cache")
+                c.Header("Expires", "0")
+            }
+            c.Next()
+        })
+    }
     r.Static("/static", "./static")
     r.StaticFile("/favicon.ico", "./static/favicon.ico")
     

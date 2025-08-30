@@ -122,8 +122,9 @@ templ TaskDetailsModal(task models.Task, members []models.BoardMember) {
             <div class="flex items-center justify-between pt-4 border-t">
                 <div class="flex space-x-2">
                     <button 
-                        onclick={ convertToSubBoardScript(task.ID.String()) }
-                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        data-task-id={ task.ID.String() }
+                        data-action="convert-to-subboard"
+                        class="task-action-btn inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
@@ -147,13 +148,15 @@ templ TaskDetailsModal(task models.Task, members []models.BoardMember) {
                         Cancel
                     </button>
                     <button 
-                        onclick={ saveTaskChangesScript(task.ID.String()) }
-                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        data-task-id={ task.ID.String() }
+                        data-action="save-changes"
+                        class="task-action-btn px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Save Changes
                     </button>
                     <button 
-                        onclick={ deleteTaskScript(task.ID.String()) }
-                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        data-task-id={ task.ID.String() }
+                        data-action="delete"
+                        class="task-action-btn px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         Delete
                     </button>
                 </div>
@@ -170,14 +173,3 @@ func formatDeadlineForInput(deadline *time.Time) string {
     return deadline.Format("2006-01-02T15:04")
 }
 
-script convertToSubBoardScript(taskID string) {
-    convertToSubBoard(taskID);
-}
-
-script saveTaskChangesScript(taskID string) {
-    saveTaskChanges(taskID);
-}
-
-script deleteTaskScript(taskID string) {
-    deleteTask(taskID);
-}

@@ -121,7 +121,7 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 func (h *TaskHandler) MoveTask(c *gin.Context) {
     userID, err := getUserFromSession(c)
     if err != nil {
-        c.Status(http.StatusUnauthorized)
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
         return
     }
     
@@ -130,54 +130,60 @@ func (h *TaskHandler) MoveTask(c *gin.Context) {
     positionStr := c.PostForm("position")
    
     if taskIDStr == "" || columnIDStr == "" || positionStr == "" {
-        c.Status(http.StatusBadRequest)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required parameters"})
         return
     }
     
     taskID, err := uuid.Parse(taskIDStr)
     if err != nil {
-        c.Status(http.StatusBadRequest)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
         return
     }
    
     columnID, err := uuid.Parse(columnIDStr)
     if err != nil {
-        c.Status(http.StatusBadRequest)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid column ID"})
         return
     }
    
     position, err := strconv.Atoi(positionStr)
     if err != nil {
-        c.Status(http.StatusBadRequest)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid position"})
         return
     }
     
     // Get task to check board access
     task, err := h.db.GetTask(context.Background(), taskID)
     if err != nil {
-        c.Status(http.StatusNotFound)
+        c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
         return
     }
     
     // Check if user has access to this board
     hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, task.BoardID)
     if err != nil {
-        c.Status(http.StatusInternalServerError)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check board access"})
         return
     }
     
     if !hasAccess {
-        c.Status(http.StatusForbidden)
+        c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
         return
     }
    
     err = h.db.MoveTask(context.Background(), taskID, columnID, position)
     if err != nil {
-        c.Status(http.StatusInternalServerError)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to move task"})
         return
     }
    
-    c.Status(http.StatusOK)
+    c.JSON(http.StatusOK, gin.H{
+        "success": true,
+        "task_id": taskID,
+        "column_id": columnID,
+        "position": position,
+        "message": "Task moved successfully",
+    })
 }
 
 func (h *TaskHandler) UpdateTask(c *gin.Context) {

@@ -8,9 +8,8 @@ import (
 )
 
 templ TaskCard(task models.Task) {
-    <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm hover:shadow-md transition-shadow cursor-move" 
-         data-task-id={ task.ID.String() }
-         draggable="true">
+    <div class="task-card" 
+         data-task-id={ task.ID.String() }>
         
         <!-- Priority indicator -->
         <div class="flex items-start justify-between mb-2">

@@ -5,7 +5,7 @@ import "fmt"
 
 templ Column(column models.Column, boardID string) {
     <div class="flex-shrink-0 w-80" data-column-id={column.ID.String()}>
-        <div class="bg-gray-100 rounded-lg p-4 h-full">
+        <div class="column-content h-full">
             <!-- Column Header -->
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-2">
@@ -121,17 +121,20 @@ templ Column(column models.Column, boardID string) {
                 </form>
             </div>
             
-            <!-- Tasks List -->
+            <!-- Tasks List - Full Column Dropzone -->
             <div 
                 id={`tasks-` + column.ID.String()}
-                class="space-y-3 min-h-[200px]"
+                class="tasks-container"
                 data-sortable="tasks"
+                data-column-id={column.ID.String()}
             >
                 for _, task := range column.Tasks {
                     @TaskCard(task)
                 }
-                
-                <!-- Drop Zone when empty -->
+            </div>
+            
+            <!-- Drop Zone - Always visible at bottom -->
+            <div class="empty-state-dropzone">
                 if len(column.Tasks) == 0 {
                     <div class="flex items-center justify-center h-32 border-2 border-dashed border-gray-300 rounded-lg text-gray-500">
                         <div class="text-center">
@@ -146,6 +149,10 @@ templ Column(column models.Column, boardID string) {
                                 add a new task
                             </button>
                         </div>
+                    </div>
+                } else {
+                    <div class="flex items-center justify-center h-16 border-2 border-dashed border-gray-200 rounded-lg text-gray-400 mt-3 hover:border-gray-300 transition-colors">
+                        <p class="text-sm">Drop tasks here</p>
                     </div>
                 }
             </div>
