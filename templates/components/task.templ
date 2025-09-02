@@ -1,0 +1,84 @@
+package components
+
+import (
+    "strings"
+    "time"
+)
+
+
+templ PriorityBadge(priority string) {
+    <span class={getPriorityClasses(priority)}>
+        {priority}
+    </span>
+}
+
+templ DeadlineBadge(deadline time.Time) {
+    <div class={getDeadlineClasses(deadline)}>
+        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>{formatDeadlineSimple(deadline)}</span>
+    </div>
+}
+
+
+
+// Helper functions
+func getPriorityClasses(priority string) string {
+    switch priority {
+    case "Urgent":
+        return "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"
+    case "High":
+        return "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
+    case "Medium":
+        return "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+    case "Low":
+        return "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+    default:
+        return "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+    }
+}
+
+func getDeadlineClasses(deadline time.Time) string {
+    now := time.Now()
+    diff := deadline.Sub(now)
+    
+    baseClasses := "flex items-center text-xs"
+    
+    if diff < 0 {
+        // Overdue
+        return baseClasses + " text-red-600"
+    } else if diff < 24*time.Hour {
+        // Due today
+        return baseClasses + " text-orange-600"
+    } else if diff < 3*24*time.Hour {
+        // Due soon
+        return baseClasses + " text-yellow-600"
+    } else {
+        // Due later
+        return baseClasses + " text-gray-500"
+    }
+}
+
+
+func getInitial(name string) string {
+    if name == "" {
+        return "?"
+    }
+    return strings.ToUpper(string(name[0]))
+}
+
+func formatDeadlineSimple(deadline time.Time) string {
+    now := time.Now()
+    diff := deadline.Sub(now)
+    
+    if diff < 0 {
+        return "Overdue"
+    } else if diff < 24*time.Hour {
+        return deadline.Format("3:04 PM")
+    } else if diff < 7*24*time.Hour {
+        return deadline.Format("Mon")
+    } else {
+        return deadline.Format("Jan 2")
+    }
+}

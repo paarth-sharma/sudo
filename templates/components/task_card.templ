@@ -1,0 +1,159 @@
+// templates/components/task_card.templ
+package components
+
+import (
+    "fmt"
+    "time"
+    "sudo/internal/models"
+)
+
+templ TaskCard(task models.Task) {
+    <div class="task-card" 
+         data-task-id={ task.ID.String() }>
+        
+        <!-- Priority indicator -->
+        <div class="flex items-start justify-between mb-2">
+            <div class="flex items-center space-x-2">
+                <div class={ "w-2 h-2 rounded-full", getPriorityColorClass(task.Priority) }></div>
+                <span class={ "text-xs font-medium px-2 py-1 rounded", getPriorityBadgeClass(task.Priority) }>
+                    { task.Priority }
+                </span>
+            </div>
+            
+            if task.Deadline != nil {
+                <div class={ "text-xs px-2 py-1 rounded", getDeadlineClass(task.Deadline) }>
+                    { formatDeadline(task.Deadline) }
+                </div>
+            }
+        </div>
+        
+        <!-- Task title -->
+        <h4 class="font-medium text-gray-900 mb-1 line-clamp-2">{ task.Title }</h4>
+        
+        <!-- Task description -->
+        if task.Description != "" {
+            <p class="text-sm text-gray-600 mb-2 line-clamp-2">{ task.Description }</p>
+        }
+        
+        <!-- Task footer -->
+        <div class="flex items-center justify-between mt-3">
+            <div class="flex items-center space-x-2">
+                <!-- Assignee avatar -->
+                if task.AssignedTo != nil {
+                    <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                        { getInitials(task.AssignedTo.String()) }
+                    </div>
+                }
+                
+                <!-- Task tags/labels -->
+                if len(task.Tags) > 0 {
+                    for _, tag := range task.Tags {
+                        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{ tag }</span>
+                    }
+                }
+            </div>
+            
+            <!-- Task actions -->
+            <div class="flex items-center space-x-1">
+                if task.Completed {
+                    <button class="text-green-500 hover:text-green-600" onclick={ toggleTaskCompleteScript(task.ID.String()) } title="Mark as incomplete">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                } else {
+                    <button class="text-gray-400 hover:text-gray-600" onclick={ toggleTaskCompleteScript(task.ID.String()) } title="Mark as complete">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </button>
+                }
+                
+                <button class="text-gray-400 hover:text-gray-600" onclick={ openTaskDetailsScript(task.ID.String()) }>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                    </svg>
+                </button>
+                
+            </div>
+        </div>
+    </div>
+}
+
+// Helper functions (these would normally be in a separate utils file)
+func getPriorityColorClass(priority string) string {
+    switch priority {
+    case "Urgent":
+        return "bg-red-500"
+    case "High":
+        return "bg-orange-500"
+    case "Medium":
+        return "bg-yellow-500"
+    case "Low":
+        return "bg-green-500"
+    default:
+        return "bg-gray-500"
+    }
+}
+
+func getPriorityBadgeClass(priority string) string {
+    switch priority {
+    case "Urgent":
+        return "bg-red-100 text-red-800"
+    case "High":
+        return "bg-orange-100 text-orange-800"
+    case "Medium":
+        return "bg-yellow-100 text-yellow-800"
+    case "Low":
+        return "bg-green-100 text-green-800"
+    default:
+        return "bg-gray-100 text-gray-800"
+    }
+}
+
+func getDeadlineClass(deadline *time.Time) string {
+    if deadline == nil {
+        return ""
+    }
+    
+    now := time.Now()
+    if deadline.Before(now) {
+        return "bg-red-100 text-red-800"
+    } else if deadline.Sub(now) < 24*time.Hour {
+        return "bg-orange-100 text-orange-800"
+    }
+    return "bg-blue-100 text-blue-800"
+}
+
+func formatDeadline(deadline *time.Time) string {
+    if deadline == nil {
+        return ""
+    }
+    
+    now := time.Now()
+    if deadline.Before(now) {
+        return "Overdue"
+    } else if deadline.Sub(now) < 24*time.Hour {
+        return "Due today"
+    } else if deadline.Sub(now) < 7*24*time.Hour {
+        days := int(deadline.Sub(now).Hours() / 24)
+        return fmt.Sprintf("Due in %dd", days)
+    }
+    return deadline.Format("Jan 2")
+}
+
+func getInitials(userID string) string {
+    if len(userID) >= 2 {
+        return userID[:2]
+    }
+    return "?"
+}
+
+script toggleTaskCompleteScript(taskID string) {
+    toggleTaskComplete(taskID);
+}
+
+script openTaskDetailsScript(taskID string) {
+    openTaskDetails(taskID);
+}
+

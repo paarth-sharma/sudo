@@ -1,0 +1,250 @@
+package components
+
+import (
+    "sudo/internal/models"
+    "time"
+    "fmt"
+)
+
+templ NotificationCenter(notifications []models.Activity) {
+    <div id="notification-center" class="hidden fixed top-16 right-4 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 border-b border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+            <div class="flex items-center space-x-2">
+                <button 
+                    onclick="markAllAsRead()"
+                    class="text-xs text-blue-600 hover:text-blue-800"
+                >
+                    Mark all read
+                </button>
+                <button 
+                    onclick="toggleNotificationCenter()"
+                    class="text-gray-400 hover:text-gray-600"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Notifications List -->
+        <div class="max-h-80 overflow-y-auto">
+            if len(notifications) == 0 {
+                <div class="p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5 5-5h-5V1H9v6H4l5 5-5 5h5v6h6v-6z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No notifications</h3>
+                    <p class="mt-1 text-sm text-gray-500">You're all caught up!</p>
+                </div>
+            } else {
+                <div class="divide-y divide-gray-200">
+                    for _, notification := range notifications {
+                        <div class={getNotificationClass(notification)} data-notification-id={notification.ID.String()}>
+                            <div class="flex space-x-3">
+                                <!-- Icon -->
+                                <div class="flex-shrink-0">
+                                    if notification.Action == "assigned" {
+                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                        </div>
+                                    } else if notification.Action == "created" {
+                                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                    } else if notification.Action == "invited" {
+                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                            </svg>
+                                        </div>
+                                    } else {
+                                        <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5 5-5h-5V1H9v6H4l5 5-5 5h5v6h6v-6z"></path>
+                                            </svg>
+                                        </div>
+                                    }
+                                </div>
+                                
+                                <!-- Content -->
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">
+                                        {notification.Description}
+                                    </p>
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        Activity: {notification.Action}
+                                    </p>
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        {formatNotificationTime(notification.CreatedAt)}
+                                    </p>
+                                </div>
+                                
+                                <!-- Actions -->
+                                <div class="flex-shrink-0 flex items-start space-x-1">
+                                    // Activity items are always considered unread for now
+                                    if true {
+                                        <button 
+                                            onclick={ templ.ComponentScript{Call: "markAsRead('" + notification.ID.String() + "')"} }
+                                            class="text-blue-600 hover:text-blue-800 text-xs"
+                                        >
+                                            Mark read
+                                        </button>
+                                    }
+                                    <button 
+                                        onclick={ templ.ComponentScript{Call: "dismissNotification('" + notification.ID.String() + "')"} }
+                                        class="text-gray-400 hover:text-gray-600"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        
+        <!-- Footer -->
+        if len(notifications) > 0 {
+            <div class="p-3 border-t border-gray-200">
+                <a 
+                    href="/notifications" 
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                    View all notifications
+                </a>
+            </div>
+        }
+    </div>
+    
+    <script>
+        function toggleNotificationCenter() {
+            const center = document.getElementById('notification-center');
+            center.classList.toggle('hidden');
+            
+            if (!center.classList.contains('hidden')) {
+                // Mark notifications as seen (not read, just seen)
+                fetch('/api/notifications/seen', {
+                    method: 'POST',
+                    credentials: 'include'
+                }).catch(console.error);
+            }
+        }
+        
+        function markAsRead(notificationId) {
+            fetch(`/api/notifications/${notificationId}/read`, {
+                method: 'POST',
+                credentials: 'include'
+            }).then(response => {
+                if (response.ok) {
+                    const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                    if (notification) {
+                        notification.classList.remove('bg-blue-50');
+                        notification.classList.add('bg-white');
+                        // Remove mark as read button
+                        const markReadBtn = notification.querySelector('button[onclick*="markAsRead"]');
+                        if (markReadBtn) {
+                            markReadBtn.remove();
+                        }
+                    }
+                    updateNotificationBadge();
+                }
+            }).catch(console.error);
+        }
+        
+        function markAllAsRead() {
+            fetch('/api/notifications/read-all', {
+                method: 'POST',
+                credentials: 'include'
+            }).then(response => {
+                if (response.ok) {
+                    // Update UI
+                    document.querySelectorAll('[data-notification-id]').forEach(notification => {
+                        notification.classList.remove('bg-blue-50');
+                        notification.classList.add('bg-white');
+                        const markReadBtn = notification.querySelector('button[onclick*="markAsRead"]');
+                        if (markReadBtn) {
+                            markReadBtn.remove();
+                        }
+                    });
+                    updateNotificationBadge();
+                }
+            }).catch(console.error);
+        }
+        
+        function dismissNotification(notificationId) {
+            fetch(`/api/notifications/${notificationId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            }).then(response => {
+                if (response.ok) {
+                    const notification = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                    if (notification) {
+                        notification.remove();
+                        updateNotificationBadge();
+                    }
+                }
+            }).catch(console.error);
+        }
+        
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const unreadCount = document.querySelectorAll('.bg-blue-50[data-notification-id]').length;
+            
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+        
+        // Close notification center when clicking outside
+        document.addEventListener('click', function(event) {
+            const center = document.getElementById('notification-center');
+            const trigger = document.getElementById('notification-trigger');
+            
+            if (!center.contains(event.target) && !trigger.contains(event.target)) {
+                center.classList.add('hidden');
+            }
+        });
+    </script>
+}
+
+func getNotificationClass(notification models.Activity) string {
+    baseClass := "p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+    // For now, assume all activities are unread (since there's no ReadAt field)
+    return baseClass + " bg-blue-50"
+}
+
+func formatNotificationTime(createdAt time.Time) string {
+    now := time.Now()
+    diff := now.Sub(createdAt)
+    
+    switch {
+    case diff < time.Minute:
+        return "Just now"
+    case diff < time.Hour:
+        minutes := int(diff.Minutes())
+        return fmt.Sprintf("%dm ago", minutes)
+    case diff < 24*time.Hour:
+        hours := int(diff.Hours())
+        return fmt.Sprintf("%dh ago", hours)
+    case diff < 7*24*time.Hour:
+        days := int(diff.Hours() / 24)
+        return fmt.Sprintf("%dd ago", days)
+    default:
+        return createdAt.Format("Jan 2")
+    }
+}

@@ -1,0 +1,14 @@
+# local configs and air
+/.vscode
+
+#local folder for AIR, to hot reload app
+tmp
+
+# dependencies
+/node_modules
+
+# builds (local)
+/bin
+
+# super secret keys
+.env
