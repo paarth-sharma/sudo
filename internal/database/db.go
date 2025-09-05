@@ -475,6 +475,24 @@ func (db *DB) GetTask(ctx context.Context, taskID uuid.UUID) (*models.Task, erro
     return &tasks[0], nil
 }
 
+func (db *DB) GetTaskByNestedBoardID(ctx context.Context, nestedBoardID uuid.UUID) (*models.Task, error) {
+    var tasks []models.Task
+    _, err := db.client.From("tasks").
+        Select("*", "", false).
+        Eq("nested_board_id", nestedBoardID.String()).
+        ExecuteTo(&tasks)
+    
+    if err != nil {
+        return nil, fmt.Errorf("failed to get task by nested board ID: %w", err)
+    }
+    
+    if len(tasks) == 0 {
+        return nil, nil // No task found (this is okay, board might not have a parent task)
+    }
+    
+    return &tasks[0], nil
+}
+
 func (db *DB) GetColumnTasks(ctx context.Context, columnID uuid.UUID) ([]models.Task, error) {
     var tasks []models.Task
     _, err := db.client.From("tasks").

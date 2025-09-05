@@ -475,6 +475,33 @@ func (h *BoardHandler) DeleteBoard(c *gin.Context) {
     }
     
     fmt.Printf("Deleting board: %s by user %s\n", boardID.String(), user.Email)
+    
+    // Check if this board is a nested board (has a parent task)
+    parentTask, err := h.db.GetTaskByNestedBoardID(context.Background(), boardID)
+    if err != nil {
+        fmt.Printf("Error checking for parent task: %v\n", err)
+        c.String(http.StatusInternalServerError, "Failed to check for parent task: %v", err)
+        return
+    }
+    
+    if parentTask != nil {
+        fmt.Printf("Board %s has parent task %s, unlinking before deletion\n", boardID.String(), parentTask.ID.String())
+        // Unlink the parent task from this board
+        updates := map[string]interface{}{
+            "nested_board_id": nil,
+        }
+        
+        err = h.db.UpdateTask(context.Background(), parentTask.ID, updates)
+        if err != nil {
+            fmt.Printf("Failed to unlink parent task %s: %v\n", parentTask.ID.String(), err)
+            c.String(http.StatusInternalServerError, "Failed to unlink parent task: %v", err)
+            return
+        }
+        fmt.Printf("Successfully unlinked parent task %s from board %s\n", parentTask.ID.String(), boardID.String())
+    } else {
+        fmt.Printf("Board %s has no parent task, proceeding with deletion\n", boardID.String())
+    }
+    
     err = h.db.DeleteBoard(context.Background(), boardID)
     if err != nil {
         fmt.Printf("Failed to delete board: %v\n", err)
@@ -482,8 +509,27 @@ func (h *BoardHandler) DeleteBoard(c *gin.Context) {
         return
     }
     
-    fmt.Printf("Board deleted successfully, redirecting to dashboard\n")
-    c.Header("HX-Redirect", "/dashboard")
+    fmt.Printf("Board deleted successfully\n")
+    
+    // Check if we're deleting the board we're currently viewing
+    referer := c.GetHeader("Referer")
+    isOnBoardBeingDeleted := strings.Contains(referer, fmt.Sprintf("/boards/%s", boardID.String()))
+    
+    if c.GetHeader("HX-Request") == "true" {
+        // For HTMX requests, trigger board deletion event
+        c.Header("HX-Trigger", fmt.Sprintf("boardDeleted-%s", boardID.String()))
+        
+        // Only redirect if we're on the board that's being deleted
+        if isOnBoardBeingDeleted {
+            c.Header("HX-Redirect", "/dashboard")
+        }
+        // If we're on a different page (like main board or dashboard), don't redirect
+    } else {
+        // For regular requests, redirect to dashboard
+        c.Redirect(http.StatusFound, "/dashboard")
+        return
+    }
+    
     c.Status(http.StatusOK)
 }
 

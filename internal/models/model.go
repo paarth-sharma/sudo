@@ -60,27 +60,29 @@ type Column struct {
 }
 
 type Task struct {
-    ID          uuid.UUID  `json:"id" db:"id"`
-    Title       string     `json:"title" db:"title"`
-    Description string     `json:"description" db:"description"`
-    ColumnID    uuid.UUID  `json:"column_id" db:"column_id"`
-    BoardID     uuid.UUID  `json:"board_id" db:"board_id"`
-    AssignedTo  *uuid.UUID `json:"assigned_to" db:"assigned_to"`
-    Priority    string     `json:"priority" db:"priority"`
-    Position    int        `json:"position" db:"position"`
-    Deadline    *time.Time `json:"deadline" db:"deadline"`
-    Completed   bool       `json:"completed" db:"completed"`
-    CompletedAt *time.Time `json:"completed_at" db:"completed_at"`
-    Tags        []string   `json:"tags" db:"tags"`
-    Attachments []map[string]interface{} `json:"attachments" db:"attachments"`
-    CreatedAt   time.Time  `json:"created_at" db:"created_at"`
-    UpdatedAt   time.Time  `json:"updated_at" db:"updated_at"`
+    ID            uuid.UUID  `json:"id" db:"id"`
+    Title         string     `json:"title" db:"title"`
+    Description   string     `json:"description" db:"description"`
+    ColumnID      uuid.UUID  `json:"column_id" db:"column_id"`
+    BoardID       uuid.UUID  `json:"board_id" db:"board_id"`
+    AssignedTo    *uuid.UUID `json:"assigned_to" db:"assigned_to"`
+    Priority      string     `json:"priority" db:"priority"`
+    Position      int        `json:"position" db:"position"`
+    Deadline      *time.Time `json:"deadline" db:"deadline"`
+    Completed     bool       `json:"completed" db:"completed"`
+    CompletedAt   *time.Time `json:"completed_at" db:"completed_at"`
+    Tags          []string   `json:"tags" db:"tags"`
+    Attachments   []map[string]interface{} `json:"attachments" db:"attachments"`
+    NestedBoardID *uuid.UUID `json:"nested_board_id" db:"nested_board_id"`
+    CreatedAt     time.Time  `json:"created_at" db:"created_at"`
+    UpdatedAt     time.Time  `json:"updated_at" db:"updated_at"`
     
     // Relationships
-    Column   *Column `json:"column,omitempty"`
-    Board    *Board  `json:"board,omitempty"`
-    Assignee *User   `json:"assignee,omitempty"`
-    Comments []Comment `json:"comments,omitempty"`
+    Column      *Column   `json:"column,omitempty"`
+    Board       *Board    `json:"board,omitempty"`
+    Assignee    *User     `json:"assignee,omitempty"`
+    Comments    []Comment `json:"comments,omitempty"`
+    NestedBoard *Board    `json:"nested_board,omitempty"`
 }
 
 type OTPToken struct {
@@ -226,6 +228,10 @@ func (t *Task) GetDeadlineStatus() string {
     }
     
     return "due-later"
+}
+
+func (t *Task) HasNestedBoard() bool {
+    return t.NestedBoardID != nil
 }
 
 func (b *Board) IsSubBoard() bool {

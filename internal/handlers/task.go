@@ -194,13 +194,16 @@ func (h *TaskHandler) MoveTask(c *gin.Context) {
 func (h *TaskHandler) UpdateTask(c *gin.Context) {
     userID, err := getUserFromSession(c)
     if err != nil {
+        fmt.Printf("UpdateTask: Session error: %v\n", err)
         c.String(http.StatusUnauthorized, "Unauthorized")
         return
     }
     
     taskIDStr := c.Param("id")
+    fmt.Printf("UpdateTask: Task ID: %s\n", taskIDStr)
     taskID, err := uuid.Parse(taskIDStr)
     if err != nil {
+        fmt.Printf("UpdateTask: Invalid task ID: %v\n", err)
         c.String(http.StatusBadRequest, "Invalid task ID")
         return
     }
@@ -208,6 +211,7 @@ func (h *TaskHandler) UpdateTask(c *gin.Context) {
     // Get task to check board access
     task, err := h.db.GetTask(context.Background(), taskID)
     if err != nil {
+        fmt.Printf("UpdateTask: Failed to get task: %v\n", err)
         c.String(http.StatusNotFound, "Task not found")
         return
     }
@@ -215,11 +219,13 @@ func (h *TaskHandler) UpdateTask(c *gin.Context) {
     // Check if user has access to this board
     hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, task.BoardID)
     if err != nil {
+        fmt.Printf("UpdateTask: Failed to check board access: %v\n", err)
         c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
         return
     }
     
     if !hasAccess {
+        fmt.Printf("UpdateTask: User %s has no access to board %s\n", userID.String(), task.BoardID.String())
         c.String(http.StatusForbidden, "You don't have access to this board")
         return
     }
@@ -252,19 +258,23 @@ func (h *TaskHandler) UpdateTask(c *gin.Context) {
     // Handle assignee
     if assigneeStr := c.PostForm("assignee_id"); assigneeStr != "" {
         if assigneeStr == "unassign" {
-            updates["assignee_id"] = nil
+            updates["assigned_to"] = nil
         } else if assigneeID, err := uuid.Parse(assigneeStr); err == nil {
-            updates["assignee_id"] = assigneeID
+            updates["assigned_to"] = assigneeID
         }
     }
    
+    fmt.Printf("UpdateTask: Updates to apply: %+v\n", updates)
+    
     // Update task in database
     err = h.db.UpdateTask(context.Background(), taskID, updates)
     if err != nil {
+        fmt.Printf("UpdateTask: Database update error: %v\n", err)
         c.String(http.StatusInternalServerError, "Failed to update task: %v", err)
         return
     }
    
+    fmt.Printf("UpdateTask: Successfully updated task %s\n", taskID.String())
     c.Status(http.StatusOK)
 }
 
@@ -303,12 +313,40 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
     }
     
     fmt.Printf("Deleting task: %s by user %s\n", taskID.String(), user.Email)
+    
+    var deletedNestedBoardID *uuid.UUID
+    
+    // Check if task has a nested board that should also be deleted
+    if task.HasNestedBoard() {
+        deletedNestedBoardID = task.NestedBoardID
+        fmt.Printf("Task %s has nested board %s, deleting nested board first\n", taskID.String(), task.NestedBoardID.String())
+        err = h.db.DeleteBoard(context.Background(), *task.NestedBoardID)
+        if err != nil {
+            fmt.Printf("Failed to delete nested board %s: %v\n", task.NestedBoardID.String(), err)
+            c.String(http.StatusInternalServerError, "Failed to delete nested board: %v", err)
+            return
+        }
+        fmt.Printf("Successfully deleted nested board %s\n", task.NestedBoardID.String())
+    }
+    
     err = h.db.DeleteTask(context.Background(), taskID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to delete task: %v", err)
         return
     }
     
+    fmt.Printf("Successfully deleted task %s\n", taskID.String())
+    
+    // Send HTMX trigger with nested board info if applicable
+    if deletedNestedBoardID != nil {
+        // Send both taskDeleted and nested board deletion events
+        triggerString := fmt.Sprintf("taskDeleted, nestedBoardDeleted-%s", deletedNestedBoardID.String())
+        c.Header("HX-Trigger", triggerString)
+        fmt.Printf("Sending HTMX trigger: %s\n", triggerString)
+    } else {
+        c.Header("HX-Trigger", "taskDeleted")
+        fmt.Printf("Sending HTMX trigger: taskDeleted\n")
+    }
     c.Status(http.StatusOK)
 }
 
@@ -521,6 +559,21 @@ func (h *TaskHandler) CreateNestedBoard(c *gin.Context) {
         c.String(http.StatusInternalServerError, "Failed to create nested board: %v", err)
         return
     }
+    
+    // Link the task to the newly created nested board
+    updates := map[string]interface{}{
+        "nested_board_id": board.ID,
+    }
+    
+    err = h.db.UpdateTask(context.Background(), taskID, updates)
+    if err != nil {
+        // If we can't link the task, clean up by deleting the board
+        h.db.DeleteBoard(context.Background(), board.ID)
+        c.String(http.StatusInternalServerError, "Failed to link task to nested board: %v", err)
+        return
+    }
+    
+    fmt.Printf("Created nested board %s for task %s\n", board.ID.String(), taskID.String())
     
     // Redirect to the new board
     c.Header("HX-Redirect", fmt.Sprintf("/boards/%s", board.ID.String()))

@@ -1333,11 +1333,29 @@ function deleteTask(taskId) {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'HX-Request': 'true'
             },
             credentials: 'include'
         }).then(response => {
             if (response.ok) {
                 console.log('Task deleted successfully');
+                
+                // Check for HX-Trigger header to handle nested board deletion
+                const hxTrigger = response.headers.get('HX-Trigger');
+                let deletedNestedBoardId = null;
+                
+                if (hxTrigger) {
+                    console.log('HX-Trigger header found:', hxTrigger);
+                    const triggers = hxTrigger.split(',').map(t => t.trim());
+                    console.log('Parsed triggers:', triggers);
+                    
+                    triggers.forEach(trigger => {
+                        if (trigger.startsWith('nestedBoardDeleted-')) {
+                            deletedNestedBoardId = trigger.replace('nestedBoardDeleted-', '');
+                            console.log('Nested board deletion detected for board:', deletedNestedBoardId);
+                        }
+                    });
+                }
                 
                 // Remove the task card from DOM with animation
                 if (taskCard) {
@@ -1363,8 +1381,40 @@ function deleteTask(taskId) {
                     }, 300);
                 }
                 
-                // Show success notification
-                showNotification('Task deleted successfully!', 'success');
+                // Handle nested board removal if detected
+                if (deletedNestedBoardId) {
+                    console.log('Also processing nested board deletion for:', deletedNestedBoardId);
+                    
+                    // Debug: List all elements with data-board-id attributes
+                    const allBoardElements = document.querySelectorAll('[data-board-id]');
+                    console.log('All elements with data-board-id:', allBoardElements);
+                    allBoardElements.forEach((el, index) => {
+                        console.log(`Element ${index}:`, el, 'data-board-id:', el.getAttribute('data-board-id'));
+                    });
+                    
+                    // Find and remove the nested board card/tile
+                    const nestedBoardCard = document.querySelector(`[data-board-id="${deletedNestedBoardId}"]`);
+                    console.log('Looking for nested board card with selector:', `[data-board-id="${deletedNestedBoardId}"]`);
+                    console.log('Found nested board card:', nestedBoardCard);
+                    
+                    if (nestedBoardCard) {
+                        console.log('Removing nested board card from UI:', deletedNestedBoardId);
+                        nestedBoardCard.style.transition = 'all 0.3s ease';
+                        nestedBoardCard.style.opacity = '0';
+                        nestedBoardCard.style.transform = 'scale(0.8)';
+                        setTimeout(() => {
+                            nestedBoardCard.remove();
+                            console.log('Nested board card removed from DOM');
+                        }, 300);
+                    } else {
+                        console.log('No nested board card found in DOM for ID:', deletedNestedBoardId);
+                        console.log('Available board cards:', document.querySelectorAll('[data-board-id]'));
+                    }
+                    
+                    showNotification('Task and its nested board deleted successfully!', 'success');
+                } else {
+                    showNotification('Task deleted successfully!', 'success');
+                }
                 
                 // Update sub-board button visibility since task count changed
                 setTimeout(checkTasksAndUpdateButton, 300);
@@ -1419,8 +1469,8 @@ function deleteBoard(boardId) {
     if (confirm('Are you sure you want to delete this entire board? This will permanently delete all columns and tasks. This action cannot be undone.')) {
         console.log('User confirmed deletion, making request to:', `/boards/${boardId}`);
         
-        // Check if we have a valid session
-        console.log('Document cookies:', document.cookie);
+        // Show loading notification
+        showNotification('Deleting board...', 'info');
         
         const requestUrl = `/boards/${boardId}`;
         console.log('Full request URL:', window.location.origin + requestUrl);
@@ -1429,6 +1479,7 @@ function deleteBoard(boardId) {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'HX-Request': 'true'
             },
             credentials: 'include'
         }).then(response => {
@@ -1438,14 +1489,37 @@ function deleteBoard(boardId) {
             console.log('Response headers:', [...response.headers.entries()]);
             
             if (response.ok) {
-                // Redirect to dashboard
-                console.log('Deletion successful, redirecting to dashboard');
-                window.location.href = '/dashboard';
+                console.log('Board deletion successful');
+                showNotification('Board deleted successfully!', 'success');
+                
+                // Remove the board card immediately for better UX (works on dashboard and main board)
+                const boardCard = document.querySelector(`[data-board-id="${boardId}"]`);
+                if (boardCard) {
+                    boardCard.style.transition = 'all 0.3s ease';
+                    boardCard.style.opacity = '0';
+                    boardCard.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        boardCard.remove();
+                    }, 300);
+                }
+                
+                // Check for HX-Redirect header (only present if we should redirect)
+                const redirect = response.headers.get('HX-Redirect');
+                if (redirect) {
+                    console.log('HX-Redirect found, redirecting to:', redirect);
+                    // Redirect after animation if server says we should
+                    setTimeout(() => {
+                        window.location.href = redirect;
+                    }, 500);
+                } else {
+                    console.log('No redirect requested, staying on current page');
+                    // No redirect - just remove the board card and stay on current page
+                }
             } else {
                 return response.text().then(text => {
                     console.error('Deletion failed with status:', response.status);
                     console.error('Deletion failed with response:', text);
-                    alert(`Failed to delete board. Status: ${response.status}. Please try again.`);
+                    showNotification(`Failed to delete board. Status: ${response.status}. Please try again.`, 'error');
                 });
             }
         }).catch(error => {
@@ -1454,7 +1528,7 @@ function deleteBoard(boardId) {
             console.error('Error message:', error.message);
             console.error('Error stack:', error.stack);
             console.error('Full error object:', error);
-            alert('Failed to delete board. Network error. Please try again.');
+            showNotification('Failed to delete board. Network error. Please try again.', 'error');
         });
     } else {
         console.log('User cancelled deletion');
@@ -1815,6 +1889,32 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeDarkMode();
 });
 
+// Nested Board Menu Functions (for main board view)
+function toggleNestedBoardMenu(boardId) {
+    // Hide all other nested board menus first
+    const allMenus = document.querySelectorAll('[id^="nested-board-menu-"]');
+    allMenus.forEach(menu => {
+        if (menu.id !== `nested-board-menu-${boardId}`) {
+            menu.classList.add('hidden');
+        }
+    });
+    
+    // Toggle the specific menu
+    const menu = document.getElementById(`nested-board-menu-${boardId}`);
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+
+// Close nested board menus when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('[id^="nested-board-menu-"]') && !event.target.closest('button[onclick*="toggleNestedBoardMenuScript"]')) {
+        document.querySelectorAll('[id^="nested-board-menu-"]').forEach(menu => {
+            menu.classList.add('hidden');
+        });
+    }
+});
+
 // Export functions for global access
 window.showAddTaskForm = showAddTaskForm;
 window.hideAddTaskForm = hideAddTaskForm;
@@ -1825,6 +1925,7 @@ window.toggleTaskComplete = toggleTaskComplete;
 window.openTaskDetails = openTaskDetails;
 window.createNestedBoard = createNestedBoard;
 window.toggleBoardMenu = toggleBoardMenu;
+window.toggleNestedBoardMenu = toggleNestedBoardMenu;
 window.deleteTask = deleteTask;
 window.deleteColumn = deleteColumn;
 window.deleteBoard = deleteBoard;
@@ -1909,4 +2010,101 @@ document.addEventListener('taskMoveError', function(e) {
             document.body.removeChild(errorDiv);
         }
     }, 3000);
+});
+
+// Debug: Log all HTMX events to understand what's happening
+document.body.addEventListener('htmx:afterRequest', function(evt) {
+    console.log('HTMX after request:', {
+        requestConfig: evt.detail.requestConfig,
+        xhr: evt.detail.xhr,
+        target: evt.detail.target,
+        responseHeaders: [...evt.detail.xhr.getAllResponseHeaders().split('\r\n')].filter(h => h.includes('HX-Trigger'))
+    });
+    
+    // Check for HX-Trigger header manually
+    const hxTrigger = evt.detail.xhr.getResponseHeader('HX-Trigger');
+    if (hxTrigger) {
+        console.log('HX-Trigger header found:', hxTrigger);
+        
+        // Parse the triggers
+        const triggers = hxTrigger.split(',').map(t => t.trim());
+        console.log('Parsed triggers:', triggers);
+        
+        let taskDeleted = false;
+        let deletedNestedBoardId = null;
+        
+        triggers.forEach(trigger => {
+            if (trigger === 'taskDeleted') {
+                taskDeleted = true;
+                console.log('Task deletion detected');
+            } else if (trigger.startsWith('nestedBoardDeleted-')) {
+                deletedNestedBoardId = trigger.replace('nestedBoardDeleted-', '');
+                console.log('Nested board deletion detected for board:', deletedNestedBoardId);
+            }
+        });
+        
+        if (taskDeleted) {
+            console.log('Processing task deletion...');
+            
+            // Task was deleted - update all column task counts and empty states
+            document.querySelectorAll('[data-column-id]').forEach(column => {
+                const columnId = column.dataset.columnId;
+                updateTaskCount(columnId);
+                updateEmptyState(columnId);
+            });
+            
+            // Update sub-board button visibility
+            setTimeout(checkTasksAndUpdateButton, 200);
+            
+            if (deletedNestedBoardId) {
+                console.log('Also processing nested board deletion for:', deletedNestedBoardId);
+                
+                // Debug: List all elements with data-board-id attributes
+                const allBoardElements = document.querySelectorAll('[data-board-id]');
+                console.log('All elements with data-board-id:', allBoardElements);
+                allBoardElements.forEach((el, index) => {
+                    console.log(`Element ${index}:`, el, 'data-board-id:', el.getAttribute('data-board-id'));
+                });
+                
+                // Find and remove the nested board card/tile
+                const nestedBoardCard = document.querySelector(`[data-board-id="${deletedNestedBoardId}"]`);
+                console.log('Looking for nested board card with selector:', `[data-board-id="${deletedNestedBoardId}"]`);
+                console.log('Found nested board card:', nestedBoardCard);
+                
+                if (nestedBoardCard) {
+                    console.log('Removing nested board card from UI:', deletedNestedBoardId);
+                    nestedBoardCard.style.transition = 'all 0.3s ease';
+                    nestedBoardCard.style.opacity = '0';
+                    nestedBoardCard.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        nestedBoardCard.remove();
+                        console.log('Nested board card removed from DOM');
+                    }, 300);
+                } else {
+                    console.log('No nested board card found in DOM for ID:', deletedNestedBoardId);
+                    console.log('Available board cards:', document.querySelectorAll('[data-board-id]'));
+                }
+                
+                showNotification('Task and its nested board deleted successfully!', 'success');
+            } else {
+                showNotification('Task deleted successfully!', 'success');
+            }
+        }
+    }
+});
+
+// HTMX event listeners for real-time updates (keep the original as backup)
+document.body.addEventListener('htmx:trigger', function(evt) {
+    console.log('HTMX trigger event received (backup handler):', evt.detail);
+});
+
+// Listen for server-sent events when tasks with nested boards are deleted
+document.body.addEventListener('htmx:responseError', function(evt) {
+    console.error('HTMX Response Error:', evt.detail);
+    // Handle errors gracefully with user notifications
+    if (evt.detail.xhr.status >= 400 && evt.detail.xhr.status < 500) {
+        showNotification('Action failed. Please check your permissions and try again.', 'error');
+    } else if (evt.detail.xhr.status >= 500) {
+        showNotification('Server error occurred. Please try again later.', 'error');
+    }
 });
