@@ -48,14 +48,14 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen bg-gray-50\"><!-- Header --><header class=\"bg-white shadow-sm\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><h1 class=\"text-2xl font-bold text-gray-900\">SUDO Dashboard</h1><span class=\"ml-3 text-sm text-gray-500\">Suck It Up and Do It</span></div><div class=\"flex items-center space-x-4\"><!-- Search --><div class=\"relative\"><input type=\"text\" placeholder=\"Search boards...\" class=\"pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\" onkeyup=\"filterBoards(this.value)\"><div class=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\"><svg class=\"h-5 w-5 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z\"></path></svg></div></div><!-- Create Board Button --><button onclick=\"document.getElementById('create-board-modal').classList.remove('hidden')\" class=\"inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500\"><svg class=\"w-5 h-5 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg> Create Board</button><!-- User Menu --><div class=\"relative\"><button onclick=\"document.getElementById('user-menu').classList.toggle('hidden')\" class=\"bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white\"><span class=\"sr-only\">Open user menu</span><div class=\"h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center\"><span class=\"text-sm font-medium text-white\">U</span></div></button><div id=\"user-menu\" class=\"hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5\"><div class=\"py-1\"><a href=\"#\" class=\"block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\">Settings</a> <button hx-post=\"/auth/logout\" class=\"block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\">Sign out</button></div></div></div></div></div></div></header><!-- Main Content --><main class=\"max-w-7xl mx-auto py-6 sm:px-6 lg:px-8\"><div class=\"px-4 py-6 sm:px-0\"><!-- Quick Stats --><div class=\"grid grid-cols-1 md:grid-cols-4 gap-6 mb-8\"><!-- Total Boards (Main + Nested) --><div class=\"bg-white rounded-lg shadow-sm p-6 border border-gray-200\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-blue-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z\"></path></svg></div><div class=\"ml-4\"><p class=\"text-2xl font-semibold text-gray-900\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen bg-gray-50\"><!-- Header --><header class=\"bg-white shadow-sm\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"flex justify-between items-center h-16\"><div class=\"flex items-center\"><h1 class=\"text-2xl font-bold text-gray-900\">SUDO Dashboard</h1><span class=\"ml-3 text-sm text-gray-500\">Suck It Up and Do It</span></div><div class=\"flex items-center space-x-4\"><!-- Search --><div class=\"relative\"><input type=\"text\" placeholder=\"Search boards...\" class=\"pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\" onkeyup=\"filterBoards(this.value)\"><div class=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\"><svg class=\"h-5 w-5 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z\"></path></svg></div></div><!-- Create Board Button --><button onclick=\"document.getElementById('create-board-modal').classList.remove('hidden')\" class=\"inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500\"><svg class=\"w-5 h-5 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg> Create Board</button><!-- User Menu --><div class=\"relative\"><button onclick=\"document.getElementById('user-menu').classList.toggle('hidden')\" class=\"bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white\"><span class=\"sr-only\">Open user menu</span><div class=\"h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center\"><span class=\"text-sm font-medium text-white\">U</span></div></button><div id=\"user-menu\" class=\"hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5\"><div class=\"py-1\"><a href=\"#\" class=\"block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\">Settings</a> <button hx-post=\"/auth/logout\" hx-confirm=\"Are you sure you want to sign out?\" class=\"block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\">Sign out</button></div></div></div></div></div></div></header><!-- Main Content --><main class=\"max-w-7xl mx-auto py-6 sm:px-6 lg:px-8\"><div class=\"px-4 py-6 sm:px-0\"><!-- Quick Stats --><div class=\"grid grid-cols-1 md:grid-cols-4 gap-6 mb-8\"><!-- Total Boards (Main + Nested) --><div class=\"bg-white rounded-lg shadow-sm p-6 border border-gray-200\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-blue-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z\"></path></svg></div><div class=\"ml-4\"><p class=\"text-2xl font-semibold text-gray-900\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(mainBoards)+len(nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 92, Col: 140}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 93, Col: 140}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -68,7 +68,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", getTotalTasksFromBothLists(mainBoards, nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 107, Col: 157}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 108, Col: 157}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -81,7 +81,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", getOverdueTasksFromBothLists(mainBoards, nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 122, Col: 159}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 123, Col: 159}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -94,7 +94,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", getTotalCollaboratorsFromBothLists(mainBoards, nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 137, Col: 165}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 138, Col: 165}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -112,7 +112,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(nestedBoards)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 151, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 152, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -130,7 +130,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					var templ_7745c5c3_Var8 templ.SafeURL
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/boards/" + board.ID.String()))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 163, Col: 111}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 164, Col: 111}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -143,7 +143,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(board.Title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 164, Col: 73}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 165, Col: 73}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -161,7 +161,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 						var templ_7745c5c3_Var10 string
 						templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(board.Description)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 176, Col: 122}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 177, Col: 122}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 						if templ_7745c5c3_Err != nil {
@@ -179,7 +179,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(board.CreatedAt.Format("Jan 2, 2006"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 184, Col: 95}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 185, Col: 95}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -192,7 +192,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(board.UpdatedAt.Format("Jan 2"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 190, Col: 89}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 191, Col: 89}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -222,7 +222,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("board-menu-dashboard-%s", board.ID.String()))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 206, Col: 115}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 207, Col: 115}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -235,7 +235,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					var templ_7745c5c3_Var15 templ.SafeURL
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/boards/" + board.ID.String()))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 207, Col: 107}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 208, Col: 107}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -280,7 +280,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(mainBoards)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 238, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 239, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -298,7 +298,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(mainBoards)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 240, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 241, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -309,32 +309,29 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</h2></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</h2></div><div class=\"grid gap-6 md:grid-cols-2 lg:grid-cols-3\" id=\"boards-grid\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(mainBoards) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"grid gap-6 md:grid-cols-2 lg:grid-cols-3\" id=\"boards-grid\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
 				for _, board := range mainBoards {
 					templ_7745c5c3_Err = DashboardBoardCard(board).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<!-- Empty State --> <div class=\"text-center py-12\"><svg class=\"mx-auto h-12 w-12 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z\"></path></svg><h3 class=\"mt-2 text-sm font-medium text-gray-900\">No boards</h3><p class=\"mt-1 text-sm text-gray-500\">Get started by creating your first board.</p><div class=\"mt-6\"><button onclick=\"document.getElementById('create-board-modal').classList.remove('hidden')\" class=\"inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500\"><svg class=\"w-5 h-5 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg> Create Board</button></div></div>")
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if len(mainBoards) == 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<!-- Empty State --> <div class=\"text-center py-12\" id=\"empty-state\"><svg class=\"mx-auto h-12 w-12 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z\"></path></svg><h3 class=\"mt-2 text-sm font-medium text-gray-900\">No boards</h3><p class=\"mt-1 text-sm text-gray-500\">Get started by creating your first board.</p><div class=\"mt-6\"><button onclick=\"document.getElementById('create-board-modal').classList.remove('hidden')\" class=\"inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500\"><svg class=\"w-5 h-5 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg> Create Board</button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></div></main><!-- Create Board Modal -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</div></div></main><!-- Create Board Modal -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -342,7 +339,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</div><script>\r\n            // Filter boards function\r\n            function filterBoards(query) {\r\n                const boardCards = document.querySelectorAll('#boards-grid > div, .grid.gap-6 > div');\r\n                const searchQuery = query.toLowerCase();\r\n                \r\n                boardCards.forEach(card => {\r\n                    const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';\r\n                    const description = card.querySelector('p')?.textContent?.toLowerCase() || '';\r\n                    \r\n                    if (title.includes(searchQuery) || description.includes(searchQuery) || searchQuery === '') {\r\n                        card.style.display = 'block';\r\n                    } else {\r\n                        card.style.display = 'none';\r\n                    }\r\n                });\r\n            }\r\n            \r\n            // Toggle board menu for dashboard\r\n            function toggleBoardMenuDashboard(boardId) {\r\n                const menu = document.getElementById(`board-menu-dashboard-${boardId}`);\r\n                const allMenus = document.querySelectorAll('[id^=\"board-menu-dashboard-\"]');\r\n                \r\n                // Close all other menus\r\n                allMenus.forEach(m => {\r\n                    if (m.id !== `board-menu-dashboard-${boardId}`) {\r\n                        m.classList.add('hidden');\r\n                    }\r\n                });\r\n                \r\n                // Toggle current menu\r\n                menu.classList.toggle('hidden');\r\n            }\r\n            \r\n            // Close menus when clicking outside\r\n            document.addEventListener('click', function(event) {\r\n                if (!event.target.closest('[onclick*=\"toggleBoardMenuDashboard\"]')) {\r\n                    const allMenus = document.querySelectorAll('[id^=\"board-menu-dashboard-\"]');\r\n                    allMenus.forEach(menu => menu.classList.add('hidden'));\r\n                }\r\n            });\r\n            \r\n            // Export functions\r\n            window.toggleBoardMenuDashboard = toggleBoardMenuDashboard;\r\n            window.filterBoards = filterBoards;\r\n        </script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div><script>\r\n            // Filter boards function\r\n            function filterBoards(query) {\r\n                const boardCards = document.querySelectorAll('#boards-grid > div, .grid.gap-6 > div');\r\n                const searchQuery = query.toLowerCase();\r\n                \r\n                boardCards.forEach(card => {\r\n                    const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';\r\n                    const description = card.querySelector('p')?.textContent?.toLowerCase() || '';\r\n                    \r\n                    if (title.includes(searchQuery) || description.includes(searchQuery) || searchQuery === '') {\r\n                        card.style.display = 'block';\r\n                    } else {\r\n                        card.style.display = 'none';\r\n                    }\r\n                });\r\n            }\r\n            \r\n            // Toggle board menu for dashboard\r\n            function toggleBoardMenuDashboard(boardId) {\r\n                const menu = document.getElementById(`board-menu-dashboard-${boardId}`);\r\n                const allMenus = document.querySelectorAll('[id^=\"board-menu-dashboard-\"]');\r\n                \r\n                // Close all other menus\r\n                allMenus.forEach(m => {\r\n                    if (m.id !== `board-menu-dashboard-${boardId}`) {\r\n                        m.classList.add('hidden');\r\n                    }\r\n                });\r\n                \r\n                // Toggle current menu\r\n                menu.classList.toggle('hidden');\r\n            }\r\n            \r\n            // Close menus when clicking outside\r\n            document.addEventListener('click', function(event) {\r\n                if (!event.target.closest('[onclick*=\"toggleBoardMenuDashboard\"]')) {\r\n                    const allMenus = document.querySelectorAll('[id^=\"board-menu-dashboard-\"]');\r\n                    allMenus.forEach(menu => menu.classList.add('hidden'));\r\n                }\r\n            });\r\n            \r\n            // Export functions\r\n            window.toggleBoardMenuDashboard = toggleBoardMenuDashboard;\r\n            window.filterBoards = filterBoards;\r\n        </script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -378,82 +375,82 @@ func DashboardBoardCard(board models.Board) templ.Component {
 			templ_7745c5c3_Var19 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200 group\"><div class=\"p-6\"><div class=\"flex items-start justify-between\"><div class=\"flex-1\"><h3 class=\"text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200 group\"><div class=\"p-6\"><div class=\"flex items-start justify-between\"><div class=\"flex-1\"><h3 class=\"text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var20 templ.SafeURL
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/boards/" + board.ID.String()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 336, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 339, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(board.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 337, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 340, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</a></h3>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</a></h3>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if board.Description != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<p class=\"text-gray-600 text-sm mb-4 line-clamp-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<p class=\"text-gray-600 text-sm mb-4 line-clamp-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(board.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 342, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 345, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"flex items-center justify-between text-sm text-gray-500\"><div class=\"flex items-center\"><svg class=\"w-4 h-4 mr-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z\"></path></svg> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"flex items-center justify-between text-sm text-gray-500\"><div class=\"flex items-center\"><svg class=\"w-4 h-4 mr-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z\"></path></svg> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(board.CreatedAt.Format("Jan 2, 2006"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 350, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 353, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</div><div class=\"flex items-center\"><svg class=\"w-4 h-4 mr-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</div><div class=\"flex items-center\"><svg class=\"w-4 h-4 mr-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(board.UpdatedAt.Format("Jan 2"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 356, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 359, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</div></div></div><!-- Board Menu --><div class=\"relative\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</div></div></div><!-- Board Menu --><div class=\"relative\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -461,7 +458,7 @@ func DashboardBoardCard(board models.Board) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<button onclick=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<button onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -470,33 +467,33 @@ func DashboardBoardCard(board models.Board) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"p-1 text-gray-400 hover:text-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-all\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z\"></path></svg></button><div id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"p-1 text-gray-400 hover:text-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-all\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z\"></path></svg></button><div id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("board-menu-dashboard-%s", board.ID.String()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 372, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 375, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"hidden absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-10 border\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"hidden absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-10 border\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 templ.SafeURL
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/boards/" + board.ID.String()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 373, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 376, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\"><svg class=\"w-4 h-4 inline mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"></path> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z\"></path></svg> View Board</a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\"><svg class=\"w-4 h-4 inline mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"></path> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z\"></path></svg> View Board</a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -504,7 +501,7 @@ func DashboardBoardCard(board models.Board) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<button onclick=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<button onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -513,7 +510,7 @@ func DashboardBoardCard(board models.Board) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" class=\"block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50\"><svg class=\"w-4 h-4 inline mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16\"></path></svg> Delete Board</button></div></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" class=\"block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50\"><svg class=\"w-4 h-4 inline mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16\"></path></svg> Delete Board</button></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -543,7 +540,7 @@ func DashboardCreateBoardModal() templ.Component {
 			templ_7745c5c3_Var29 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<div id=\"create-board-modal\" class=\"hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50\"><div class=\"relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white\"><div class=\"flex items-center justify-between pb-3 border-b\"><h3 class=\"text-lg font-semibold text-gray-900\">Create New Board</h3><button onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/boards\" hx-target=\"#boards-grid\" hx-swap=\"beforeend\" class=\"mt-4 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Board Title</label> <input type=\"text\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Enter board title\"></div><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Description (Optional)</label> <textarea name=\"description\" rows=\"3\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none\" placeholder=\"Brief description of your board\"></textarea></div><div class=\"flex space-x-3 pt-4 border-t\"><button type=\"submit\" class=\"flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500\">Create Board</button> <button type=\"button\" onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors focus:outline-none\">Cancel</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div id=\"create-board-modal\" class=\"hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50\"><div class=\"relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white\"><div class=\"flex items-center justify-between pb-3 border-b\"><h3 class=\"text-lg font-semibold text-gray-900\">Create New Board</h3><button onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/boards\" hx-target=\"#boards-grid\" hx-swap=\"beforeend\" hx-on::after-request=\"document.getElementById('create-board-modal').classList.add('hidden'); document.getElementById('empty-state')?.classList.add('hidden');\" class=\"mt-4 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Board Title</label> <input type=\"text\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Enter board title\"></div><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Description (Optional)</label> <textarea name=\"description\" rows=\"3\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none\" placeholder=\"Brief description of your board\"></textarea></div><div class=\"flex space-x-3 pt-4 border-t\"><button type=\"submit\" class=\"flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500\">Create Board</button> <button type=\"button\" onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors focus:outline-none\">Cancel</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

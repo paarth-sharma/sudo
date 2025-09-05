@@ -9,6 +9,7 @@ import (
     "sudo/internal/database"
     "sudo/internal/email"
     "sudo/internal/handlers"
+    "sudo/internal/realtime"
     "sudo/templates/pages"
     
     "github.com/gin-contrib/sessions"
@@ -51,10 +52,14 @@ func main() {
     db := database.NewDB()
     emailService := email.NewEmailService()
     
+    // Add real-time service initialization
+    realtimeService := realtime.NewRealtimeService(db)
+    go realtimeService.Run() // Start the real-time hub
+    
     // Initialize handlers
     authHandler := handlers.NewAuthHandler(db, emailService)
-    boardHandler := handlers.NewBoardHandler(db)
-    taskHandler := handlers.NewTaskHandler(db)
+    boardHandler := handlers.NewBoardHandler(db, realtimeService) // Pass realtime service
+    taskHandler := handlers.NewTaskHandler(db, realtimeService) // Pass realtime service
     
     // Setup Gin
     if os.Getenv("APP_ENV") == "production" {

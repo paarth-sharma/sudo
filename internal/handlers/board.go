@@ -5,10 +5,12 @@ import (
     "net/http"
     "fmt"
     "strings"
+    "strconv"
     
     "sudo/internal/database"
     "sudo/internal/email"
     "sudo/internal/models"
+    "sudo/internal/realtime"
     "sudo/templates/pages"
     "sudo/templates/components"
     
@@ -21,12 +23,14 @@ import (
 type BoardHandler struct {
     db           *database.DB
     emailService *email.EmailService
+    realtime     *realtime.RealtimeService
 }
 
-func NewBoardHandler(db *database.DB) *BoardHandler {
+func NewBoardHandler(db *database.DB, realtime *realtime.RealtimeService) *BoardHandler {
     return &BoardHandler{
         db:           db,
         emailService: email.NewEmailService(),
+        realtime:     realtime,
     }
 }
 
@@ -132,9 +136,16 @@ func (h *BoardHandler) CreateBoard(c *gin.Context) {
     
     fmt.Printf("Board created successfully: %s (ID: %s)\n", board.Title, board.ID.String())
     
-    component := pages.BoardCard(*board)
-    handler := templ.Handler(component)
-    handler.ServeHTTP(c.Writer, c.Request)
+    // Check if this is an HTMX request
+    if c.GetHeader("HX-Request") == "true" {
+        // Return a dashboard board card for HTMX
+        component := pages.DashboardBoardCard(*board)
+        handler := templ.Handler(component)
+        handler.ServeHTTP(c.Writer, c.Request)
+    } else {
+        // Regular request - redirect to the new board
+        c.Redirect(http.StatusSeeOther, fmt.Sprintf("/boards/%s", board.ID.String()))
+    }
 }
 
 func (h *BoardHandler) ViewBoard(c *gin.Context) {
@@ -187,7 +198,47 @@ func (h *BoardHandler) ViewBoard(c *gin.Context) {
         nestedBoards = []models.Board{}
     }
     
-    component := pages.BoardWithNested(*board, parentBoard, nestedBoards)
+    // Get current user data
+    user, err := h.db.GetUserByID(context.Background(), userID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to get user data: %v", err)
+        return
+    }
+    
+    // Get online users for this board
+    onlineUsers := []models.User{}
+    presenceData, err := h.db.GetBoardPresence(context.Background(), boardID)
+    if err != nil {
+        fmt.Printf("Warning: Failed to get board presence: %v\n", err)
+    } else {
+        // Convert presence data to user data
+        for _, presence := range presenceData {
+            user := models.User{
+                ID: presence.UserID,
+            }
+            
+            // Check if User relationship was populated
+            if presence.User != nil {
+                user.Name = presence.User.Name
+                user.Email = presence.User.Email
+            } else {
+                // Fallback: fetch user data directly if relationship wasn't populated
+                userData, err := h.db.GetUserByID(context.Background(), presence.UserID)
+                if err != nil {
+                    fmt.Printf("Warning: Failed to get user data for presence: %v\n", err)
+                    user.Name = "Unknown User"
+                    user.Email = ""
+                } else {
+                    user.Name = userData.Name
+                    user.Email = userData.Email
+                }
+            }
+            
+            onlineUsers = append(onlineUsers, user)
+        }
+    }
+    
+    component := pages.BoardWithNested(*board, parentBoard, nestedBoards, *user, onlineUsers)
     handler := templ.Handler(component)
     handler.ServeHTTP(c.Writer, c.Request)
 }
@@ -615,6 +666,11 @@ func (h *BoardHandler) GetBoardTasks(c *gin.Context) {
         allTasks = append(allTasks, column.Tasks...)
     }
     
+    // Ensure we never return null, always return empty array if no tasks
+    if allTasks == nil {
+        allTasks = []models.Task{}
+    }
+    
     c.JSON(http.StatusOK, allTasks)
 }
 
@@ -707,10 +763,9 @@ func (h *BoardHandler) SearchContent(c *gin.Context) {
 }
 
 func (h *BoardHandler) HandleWebSocket(c *gin.Context) {
-    // WebSocket implementation for real-time updates
-    // This is a placeholder - implement with gorilla/websocket or similar
-    c.String(http.StatusNotImplemented, "WebSocket endpoint not implemented yet")
+    h.realtime.HandleWebSocketConnection(c)
 }
+
 
 // Helper functions
 func (h *BoardHandler) checkBoardAccess(userID, boardID uuid.UUID) (bool, error) {
@@ -761,4 +816,179 @@ func getBaseURL(c *gin.Context) string {
         scheme = "https"
     }
     return fmt.Sprintf("%s://%s", scheme, c.Request.Host)
+}
+
+// Enhanced task movement with real-time broadcasting
+func (h *BoardHandler) MoveTask(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.Header("HX-Redirect", "/")
+        c.Status(http.StatusUnauthorized)
+        return
+    }
+
+    taskIDStr := c.Param("taskId")
+    taskID, err := uuid.Parse(taskIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid task ID")
+        return
+    }
+
+    columnIDStr := c.PostForm("column_id")
+    position, err := strconv.Atoi(c.PostForm("position"))
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid position")
+        return
+    }
+
+    expectedVersion, err := strconv.Atoi(c.PostForm("version"))
+    if err != nil {
+        expectedVersion = 1 // Default if version not provided
+    }
+
+    columnID, err := uuid.Parse(columnIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid column ID")
+        return
+    }
+
+    // Get task to check board access
+    task, err := h.db.GetTask(context.Background(), taskID)
+    if err != nil {
+        c.String(http.StatusNotFound, "Task not found")
+        return
+    }
+
+    // Check if user has access to this board
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, task.BoardID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to check board access: %v", err)
+        return
+    }
+
+    if !hasAccess {
+        c.String(http.StatusForbidden, "You don't have access to this board")
+        return
+    }
+
+    // Perform optimistic task move
+    updatedTask, err := h.db.MoveTaskWithOptimisticLock(
+        context.Background(), taskID, columnID, position, expectedVersion)
+    if err != nil {
+        c.JSON(http.StatusConflict, gin.H{
+            "error": "Conflict detected", 
+            "message": err.Error(),
+        })
+        return
+    }
+
+    // Broadcast real-time update to all connected clients
+    if h.realtime != nil {
+        h.realtime.BroadcastTaskUpdate(
+            updatedTask.BoardID.String(), 
+            updatedTask, 
+            "moved",
+        )
+    }
+
+    // Return updated task component for HTMX
+    taskComponent := components.TaskCard(*updatedTask)
+    
+    c.Header("Content-Type", "text/html")
+    taskComponent.Render(c.Request.Context(), c.Writer)
+}
+
+// Enhanced task creation with real-time broadcasting
+func (h *BoardHandler) CreateTaskWithBroadcast(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.Header("HX-Redirect", "/")
+        c.Status(http.StatusUnauthorized)
+        return
+    }
+
+    title := c.PostForm("title")
+    description := c.PostForm("description")
+    columnIDStr := c.PostForm("column_id")
+    boardIDStr := c.PostForm("board_id")
+    priority := c.PostForm("priority")
+
+    if title == "" || columnIDStr == "" || boardIDStr == "" {
+        c.String(http.StatusBadRequest, "Title, column ID, and board ID are required")
+        return
+    }
+
+    if priority == "" {
+        priority = "Medium"
+    }
+
+    columnID, err := uuid.Parse(columnIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid column ID")
+        return
+    }
+
+    boardID, err := uuid.Parse(boardIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid board ID")
+        return
+    }
+
+    // Check board access
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, boardID)
+    if err != nil || !hasAccess {
+        c.String(http.StatusForbidden, "Access denied")
+        return
+    }
+
+    // Create task
+    task, err := h.db.CreateTask(context.Background(), title, description, columnID, boardID, priority)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to create task: %v", err)
+        return
+    }
+
+    // Broadcast real-time update
+    if h.realtime != nil {
+        h.realtime.BroadcastTaskUpdate(boardIDStr, task, "created")
+    }
+
+    // Return new task component
+    taskComponent := components.TaskCard(*task)
+    
+    c.Header("Content-Type", "text/html")
+    taskComponent.Render(c.Request.Context(), c.Writer)
+}
+
+// Get board with real-time connection count
+func (h *BoardHandler) GetBoardWithPresence(c *gin.Context) {
+    boardIDStr := c.Param("id")
+    boardID, err := uuid.Parse(boardIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid board ID")
+        return
+    }
+
+    board, err := h.db.GetBoardWithColumns(context.Background(), boardID)
+    if err != nil {
+        c.String(http.StatusNotFound, "Board not found")
+        return
+    }
+
+    // Add real-time connection info
+    connectedUsers := 0
+    if h.realtime != nil {
+        connectedUsers = h.realtime.GetConnectedUsersCount(boardIDStr)
+    }
+
+    // Enhanced board view with presence info
+    boardWithPresence := struct {
+        *models.Board
+        ConnectedUsers int `json:"connected_users"`
+    }{
+        Board:          board,
+        ConnectedUsers: connectedUsers,
+    }
+
+    c.JSON(http.StatusOK, boardWithPresence)
 }

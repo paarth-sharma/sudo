@@ -5,6 +5,7 @@ import (
     "fmt"
     "log"
     "os"
+    "strings"
     "time"
     
     "github.com/google/uuid"
@@ -39,7 +40,11 @@ func (db *DB) CreateUser(ctx context.Context, email, name string) (*models.User,
     // Use map instead of struct to avoid UUID issues
     userData := map[string]interface{}{
         "email": email,
-        "name":  name,
+    }
+    
+    // Only add name if it's not empty
+    if strings.TrimSpace(name) != "" {
+        userData["name"] = name
     }
     
     var result []models.User

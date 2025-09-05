@@ -1,0 +1,58 @@
+package components
+
+import "sudo/internal/models"
+import "fmt"
+
+templ PresenceIndicators(onlineUsers []models.User) {
+    <div id="presence-indicators" class="flex items-center space-x-2">
+        <span class="text-sm text-gray-600">
+            { fmt.Sprintf("%d online", len(onlineUsers)) }
+        </span>
+        <div class="flex -space-x-1">
+            for i, user := range onlineUsers {
+                if i < 5 {
+                    <div 
+                        class="relative inline-block"
+                        title={ user.Name }
+                    >
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium border-2 border-white">
+                            { user.GetInitials() }
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
+                    </div>
+                } else if i == 5 {
+                    <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs font-medium border-2 border-white">
+                        +{ fmt.Sprintf("%d", len(onlineUsers) - 5) }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+
+templ LiveCursor(userID, userName string, x, y int) {
+    <div 
+        id={ fmt.Sprintf("cursor-%s", userID) }
+        class="fixed pointer-events-none z-50 transition-all duration-100 ease-out"
+        style={ fmt.Sprintf("left: %dpx; top: %dpx;", x, y) }
+    >
+        <svg width="24" height="24" viewBox="0 0 24 24" class="drop-shadow-lg">
+            <path d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.7841 12.3673H5.65376Z" 
+                  fill="#3B82F6" stroke="white" stroke-width="1"/>
+        </svg>
+        <div class="ml-6 -mt-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap">
+            { userName }
+        </div>
+    </div>
+}
+
+templ TypingIndicator(userName string) {
+    <div class="flex items-center space-x-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+        <div class="flex space-x-1">
+            <div class="w-1 h-1 bg-blue-600 rounded-full animate-bounce"></div>
+            <div class="w-1 h-1 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-1 h-1 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+        </div>
+        <span>{ userName } is typing...</span>
+    </div>
+}

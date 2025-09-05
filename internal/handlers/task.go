@@ -9,6 +9,7 @@ import (
    
     "sudo/internal/database"
     "sudo/internal/models"
+    "sudo/internal/realtime"
     "sudo/templates/components"
    
     "github.com/gin-gonic/gin"
@@ -18,11 +19,15 @@ import (
 )
 
 type TaskHandler struct {
-    db *database.DB
+    db       *database.DB
+    realtime *realtime.RealtimeService
 }
 
-func NewTaskHandler(db *database.DB) *TaskHandler {
-    return &TaskHandler{db: db}
+func NewTaskHandler(db *database.DB, rt *realtime.RealtimeService) *TaskHandler {
+    return &TaskHandler{
+        db:       db,
+        realtime: rt,
+    }
 }
 
 func (h *TaskHandler) validateUserSession(c *gin.Context) (*models.User, error) {
@@ -614,4 +619,83 @@ func (h *TaskHandler) ReopenTask(c *gin.Context) {
     }
     
     c.Status(http.StatusOK)
+}
+
+// Enhanced task update with real-time broadcasting
+func (h *TaskHandler) UpdateTaskWithBroadcast(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.Header("HX-Redirect", "/")
+        c.Status(http.StatusUnauthorized)
+        return
+    }
+
+    taskIDStr := c.Param("taskId")
+    taskID, err := uuid.Parse(taskIDStr)
+    if err != nil {
+        c.String(http.StatusBadRequest, "Invalid task ID")
+        return
+    }
+
+    // Get current task for board ID
+    task, err := h.db.GetTask(context.Background(), taskID)
+    if err != nil {
+        c.String(http.StatusNotFound, "Task not found")
+        return
+    }
+
+    // Check board access
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, task.BoardID)
+    if err != nil || !hasAccess {
+        c.String(http.StatusForbidden, "Access denied")
+        return
+    }
+
+    // Prepare updates
+    updates := make(map[string]interface{})
+    
+    if title := c.PostForm("title"); title != "" {
+        updates["title"] = title
+    }
+    if description := c.PostForm("description"); description != "" {
+        updates["description"] = description
+    }
+    if priority := c.PostForm("priority"); priority != "" {
+        updates["priority"] = priority
+    }
+    if assignedTo := c.PostForm("assigned_to"); assignedTo != "" {
+        if assigneeID, err := uuid.Parse(assignedTo); err == nil {
+            updates["assigned_to"] = assigneeID
+        }
+    }
+
+    if len(updates) == 0 {
+        c.String(http.StatusBadRequest, "No valid updates provided")
+        return
+    }
+
+    // Update task
+    err = h.db.UpdateTask(context.Background(), taskID, updates)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to update task: %v", err)
+        return
+    }
+
+    // Get updated task
+    updatedTask, err := h.db.GetTask(context.Background(), taskID)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Failed to get updated task")
+        return
+    }
+
+    // Broadcast real-time update
+    if h.realtime != nil {
+        h.realtime.BroadcastTaskUpdate(task.BoardID.String(), updatedTask, "updated")
+    }
+
+    // Return updated task component
+    taskComponent := components.TaskCard(*updatedTask)
+    
+    c.Header("Content-Type", "text/html")
+    taskComponent.Render(c.Request.Context(), c.Writer)
 }

@@ -63,6 +63,7 @@ templ DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board
                                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
                                         <button 
                                             hx-post="/auth/logout"
+                                            hx-confirm="Are you sure you want to sign out?"
                                             class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Sign out
@@ -242,15 +243,17 @@ templ DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board
                         </h2>
                     </div>
                     
-                    if len(mainBoards) > 0 {
-                        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="boards-grid">
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="boards-grid">
+                        if len(mainBoards) > 0 {
                             for _, board := range mainBoards {
                                 @DashboardBoardCard(board)
                             }
-                        </div>
-                    } else {
+                        }
+                    </div>
+                    
+                    if len(mainBoards) == 0 {
                         <!-- Empty State -->
-                        <div class="text-center py-12">
+                        <div class="text-center py-12" id="empty-state">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z"></path>
                             </svg>
@@ -403,7 +406,13 @@ templ DashboardCreateBoardModal() {
                 </button>
             </div>
             
-            <form hx-post="/boards" hx-target="#boards-grid" hx-swap="beforeend" class="mt-4 space-y-4">
+            <form 
+                hx-post="/boards" 
+                hx-target="#boards-grid" 
+                hx-swap="beforeend"
+                hx-on::after-request="document.getElementById('create-board-modal').classList.add('hidden'); document.getElementById('empty-state')?.classList.add('hidden');"
+                class="mt-4 space-y-4"
+            >
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Board Title</label>
                     <input 

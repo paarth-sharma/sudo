@@ -4,34 +4,73 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('SortableJS available:', typeof Sortable !== 'undefined');
     initializeModals();
     
+    // Add HTMX error debugging
+    document.body.addEventListener('htmx:responseError', function(evt) {
+        console.error('HTMX Response Error:', evt.detail);
+        console.error('Status:', evt.detail.xhr.status);
+        console.error('Response:', evt.detail.xhr.responseText);
+    });
+    
+    document.body.addEventListener('htmx:sendError', function(evt) {
+        console.error('HTMX Send Error:', evt.detail);
+    });
+    
+    document.body.addEventListener('htmx:targetError', function(evt) {
+        console.error('HTMX Target Error Details:', {
+            target: evt.detail.target,
+            element: evt.detail.elt,
+            xhr: evt.detail.xhr,
+            requestConfig: evt.detail.requestConfig
+        });
+    });
+    
     // Check for tasks and update sub-board button visibility
     setTimeout(checkTasksAndUpdateButton, 500);
     
-    // Force trigger htmx.onLoad for initial page load
-    console.log('Manually triggering htmx.onLoad for initial load...');
-    htmx.onLoad(document.body);
+    // Force trigger initialization for initial page load
+    console.log('Manually triggering sortables initialization for initial load...');
+    if (typeof initializeSortables === 'function') {
+        initializeSortables(document.body);
+    }
+    
+    // Set up a watchdog to periodically check and re-enable sortables if needed
+    setInterval(function() {
+        const disabledSortables = [];
+        document.querySelectorAll('[data-sortable="tasks"]').forEach(container => {
+            if (container.sortableInstance && container.sortableInstance.option('disabled')) {
+                disabledSortables.push(container.dataset.columnId);
+                container.sortableInstance.option("disabled", false);
+            }
+        });
+        
+        if (disabledSortables.length > 0) {
+            console.log('Watchdog re-enabled sortables for columns:', disabledSortables);
+        }
+    }, 5000); // Check every 5 seconds
 });
 
 // HTMX + SortableJS Integration - Enhanced for Full Column Dropzone
-htmx.onLoad(function(content) {
+function initializeSortables(content) {
     console.log('HTMX onLoad triggered, initializing sortables...');
     console.log('Content element:', content);
     console.log('SortableJS available in onLoad:', typeof Sortable !== 'undefined');
     
-    var sortables = content.querySelectorAll('[data-sortable="tasks"]');
+    // Use document.querySelectorAll instead of content.querySelectorAll to fix HTMX integration
+    var sortables = document.querySelectorAll('[data-sortable="tasks"]');
     console.log('Found sortables:', sortables.length);
     console.log('Sortable elements:', sortables);
     
-    // Also check if we can find task cards
-    var taskCards = content.querySelectorAll('[data-task-id]');
+    // Also check if we can find task cards (use document for consistency)
+    var taskCards = document.querySelectorAll('[data-task-id]');
     console.log('Found task cards:', taskCards.length);
     
     for (var i = 0; i < sortables.length; i++) {
         var sortable = sortables[i];
         console.log('Initializing sortable:', sortable.dataset.columnId);
         
-        // Destroy existing instance if it exists
+        // Destroy existing instance if it exists to prevent duplicates
         if (sortable.sortableInstance) {
+            console.log('Destroying existing sortable instance for column:', sortable.dataset.columnId);
             sortable.sortableInstance.destroy();
             sortable.sortableInstance = null;
         }
@@ -97,6 +136,9 @@ htmx.onLoad(function(content) {
                     newIndex: evt.newIndex
                 });
                 
+                // Disable sortable during HTMX request to prevent conflicts
+                this.option("disabled", true);
+                
                 // Remove visual feedback
                 document.querySelectorAll('[data-sortable="tasks"]').forEach(col => {
                     col.classList.remove('drag-active');
@@ -138,6 +180,9 @@ htmx.onLoad(function(content) {
                 }));
                 
                 console.log('Sending task move request...');
+                
+                const sortableInstance = this;
+                
                 fetch('/tasks/move', {
                     method: 'POST',
                     headers: {
@@ -191,20 +236,69 @@ htmx.onLoad(function(content) {
                             evt.item.originalParent.appendChild(evt.item);
                         }
                     }
+                }).finally(() => {
+                    // Always re-enable sortable after request completes (success or error)
+                    console.log('Re-enabling sortable after task move request');
+                    if (sortableInstance && typeof sortableInstance.option === 'function') {
+                        sortableInstance.option("disabled", false);
+                    }
+                    
+                    // Also re-enable all other sortables to be safe
+                    document.querySelectorAll('[data-sortable="tasks"]').forEach(container => {
+                        if (container.sortableInstance && typeof container.sortableInstance.option === 'function') {
+                            container.sortableInstance.option("disabled", false);
+                        }
+                    });
                 });
             }
         });
         
         // Store instance for cleanup
         sortable.sortableInstance = sortableInstance;
+        
+        // Add HTMX event listener to re-enable sortable after swaps
+        sortable.addEventListener("htmx:afterSwap", function() {
+            console.log('HTMX swap completed, re-enabling sortable for column:', sortable.dataset.columnId);
+            if (sortableInstance) {
+                sortableInstance.option("disabled", false);
+            }
+        });
     }
-});
+}
+
+// Safe HTMX onLoad registration with error handling
+if (typeof htmx !== 'undefined' && htmx.onLoad) {
+    htmx.onLoad(initializeSortables);
+    console.log('HTMX onLoad handler registered successfully');
+} else {
+    console.error('HTMX not available or onLoad method missing');
+    // Fallback initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeSortables(document.body);
+    });
+}
 
 // Global function to manually reinitialize drag and drop for debugging
 window.reinitializeDragAndDrop = function() {
     console.log('Manual drag and drop reinitialization requested');
-    // Trigger HTMX onLoad for the entire document
-    htmx.onLoad(document.body);
+    // Use our safe initialization function
+    initializeSortables(document.body);
+};
+
+// Global function to re-enable all sortables
+window.enableAllSortables = function() {
+    console.log('Re-enabling all sortable instances...');
+    let enabledCount = 0;
+    
+    document.querySelectorAll('[data-sortable="tasks"]').forEach(container => {
+        if (container.sortableInstance && typeof container.sortableInstance.option === 'function') {
+            container.sortableInstance.option("disabled", false);
+            enabledCount++;
+        }
+    });
+    
+    console.log(`Re-enabled ${enabledCount} sortable instances`);
+    return enabledCount;
 };
 
 // Debug function to check sortable instances
@@ -606,32 +700,42 @@ function createSubBoardFromSelectedTask() {
 
 // Get current board ID from URL or data attributes
 function getCurrentBoardId() {
-    // Try to get from URL path
-    const pathMatch = window.location.pathname.match(/\/boards\/([a-f0-9-]+)/);
+    console.log('Attempting to get board ID...');
+    
+    // Try to get from URL path first (most reliable)
+    const pathMatch = window.location.pathname.match(/\/boards\/([a-f0-9\-]{36})/);
     if (pathMatch) {
+        console.log('Board ID found in URL:', pathMatch[1]);
         return pathMatch[1];
     }
     
-    // Try to get from data attributes in the page
+    // Try to get from main board container
+    const boardContainer = document.getElementById('board-container');
+    if (boardContainer && boardContainer.dataset.boardId) {
+        console.log('Board ID found in board container:', boardContainer.dataset.boardId);
+        return boardContainer.dataset.boardId;
+    }
+    
+    // Try to get from any element with data-board-id
     const boardElement = document.querySelector('[data-board-id]');
-    if (boardElement) {
+    if (boardElement && boardElement.dataset.boardId) {
+        console.log('Board ID found in DOM element:', boardElement.dataset.boardId);
         return boardElement.dataset.boardId;
     }
     
-    // Try to get from board columns
-    const columnElement = document.querySelector('[data-column-id]');
-    if (columnElement) {
-        // Look for board ID in add column modal or similar
-        const addColumnModal = document.getElementById('add-column-modal');
-        if (addColumnModal) {
-            const hiddenInput = addColumnModal.querySelector('input[name="board_id"]');
-            if (hiddenInput) {
-                return hiddenInput.value;
-            }
+    // Try to get from add column modal
+    const addColumnModal = document.getElementById('add-column-modal');
+    if (addColumnModal) {
+        const hiddenInput = addColumnModal.querySelector('input[name="board_id"]');
+        if (hiddenInput && hiddenInput.value) {
+            console.log('Board ID found in add column modal:', hiddenInput.value);
+            return hiddenInput.value;
         }
     }
     
-    console.warn('Could not determine current board ID');
+    console.error('Could not determine current board ID');
+    console.log('Current URL:', window.location.pathname);
+    console.log('Available elements with data-board-id:', document.querySelectorAll('[data-board-id]'));
     return null;
 }
 
@@ -649,7 +753,10 @@ function getPriorityDisplayName(priority) {
 // Function to check for tasks and show/hide create sub-board button
 function checkTasksAndUpdateButton() {
     const boardId = getCurrentBoardId();
-    if (!boardId) return;
+    if (!boardId) {
+        console.log('Skipping task check - not on a board page');
+        return;
+    }
     
     fetch(`/api/boards/${boardId}/tasks`, {
         method: 'GET',
@@ -663,9 +770,10 @@ function checkTasksAndUpdateButton() {
         }
         return [];
     }).then(tasks => {
+        console.log('Tasks API response:', tasks, 'Type:', typeof tasks);
         const createButton = document.getElementById('create-subboard-button');
         if (createButton) {
-            if (tasks.length > 0) {
+            if (tasks && Array.isArray(tasks) && tasks.length > 0) {
                 createButton.classList.remove('hidden');
                 createButton.classList.add('inline-flex');
             } else {
@@ -1745,6 +1853,7 @@ window.checkTasksAndUpdateButton = checkTasksAndUpdateButton;
 // Export debug functions
 window.debugSortables = debugSortables;
 window.reinitializeDragAndDrop = reinitializeDragAndDrop;
+window.enableAllSortables = enableAllSortables;
 
 // Enhanced Drag and Drop Event Handlers
 document.addEventListener('taskMoved', function(e) {
