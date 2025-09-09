@@ -5,20 +5,31 @@ import "fmt"
 
 // NestedBoardNavigation shows parent board link and nested boards list
 templ NestedBoardNavigation(board models.Board, parentBoard *models.Board, nestedBoards []models.Board) {
-    <!-- Parent Board Navigation -->
+    <!-- Board Hierarchy Navigation -->
     if parentBoard != nil {
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div class="flex items-center text-sm text-blue-700">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                <span class="text-blue-600">Parent Board:</span>
-                <a 
-                    href={ templ.SafeURL(fmt.Sprintf("/boards/%s", parentBoard.ID.String())) }
-                    class="ml-2 font-medium text-blue-800 hover:text-blue-900 hover:underline"
-                >
-                    { parentBoard.Title }
-                </a>
+            <div class="flex items-center text-sm">
+                <nav class="flex items-center space-x-2">
+                    <a 
+                        href="/dashboard"
+                        class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                    >
+                        Dashboard
+                    </a>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <a 
+                        href={ templ.SafeURL(fmt.Sprintf("/boards/%s", parentBoard.ID.String())) }
+                        class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                    >
+                        { parentBoard.Title }
+                    </a>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="text-gray-700 font-medium">{ board.Title }</span>
+                </nav>
             </div>
         </div>
     }

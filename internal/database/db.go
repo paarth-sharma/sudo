@@ -343,6 +343,37 @@ func (db *DB) GetBoardMembers(ctx context.Context, boardID uuid.UUID) ([]models.
     return users, nil
 }
 
+// GetBoardMembersWithRoles returns board members with their roles in API format
+func (db *DB) GetBoardMembersWithRoles(ctx context.Context, boardID uuid.UUID) ([]map[string]interface{}, error) {
+    var members []models.BoardMember
+    _, err := db.client.From("board_members").
+        Select("user_id, role", "", false).
+        Eq("board_id", boardID.String()).
+        ExecuteTo(&members)
+    
+    if err != nil {
+        return nil, fmt.Errorf("failed to get board members: %w", err)
+    }
+    
+    // Get user details for each member and format for API
+    var membersData []map[string]interface{}
+    for _, member := range members {
+        user, err := db.GetUserByID(ctx, member.UserID)
+        if err != nil {
+            log.Printf("Failed to get user %s: %v", member.UserID, err)
+            continue
+        }
+        
+        membersData = append(membersData, map[string]interface{}{
+            "user_id":   member.UserID.String(),
+            "user_name": user.GetDisplayName(),
+            "role":      member.Role,
+        })
+    }
+    
+    return membersData, nil
+}
+
 // Column operations
 func (db *DB) CreateColumn(ctx context.Context, boardID uuid.UUID, title string, position int) (*models.Column, error) {
     // Use map instead of struct to let database generate UUID

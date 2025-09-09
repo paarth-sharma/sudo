@@ -559,13 +559,14 @@ func (h *BoardHandler) GetBoardMembers(c *gin.Context) {
         return
     }
     
-    members, err := h.db.GetBoardMembers(context.Background(), boardID)
+    // Get board members with their roles
+    boardMembersWithRoles, err := h.db.GetBoardMembersWithRoles(context.Background(), boardID)
     if err != nil {
-        c.String(http.StatusInternalServerError, "Failed to get board members: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get board members"})
         return
     }
     
-    c.JSON(http.StatusOK, members)
+    c.JSON(http.StatusOK, gin.H{"members": boardMembersWithRoles})
 }
 
 func (h *BoardHandler) UpdateColumn(c *gin.Context) {
@@ -1038,3 +1039,50 @@ func (h *BoardHandler) GetBoardWithPresence(c *gin.Context) {
 
     c.JSON(http.StatusOK, boardWithPresence)
 }
+
+// GetBoardColumns returns the columns for a specific board
+func (h *BoardHandler) GetBoardColumns(c *gin.Context) {
+    userID, err := getUserFromSession(c)
+    if err != nil {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+        return
+    }
+
+    boardIDStr := c.Param("id")
+    boardID, err := uuid.Parse(boardIDStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid board ID"})
+        return
+    }
+
+    // Check if user has access to this board
+    hasAccess, err := h.db.HasBoardAccess(context.Background(), userID, boardID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check board access"})
+        return
+    }
+
+    if !hasAccess {
+        c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+        return
+    }
+
+    // Get board with columns
+    board, err := h.db.GetBoardWithColumns(context.Background(), boardID)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Board not found"})
+        return
+    }
+
+    // Return just the columns data
+    columnsData := make([]map[string]interface{}, len(board.Columns))
+    for i, col := range board.Columns {
+        columnsData[i] = map[string]interface{}{
+            "id":    col.ID.String(),
+            "title": col.Title,
+        }
+    }
+
+    c.JSON(http.StatusOK, gin.H{"columns": columnsData})
+}
+

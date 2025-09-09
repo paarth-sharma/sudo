@@ -209,25 +209,33 @@ func getTotalTasks(boards []models.Board) int {
 	total := 0
 	for _, board := range boards {
 		for _, column := range board.Columns {
-			total += len(column.Tasks)
+			for _, task := range column.Tasks {
+				if !task.Completed {
+					total++
+				}
+			}
 		}
 	}
 	return total
 }
 
 func getOverdueTasks(boards []models.Board) int {
-	overdue := 0
+	dueSoon := 0
 	now := time.Now()
+	sevenDaysFromNow := now.AddDate(0, 0, 7)
 	for _, board := range boards {
 		for _, column := range board.Columns {
 			for _, task := range column.Tasks {
-				if task.Deadline != nil && task.Deadline.Before(now) {
-					overdue++
+				if task.Deadline != nil && !task.Completed {
+					// Include tasks that are due within the next 7 days (including overdue)
+					if task.Deadline.Before(sevenDaysFromNow) || task.Deadline.Equal(sevenDaysFromNow) {
+						dueSoon++
+					}
 				}
 			}
 		}
 	}
-	return overdue
+	return dueSoon
 }
 
 func getTotalColumns(boards []models.Board) int {

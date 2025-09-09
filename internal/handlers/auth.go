@@ -129,11 +129,22 @@ func (h *AuthHandler) VerifyOTP(c *gin.Context) {
 func (h *AuthHandler) Logout(c *gin.Context) {
     session := sessions.Default(c)
     session.Clear()
-    session.Options(sessions.Options{MaxAge: -1})
-    session.Save()
+    session.Options(sessions.Options{
+        MaxAge:   -1,
+        HttpOnly: true,
+        Secure:   false,
+        SameSite: http.SameSiteLaxMode,
+        Path:     "/",
+    })
+    err := session.Save()
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout"})
+        return
+    }
     
-    c.Header("HX-Redirect", "/")
-    c.Status(http.StatusOK)
+    // Use window.location with a slight delay to ensure session is cleared
+    c.Header("Content-Type", "text/html")
+    c.String(http.StatusOK, `<script>setTimeout(function(){ window.location.href = "/"; }, 100);</script>`)
 }
 
 func generateOTP() (string, error) {

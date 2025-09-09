@@ -179,6 +179,16 @@ func main() {
             boardHandler.SearchContent(c)
         })
         
+        protected.GET("/api/boards/:id/columns", func(c *gin.Context) {
+            // Get columns for a specific board
+            boardHandler.GetBoardColumns(c)
+        })
+        
+        protected.GET("/api/boards/:id/members", func(c *gin.Context) {
+            // Get members for a specific board
+            boardHandler.GetBoardMembers(c)
+        })
+        
         // WebSocket endpoint for real-time updates
         protected.GET("/ws/:boardId", func(c *gin.Context) {
             // WebSocket connection for real-time collaboration
