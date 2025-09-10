@@ -6,7 +6,7 @@ import "sudo/templates/components"
 
 templ BoardWithNested(board models.Board, parentBoard *models.Board, nestedBoards []models.Board, user models.User, onlineUsers []models.User) {
     @layouts.Base(board.Title + " - SUDO Kanban") {
-        <div id="board-container" class="min-h-screen bg-gray-50" 
+        <div id="board-container" class="min-h-screen bg-theme-primary transition-colors duration-300" 
              data-board-id={ board.ID.String() }
              data-user-id={ user.ID.String() }  
              data-user-name={ user.GetDisplayName() }>
@@ -14,14 +14,14 @@ templ BoardWithNested(board models.Board, parentBoard *models.Board, nestedBoard
             @components.GlobalHeader(board.Title, &board, parentBoard, onlineUsers)
             
             <!-- Board Content -->
-            <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div class="px-4 sm:px-0">
+            <main class="container-responsive py-6">
+                <div>
                     <!-- Nested Board Navigation -->
                     @components.NestedBoardNavigation(board, parentBoard, nestedBoards)
                     
                     <!-- Kanban Board -->
                     <div class="py-6">
-                        <div class="flex gap-6 overflow-x-auto pb-6">
+                        <div class="kanban-board-container">
                             <div id="board-columns" class="flex gap-6">
                                 for _, column := range board.Columns {
                                     <div data-column-id={ column.ID.String() }>

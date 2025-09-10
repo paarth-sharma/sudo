@@ -45,7 +45,7 @@ func BoardWithNested(board models.Board, parentBoard *models.Board, nestedBoards
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"board-container\" class=\"min-h-screen bg-gray-50\" data-board-id=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"board-container\" class=\"min-h-screen bg-theme-primary transition-colors duration-300\" data-board-id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -92,7 +92,7 @@ func BoardWithNested(board models.Board, parentBoard *models.Board, nestedBoards
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Board Content --><main class=\"max-w-7xl mx-auto py-6 sm:px-6 lg:px-8\"><div class=\"px-4 sm:px-0\"><!-- Nested Board Navigation -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Board Content --><main class=\"container-responsive py-6\"><div><!-- Nested Board Navigation -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -100,7 +100,7 @@ func BoardWithNested(board models.Board, parentBoard *models.Board, nestedBoards
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Kanban Board --><div class=\"py-6\"><div class=\"flex gap-6 overflow-x-auto pb-6\"><div id=\"board-columns\" class=\"flex gap-6\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Kanban Board --><div class=\"py-6\"><div class=\"kanban-board-container\"><div id=\"board-columns\" class=\"flex gap-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

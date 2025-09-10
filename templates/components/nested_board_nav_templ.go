@@ -38,7 +38,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 			return templ_7745c5c3_Err
 		}
 		if parentBoard != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg\"><div class=\"flex items-center text-sm\"><nav class=\"flex items-center space-x-2\"><a href=\"/dashboard\" class=\"text-blue-600 hover:text-blue-800 hover:underline font-medium\">Dashboard</a> <svg class=\"w-4 h-4 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"mb-4 p-3 bg-terracotta-50 dark:bg-gunmetal-700 border border-terracotta-200 dark:border-gunmetal-500 rounded-lg transition-colors duration-300\"><div class=\"flex items-center text-sm\"><nav class=\"flex items-center space-x-2\"><a href=\"/dashboard\" class=\"text-terracotta-600 dark:text-terracotta-300 hover:text-terracotta-800 dark:hover:text-terracotta-100 hover:underline font-medium transition-colors duration-300\">Dashboard</a> <svg class=\"w-4 h-4 text-theme-muted transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -51,7 +51,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"text-blue-600 hover:text-blue-800 hover:underline font-medium\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"text-terracotta-600 dark:text-terracotta-300 hover:text-terracotta-800 dark:hover:text-terracotta-100 hover:underline font-medium transition-colors duration-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -64,14 +64,14 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</a> <svg class=\"w-4 h-4 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <span class=\"text-gray-700 font-medium\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</a> <svg class=\"w-4 h-4 text-theme-muted transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <span class=\"text-theme-primary font-medium transition-colors duration-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(board.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/nested_board_nav.templ`, Line: 31, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/nested_board_nav.templ`, Line: 31, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -82,7 +82,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Nested Boards Section --><div class=\"mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg\" id=\"nested-boards-section\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-lg font-semibold text-gray-900 flex items-center\"><svg class=\"w-5 h-5 mr-2 text-gray-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10\"></path></svg> Sub-boards (")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Nested Boards Section --><div class=\"mb-6 p-4 bg-theme-secondary border border-theme-secondary rounded-lg transition-colors duration-300\" id=\"nested-boards-section\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-lg font-semibold text-theme-primary flex items-center transition-colors duration-300\"><svg class=\"w-5 h-5 mr-2 text-theme-secondary transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10\"></path></svg> Sub-boards (")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +95,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, ")</h3><!-- Create Sub-board Button - Only shown when tasks exist --><button onclick=\"loadTasksAndShowModal()\" id=\"create-subboard-button\" class=\"hidden inline-flex items-center px-3 py-2 border border-dashed border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors\"><svg class=\"w-4 h-4 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg> Create Sub-board</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, ")</h3><!-- Create Sub-board Button - Only shown when tasks exist --><button onclick=\"loadTasksAndShowModal()\" id=\"create-subboard-button\" class=\"hidden inline-flex items-center px-3 py-2 border border-dashed border-theme-primary text-sm leading-4 font-medium rounded-md text-theme-primary bg-theme-tertiary hover:bg-theme-secondary hover:border-theme-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500 transition-all duration-300\"><svg class=\"w-4 h-4 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg> Create Sub-board</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -105,14 +105,14 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 				return templ_7745c5c3_Err
 			}
 			for _, nestedBoard := range nestedBoards {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"relative p-3 bg-white border border-gray-200 rounded-md hover:border-gray-300 hover:shadow-sm transition-all duration-200 group\" data-board-id=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"relative p-3 bg-theme-tertiary border border-theme-secondary rounded-md hover:border-theme-primary hover:shadow-sm transition-all duration-200 group\" data-board-id=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(nestedBoard.ID.String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/nested_board_nav.templ`, Line: 63, Col: 200}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/nested_board_nav.templ`, Line: 63, Col: 221}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -131,7 +131,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"flex-1 block\"><h4 class=\"font-medium text-gray-900 group-hover:text-blue-600 mb-1\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"flex-1 block\"><h4 class=\"font-medium text-theme-primary group-hover:text-terracotta-600 mb-1 transition-colors duration-300\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -149,7 +149,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 					return templ_7745c5c3_Err
 				}
 				if nestedBoard.Description != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<p class=\"text-sm text-gray-600 line-clamp-2\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<p class=\"text-sm text-theme-secondary line-clamp-2 transition-colors duration-300\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -167,7 +167,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"mt-2 flex items-center text-xs text-gray-500\"><svg class=\"w-3 h-3 mr-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z\"></path></svg> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"mt-2 flex items-center text-xs text-theme-muted transition-colors duration-300\"><svg class=\"w-3 h-3 mr-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z\"></path></svg> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -197,7 +197,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"p-1 text-gray-400 hover:text-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-all\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z\"></path></svg></button><div id=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"p-1 text-theme-muted hover:text-theme-primary rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z\"></path></svg></button><div id=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -210,7 +210,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"hidden absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-10 border\"><a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"hidden absolute right-0 mt-1 w-48 bg-theme-tertiary border border-theme-secondary rounded-md shadow-lg py-1 z-10 transition-colors duration-300\"><a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -223,7 +223,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\"><svg class=\"w-4 h-4 inline mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"></path> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z\"></path></svg> View Board</a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"block px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300\"><svg class=\"w-4 h-4 inline mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"></path> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z\"></path></svg> View Board</a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -250,7 +250,7 @@ func NestedBoardNavigation(board models.Board, parentBoard *models.Board, nested
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<!-- Empty state --> <div class=\"text-center py-8 text-gray-500\"><svg class=\"w-12 h-12 mx-auto mb-4 text-gray-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10\"></path></svg><p class=\"text-sm\">No sub-boards yet</p><p class=\"text-xs text-gray-400 mt-1\">Create one from an existing task to organize your work hierarchically</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<!-- Empty state --> <div class=\"text-center py-8 text-theme-secondary transition-colors duration-300\"><svg class=\"w-12 h-12 mx-auto mb-4 text-theme-muted transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10\"></path></svg><p class=\"text-sm\">No sub-boards yet</p><p class=\"text-xs text-theme-muted mt-1 transition-colors duration-300\">Create one from an existing task to organize your work hierarchically</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -285,7 +285,7 @@ func CreateNestedBoardModal(boardID string) templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div id=\"create-nested-board-modal\" class=\"hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50\"><div class=\"relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white\"><!-- Modal Header --><div class=\"flex items-center justify-between pb-3 border-b\"><h3 class=\"text-lg font-semibold text-gray-900\">Create Sub-board from Task</h3><button onclick=\"closeCreateNestedBoardModal()\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><!-- Modal Body --><div class=\"mt-4 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-700 mb-2\">Select Parent Task</label> <select id=\"parent-task-select\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" required><option value=\"\">Select a task to convert to sub-board...</option><!-- Options will be populated by JavaScript --></select><p class=\"mt-1 text-xs text-gray-500\">The selected task will be used to create a new sub-board with the task's title and description.</p></div><!-- Task Preview (will be populated when a task is selected) --><div id=\"task-preview\" class=\"hidden p-3 bg-gray-50 rounded-md border\"><h4 class=\"text-sm font-medium text-gray-900 mb-1\">Preview:</h4><div id=\"preview-content\" class=\"text-sm text-gray-600\"><!-- Task details will be shown here --></div></div><div class=\"flex space-x-3 pt-4 border-t\"><button type=\"button\" onclick=\"createSubBoardFromSelectedTask()\" id=\"create-suboard-btn\" disabled class=\"flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed\">Create Sub-board</button> <button type=\"button\" onclick=\"closeCreateNestedBoardModal()\" class=\"px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors focus:outline-none\">Cancel</button></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div id=\"create-nested-board-modal\" class=\"hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50\"><div class=\"relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-theme-tertiary border-theme-secondary transition-colors duration-300\"><!-- Modal Header --><div class=\"flex items-center justify-between pb-3 border-b\"><h3 class=\"text-lg font-semibold text-theme-primary transition-colors duration-300\">Create Sub-board from Task</h3><button onclick=\"closeCreateNestedBoardModal()\" class=\"text-theme-muted hover:text-theme-primary transition-colors duration-300\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><!-- Modal Body --><div class=\"mt-4 space-y-4\"><div><label class=\"block text-sm font-medium text-theme-primary mb-2 transition-colors duration-300\">Select Parent Task</label> <select id=\"parent-task-select\" class=\"form-input\" required><option value=\"\">Select a task to convert to sub-board...</option><!-- Options will be populated by JavaScript --></select><p class=\"mt-1 text-xs text-theme-muted transition-colors duration-300\">The selected task will be used to create a new sub-board with the task's title and description.</p></div><!-- Task Preview (will be populated when a task is selected) --><div id=\"task-preview\" class=\"hidden p-3 bg-theme-secondary rounded-md border border-theme-secondary transition-colors duration-300\"><h4 class=\"text-sm font-medium text-theme-primary mb-1 transition-colors duration-300\">Preview:</h4><div id=\"preview-content\" class=\"text-sm text-theme-secondary transition-colors duration-300\"><!-- Task details will be shown here --></div></div><div class=\"flex space-x-3 pt-4 border-t\"><button type=\"button\" onclick=\"createSubBoardFromSelectedTask()\" id=\"create-suboard-btn\" disabled class=\"flex-1 bg-terracotta-600 text-white py-2 px-4 rounded-md hover:bg-terracotta-700 transition-colors focus:outline-none focus:ring-2 focus:ring-terracotta-500 disabled:bg-gray-300 disabled:cursor-not-allowed\">Create Sub-board</button> <button type=\"button\" onclick=\"closeCreateNestedBoardModal()\" class=\"px-4 py-2 text-theme-secondary hover:text-theme-primary transition-colors focus:outline-none\">Cancel</button></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

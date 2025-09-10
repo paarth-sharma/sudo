@@ -42,7 +42,7 @@ func Base(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"/static/css/styles.css\" rel=\"stylesheet\"><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://unpkg.com/sortablejs@1.15.0/Sortable.min.js\"></script><script>\r\n            // Dark mode initialization\r\n            (function() {\r\n                const darkMode = localStorage.getItem('darkMode') === 'true' || \r\n                               (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);\r\n                if (darkMode) {\r\n                    document.documentElement.classList.add('dark');\r\n                }\r\n            })();\r\n        </script></head><body class=\"min-h-screen transition-colors\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"/static/css/styles.css\" rel=\"stylesheet\"><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"https://unpkg.com/sortablejs@1.15.0/Sortable.min.js\"></script><script>\r\n            // Dark mode initialization\r\n            (function() {\r\n                const darkMode = localStorage.getItem('darkMode') === 'true' || \r\n                               (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);\r\n                if (darkMode) {\r\n                    document.documentElement.classList.add('dark');\r\n                }\r\n            })();\r\n        </script></head><body class=\"min-h-screen bg-theme-primary text-theme-primary transition-all duration-300\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +50,7 @@ func Base(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<!-- Dark Mode Toggle --><button onclick=\"toggleDarkMode()\" class=\"dark-mode-toggle\" title=\"Toggle Dark Mode\"><svg class=\"block dark:hidden\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\"></path></svg> <svg class=\"hidden dark:block\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z\"></path></svg></button><script src=\"/static/js/app.js\"></script><script src=\"/static/js/realtime.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script src=\"/static/js/app.js\"></script><script src=\"/static/js/realtime.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

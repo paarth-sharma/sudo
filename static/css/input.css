@@ -2,9 +2,198 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Theme Variables */
+:root {
+  /* Light Mode Colors */
+  --color-timberwolf: #ddd1c7;
+  --color-timberwolf-50: #f8f6f4;
+  --color-timberwolf-100: #f1ece8;
+  --color-timberwolf-200: #eae3dd;
+  --color-timberwolf-300: #e3d9d1;
+  --color-timberwolf-400: #bca592;
+  --color-timberwolf-500: #ddd1c7;
+  --color-timberwolf-600: #9c7a5f;
+  --color-timberwolf-700: #685240;
+  --color-timberwolf-800: #342920;
+  --color-timberwolf-900: #1a1410;
+
+  --color-asparagus: #698f3f;
+  --color-asparagus-50: #e1ecd4;
+  --color-asparagus-100: #c3daaa;
+  --color-asparagus-200: #a4c77f;
+  --color-asparagus-300: #86b455;
+  --color-asparagus-400: #698f3f;
+  --color-asparagus-500: #537132;
+  --color-asparagus-600: #3e5525;
+  --color-asparagus-700: #293919;
+  --color-asparagus-800: #151c0c;
+  --color-asparagus-900: #0a0e06;
+
+  --color-brown-sugar: #a1674a;
+  --color-brown-sugar-50: #eee0d9;
+  --color-brown-sugar-100: #dcc1b4;
+  --color-brown-sugar-200: #cba28e;
+  --color-brown-sugar-300: #ba8368;
+  --color-brown-sugar-400: #a1674a;
+  --color-brown-sugar-500: #81523b;
+  --color-brown-sugar-600: #603e2c;
+  --color-brown-sugar-700: #40291e;
+  --color-brown-sugar-800: #20150f;
+  --color-brown-sugar-900: #100a07;
+
+  --color-jet: #34312d;
+  --color-jet-50: #d9d6d3;
+  --color-jet-100: #b2ada7;
+  --color-jet-200: #8c847a;
+  --color-jet-300: #605b53;
+  --color-jet-400: #34312d;
+  --color-jet-500: #292724;
+  --color-jet-600: #1f1d1b;
+  --color-jet-700: #151412;
+  --color-jet-800: #0a0a09;
+  --color-jet-900: #050504;
+
+  --color-eerie-black: #252627;
+  --color-eerie-black-50: #d2d4d5;
+  --color-eerie-black-100: #a6a8ab;
+  --color-eerie-black-200: #797d81;
+  --color-eerie-black-300: #4f5254;
+  --color-eerie-black-400: #252627;
+  --color-eerie-black-500: #1e1f20;
+  --color-eerie-black-600: #161718;
+  --color-eerie-black-700: #0f0f10;
+  --color-eerie-black-800: #070808;
+  --color-eerie-black-900: #040404;
+
+  /* Light mode semantic colors */
+  --bg-primary: var(--color-timberwolf);
+  --bg-secondary: var(--color-timberwolf-200);
+  --bg-tertiary: #ffffff;
+  --text-primary: var(--color-jet);
+  --text-secondary: var(--color-jet-400);
+  --text-muted: var(--color-jet-200);
+  --border-primary: var(--color-timberwolf-400);
+  --border-secondary: var(--color-timberwolf-300);
+}
+
+.dark {
+  /* Dark Mode Colors */
+  --color-yinmn-blue: #3d5a80;
+  --color-yinmn-blue-50: #d4ddea;
+  --color-yinmn-blue-100: #a8bcd5;
+  --color-yinmn-blue-200: #7d9ac0;
+  --color-yinmn-blue-300: #5279ab;
+  --color-yinmn-blue-400: #3d5a80;
+  --color-yinmn-blue-500: #314866;
+  --color-yinmn-blue-600: #25364c;
+  --color-yinmn-blue-700: #192433;
+  --color-yinmn-blue-800: #0c1219;
+  --color-yinmn-blue-900: #060a0d;
+
+  --color-powder-blue: #98c1d9;
+  --color-powder-blue-50: #eaf2f7;
+  --color-powder-blue-100: #d5e6f0;
+  --color-powder-blue-200: #c0d9e8;
+  --color-powder-blue-300: #accde0;
+  --color-powder-blue-400: #98c1d9;
+  --color-powder-blue-500: #61a0c5;
+  --color-powder-blue-600: #3b7ca1;
+  --color-powder-blue-700: #28526b;
+  --color-powder-blue-800: #142936;
+  --color-powder-blue-900: #0a141b;
+
+  --color-gunmetal: #293241;
+  --color-gunmetal-50: #cdd4e0;
+  --color-gunmetal-100: #9ca9c1;
+  --color-gunmetal-200: #6a7fa2;
+  --color-gunmetal-300: #485873;
+  --color-gunmetal-400: #293241;
+  --color-gunmetal-500: #212835;
+  --color-gunmetal-600: #191e28;
+  --color-gunmetal-700: #10141a;
+  --color-gunmetal-800: #080a0d;
+  --color-gunmetal-900: #040507;
+
+  --color-light-cyan: #e0fbfc;
+  --color-light-cyan-50: #f9fefe;
+  --color-light-cyan-100: #f2fdfe;
+  --color-light-cyan-200: #ecfcfd;
+  --color-light-cyan-300: #e5fcfc;
+  --color-light-cyan-400: #e0fbfc;
+  --color-light-cyan-500: #88f0f3;
+  --color-light-cyan-600: #32e5eb;
+  --color-light-cyan-700: #11a7ad;
+  --color-light-cyan-800: #095456;
+  --color-light-cyan-900: #04292b;
+
+  --color-burnt-sienna: #ee6c4d;
+  --color-burnt-sienna-50: #fce2dc;
+  --color-burnt-sienna-100: #f8c5b8;
+  --color-burnt-sienna-200: #f5a895;
+  --color-burnt-sienna-300: #f28b71;
+  --color-burnt-sienna-400: #ee6c4d;
+  --color-burnt-sienna-500: #e73f16;
+  --color-burnt-sienna-600: #ae3010;
+  --color-burnt-sienna-700: #74200b;
+  --color-burnt-sienna-800: #3a1005;
+  --color-burnt-sienna-900: #1d0802;
+
+  /* Dark mode semantic colors */
+  --bg-primary: var(--color-gunmetal);
+  --bg-secondary: var(--color-gunmetal-600);
+  --bg-tertiary: var(--color-gunmetal-700);
+  --text-primary: var(--color-light-cyan);
+  --text-secondary: var(--color-powder-blue-200);
+  --text-muted: var(--color-powder-blue-300);
+  --border-primary: var(--color-gunmetal-400);
+  --border-secondary: var(--color-gunmetal-500);
+}
+
+/* Base body styling with theme support */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme-aware utility classes */
+.bg-theme-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-theme-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-theme-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.text-theme-primary {
+  color: var(--text-primary);
+}
+
+.text-theme-secondary {
+  color: var(--text-secondary);
+}
+
+.text-theme-muted {
+  color: var(--text-muted);
+}
+
+.border-theme-primary {
+  border-color: var(--border-primary);
+}
+
+.border-theme-secondary {
+  border-color: var(--border-secondary);
+}
+
+/* Theme toggle is now integrated into the global header */
+
 /* Custom styles for SUDO Kanban */
 
-/* Priority badges */
+/* Priority badges - Keep consistent colors across themes */
 .priority-badge {
     @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
 }
@@ -25,13 +214,59 @@
     @apply bg-green-100 text-green-800;
 }
 
-/* Task card hover effects */
+/* Priority badges dark mode - same colors for consistency */
+.dark .priority-urgent {
+    @apply bg-red-100 text-red-800;
+}
+
+.dark .priority-high {
+    @apply bg-orange-100 text-orange-800;
+}
+
+.dark .priority-medium {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.dark .priority-low {
+    @apply bg-green-100 text-green-800;
+}
+
+/* Task card hover effects - Theme aware */
 .task-card {
-    @apply bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow;
+    @apply p-3 rounded-lg shadow-sm border cursor-move hover:shadow-md transition-all duration-300;
+    background-color: #ffffff; /* Always off-white/white */
+    border-color: var(--border-secondary);
 }
 
 .task-card:hover {
     @apply transform -translate-y-1;
+    background-color: #ffffff; /* Keep off-white on hover */
+    border-color: var(--text-primary); /* Dark outline based on theme */
+    border-width: 2px; /* Slightly thicker border on hover */
+}
+
+.dark .task-card {
+    background-color: #f8f9fa; /* Light off-white in dark mode */
+    border-color: var(--border-secondary);
+}
+
+.dark .task-card:hover {
+    background-color: #f8f9fa; /* Keep light off-white on hover */
+    border-color: var(--text-primary); /* Dark outline in dark mode */
+    border-width: 2px; /* Slightly thicker border on hover */
+}
+
+/* Task card text - Always black for visibility on white background */
+.task-card .text-theme-primary,
+.task-card .text-theme-secondary,
+.task-card .text-theme-muted {
+    color: #000000 !important; /* Black text for all task card text */
+}
+
+.dark .task-card .text-theme-primary,
+.dark .task-card .text-theme-secondary,
+.dark .task-card .text-theme-muted {
+    color: #000000 !important; /* Black text for all task card text in dark mode too */
 }
 
 /* Drag and drop states */
@@ -68,16 +303,26 @@
     margin-top: 12px;
 }
 
-/* Empty state dropzone */
+/* Empty state dropzone - Theme aware */
 .empty-state-dropzone {
     @apply mt-auto;
     padding: 8px;
+    color: var(--text-muted);
 }
 
-/* Column layout adjustments */
+.dark .empty-state-dropzone {
+    color: var(--text-muted);
+}
+
+/* Column layout adjustments - Theme aware */
 .column-content {
-    @apply flex flex-col bg-gray-100 rounded-lg p-4;
+    @apply flex flex-col rounded-lg p-4 transition-colors duration-300;
     min-height: 500px;
+    background-color: var(--bg-secondary);
+}
+
+.dark .column-content {
+    background-color: var(--bg-secondary);
 }
 
 [data-sortable="tasks"] {
@@ -136,60 +381,141 @@ body.dragging * {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Column styles */
+/* Column styles - Theme aware */
 .column {
-    @apply bg-gray-100 rounded-lg p-4 min-h-96;
+    @apply rounded-lg p-4 min-h-96 transition-colors duration-300;
+    background-color: var(--bg-secondary);
 }
 
 .column-header {
-    @apply flex items-center justify-between mb-4 pb-2 border-b border-gray-200;
+    @apply flex items-center justify-between mb-4 pb-2 border-b transition-colors duration-300;
+    border-color: var(--border-secondary);
 }
 
-/* Button styles */
+.dark .column {
+    background-color: var(--bg-secondary);
+}
+
+.dark .column-header {
+    border-color: var(--border-secondary);
+}
+
+/* Button styles - Theme aware */
 .btn-primary {
-    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors;
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300;
 }
 
 .btn-secondary {
-    @apply inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors;
+    @apply inline-flex items-center px-4 py-2 border shadow-sm text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300;
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
 }
 
 .btn-danger {
-    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors;
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300;
 }
 
-/* Form styles */
+.dark .btn-secondary {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.dark .btn-secondary:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+}
+
+/* Form styles - Always white background with black text */
 .form-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+    @apply w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300;
+    background-color: #ffffff; /* Always white background */
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
 }
 
 .form-textarea {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-colors;
+    @apply w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-300;
+    background-color: #ffffff; /* Always white background */
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
 }
 
 .form-select {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+    @apply w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300;
+    background-color: #ffffff; /* Always white background */
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
 }
 
-/* Modal styles */
+.dark .form-input,
+.dark .form-textarea,
+.dark .form-select {
+    background-color: #ffffff; /* Keep white background in dark mode */
+    border-color: var(--border-secondary);
+    color: #000000; /* Keep black text in dark mode */
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder,
+.dark .form-input::placeholder,
+.dark .form-textarea::placeholder {
+    color: #666666; /* Gray placeholder text for visibility */
+}
+
+/* Search bar specific styling */
+#persistent-search::placeholder {
+    color: var(--text-muted);
+}
+
+.dark #persistent-search::placeholder {
+    color: var(--text-muted);
+}
+
+/* Modal styles - Theme aware */
 .modal-overlay {
     @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
 }
 
 .modal-content {
-    @apply bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto;
+    @apply rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto transition-colors duration-300;
+    background-color: #ffffff; /* Always white background */
 }
 
 .modal-header {
-    @apply flex items-center justify-between p-6 border-b border-gray-200;
+    @apply flex items-center justify-between p-6 border-b transition-colors duration-300;
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
 }
 
 .modal-body {
     @apply p-6;
+    color: #000000; /* Always black text */
 }
 
 .modal-footer {
-    @apply flex justify-end space-x-3 p-6 border-t border-gray-200;
+    @apply flex justify-end space-x-3 p-6 border-t transition-colors duration-300;
+    border-color: var(--border-secondary);
+}
+
+.dark .modal-content {
+    background-color: #ffffff; /* Keep white background in dark mode */
+}
+
+.dark .modal-header,
+.dark .modal-footer {
+    border-color: var(--border-secondary);
+}
+
+.dark .modal-header,
+.dark .modal-body {
+    color: #000000; /* Always black text in dark mode */
 }
 
 /* Loading states */
@@ -201,34 +527,75 @@ body.dragging * {
     @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
 }
 
-/* Notification styles */
+/* Notification styles - Theme aware */
 .notification-success {
-    @apply bg-green-50 border border-green-200 rounded-lg p-4 mb-4;
+    @apply bg-green-50 border border-green-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #065f46;
 }
 
 .notification-error {
-    @apply bg-red-50 border border-red-200 rounded-lg p-4 mb-4;
+    @apply bg-red-50 border border-red-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #7f1d1d;
 }
 
 .notification-warning {
-    @apply bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4;
+    @apply bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #78350f;
 }
 
 .notification-info {
-    @apply bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4;
+    @apply bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #1e3a8a;
 }
 
-/* Board grid styles */
+/* Dark mode notifications */
+.dark .notification-success {
+    @apply bg-green-900 border-green-700;
+    color: #bbf7d0;
+}
+
+.dark .notification-error {
+    @apply bg-red-900 border-red-700;
+    color: #fecaca;
+}
+
+.dark .notification-warning {
+    @apply bg-yellow-900 border-yellow-700;
+    color: #fde68a;
+}
+
+.dark .notification-info {
+    @apply bg-blue-900 border-blue-700;
+    color: #bfdbfe;
+}
+
+/* Board grid styles - Theme aware */
 .board-grid {
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
 }
 
 .board-card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer;
+    @apply rounded-lg shadow-sm border p-6 hover:shadow-md transition-all duration-300 cursor-pointer;
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
 }
 
 .board-card:hover {
-    @apply border-blue-300;
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+    transform: translateY(-2px);
+}
+
+.dark .board-card {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.dark .board-card:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
 }
 
 /* Responsive kanban board */
@@ -240,9 +607,13 @@ body.dragging * {
     @apply flex-shrink-0 w-80;
 }
 
-/* User avatar */
+/* User avatar - Theme aware */
 .user-avatar {
-    @apply w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium;
+    @apply w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-300;
+}
+
+.dark .user-avatar {
+    background-color: var(--color-yinmn-blue);
 }
 
 /* Status indicators */
@@ -275,21 +646,36 @@ body.dragging * {
     @apply text-gray-500;
 }
 
-/* Empty states */
+/* Empty states - Theme aware */
 .empty-state {
-    @apply text-center py-12;
+    @apply text-center py-12 transition-colors duration-300;
 }
 
 .empty-state-icon {
-    @apply mx-auto h-12 w-12 text-gray-400 mb-4;
+    @apply mx-auto h-12 w-12 mb-4 transition-colors duration-300;
+    color: var(--text-muted);
 }
 
 .empty-state-title {
-    @apply text-lg font-medium text-gray-900 mb-2;
+    @apply text-lg font-medium mb-2 transition-colors duration-300;
+    color: var(--text-primary);
 }
 
 .empty-state-description {
-    @apply text-gray-500 mb-6;
+    @apply mb-6 transition-colors duration-300;
+    color: var(--text-secondary);
+}
+
+.dark .empty-state-icon {
+    color: var(--text-muted);
+}
+
+.dark .empty-state-title {
+    color: var(--text-primary);
+}
+
+.dark .empty-state-description {
+    color: var(--text-secondary);
 }
 
 /* Line clamp utility */
@@ -452,21 +838,196 @@ body.dragging * {
     }
 }
 
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
-    .dark-mode {
-        @apply bg-gray-900 text-white;
+/* User profile dropdown - Keep Settings and Sign Out text white */
+#user-menu .text-theme-primary {
+    color: #ffffff !important; /* Force white text for dropdown items */
+}
+
+.dark #user-menu .text-theme-primary {
+    color: #ffffff !important; /* Keep white text in dark mode */
+}
+
+/* Override all form input text colors - ultra aggressive approach */
+html.dark input,
+html.dark textarea,
+html.dark select,
+.dark input,
+.dark textarea, 
+.dark select {
+    color: #000000 !important;
+}
+
+/* Also override in light mode to be safe */
+html input,
+html textarea,
+html select,
+input,
+textarea,
+select {
+    color: #000000 !important;
+}
+
+/* Additional targeting for specific form elements that might be more specific */
+input[type="text"],
+input[type="email"],
+input[type="password"], 
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea,
+select {
+    color: #000000 !important;
+}
+
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"], 
+.dark input[type="number"],
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="datetime-local"],
+.dark textarea,
+.dark select {
+    color: #000000 !important;
+}
+
+/* Responsive design updates for theme */
+@media (max-width: 768px) {
+    .dark-mode-toggle {
+        @apply bottom-4 right-4 p-2;
     }
     
-    .dark-mode .task-card {
-        @apply bg-gray-800 border-gray-700;
+    .dark-mode-toggle svg {
+        @apply w-5 h-5;
+    }
+}
+
+/* Smooth transitions for all theme-aware elements */
+* {
+    transition-property: background-color, border-color, color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --border-primary: #000000;
+        --border-secondary: #333333;
     }
     
-    .dark-mode .column {
-        @apply bg-gray-800;
+    .dark {
+        --border-primary: #ffffff;
+        --border-secondary: #cccccc;
     }
-    
-    .dark-mode .board-card {
-        @apply bg-gray-800 border-gray-700;
+}
+
+/* Responsive Container Classes - Better Space Utilization */
+.container-responsive {
+    @apply mx-auto px-4;
+    max-width: 100%;
+}
+
+/* Responsive breakpoints with better space usage */
+@media (min-width: 640px) {
+    .container-responsive {
+        @apply px-6;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .container-responsive {
+        @apply px-8;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container-responsive {
+        @apply px-12;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container-responsive {
+        @apply px-16;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 1536px) {
+    .container-responsive {
+        @apply px-20;
+        max-width: 100%;
+    }
+}
+
+/* Kanban board responsive columns */
+.kanban-board-container {
+    @apply flex gap-4 overflow-x-auto pb-6;
+}
+
+@media (min-width: 1024px) {
+    .kanban-board-container {
+        @apply gap-6;
+    }
+}
+
+@media (min-width: 1280px) {
+    .kanban-board-container {
+        @apply gap-8;
+    }
+}
+
+/* Responsive column widths */
+.kanban-column {
+    @apply flex-shrink-0;
+    width: 280px;
+}
+
+@media (min-width: 768px) {
+    .kanban-column {
+        width: 300px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .kanban-column {
+        width: 320px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .kanban-column {
+        width: 350px;
+    }
+}
+
+/* Dashboard grid responsiveness */
+.dashboard-stats-grid {
+    @apply grid gap-4 mb-8;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        @apply gap-6;
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        @apply gap-8;
     }
 }

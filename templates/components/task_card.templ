@@ -28,11 +28,11 @@ templ TaskCard(task models.Task) {
         </div>
         
         <!-- Task title -->
-        <h4 class="font-medium text-gray-900 mb-1 line-clamp-2">{ task.Title }</h4>
+        <h4 class="font-medium text-theme-primary mb-1 line-clamp-2 transition-colors duration-300">{ task.Title }</h4>
         
         <!-- Task description -->
         if task.Description != "" {
-            <p class="text-sm text-gray-600 mb-2 line-clamp-2">{ task.Description }</p>
+            <p class="text-sm text-theme-secondary mb-2 line-clamp-2 transition-colors duration-300">{ task.Description }</p>
         }
         
         <!-- Task footer -->
@@ -40,7 +40,7 @@ templ TaskCard(task models.Task) {
             <div class="flex items-center space-x-2">
                 <!-- Assignee avatar -->
                 if task.AssignedTo != nil {
-                    <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                    <div class="w-6 h-6 bg-terracotta-500 dark:bg-yinmn-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium transition-colors duration-300">
                         { getInitials(task.AssignedTo.String()) }
                     </div>
                 }
@@ -48,7 +48,7 @@ templ TaskCard(task models.Task) {
                 <!-- Task tags/labels -->
                 if len(task.Tags) > 0 {
                     for _, tag := range task.Tags {
-                        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{ tag }</span>
+                        <span class="text-xs bg-theme-secondary text-theme-primary px-2 py-1 rounded transition-colors duration-300">{ tag }</span>
                     }
                 }
             </div>
@@ -62,14 +62,14 @@ templ TaskCard(task models.Task) {
                         </svg>
                     </button>
                 } else {
-                    <button class="text-gray-400 hover:text-gray-600" onclick={ toggleTaskCompleteScript(task.ID.String()) } title="Mark as complete">
+                    <button class="text-theme-muted hover:text-theme-secondary transition-colors duration-300" onclick={ toggleTaskCompleteScript(task.ID.String()) } title="Mark as complete">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </button>
                 }
                 
-                <button class="text-gray-400 hover:text-gray-600" onclick={ openTaskDetailsScript(task.ID.String()) }>
+                <button class="text-theme-muted hover:text-theme-secondary transition-colors duration-300" onclick={ openTaskDetailsScript(task.ID.String()) }>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                     </svg>

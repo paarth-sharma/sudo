@@ -32,33 +32,33 @@ func Column(column models.Column, boardID string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex-shrink-0 w-80\" data-column-id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"kanban-column\" data-column-id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(column.ID.String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/column.templ`, Line: 7, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/column.templ`, Line: 7, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><div class=\"column-content h-full\"><!-- Column Header --><div class=\"flex items-center justify-between mb-4\"><div class=\"flex items-center space-x-2\"><h3 class=\"font-semibold text-gray-900\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><div class=\"column-content h-full\"><!-- Column Header --><div class=\"flex items-center justify-between mb-4\"><div class=\"flex items-center space-x-2\"><h3 class=\"font-semibold text-theme-primary transition-colors duration-300\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(column.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/column.templ`, Line: 12, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/column.templ`, Line: 12, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h3><span class=\"bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h3><span class=\"bg-theme-secondary text-theme-primary px-2 py-1 rounded-full text-xs font-medium transition-colors duration-300\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -88,7 +88,7 @@ func Column(column models.Column, boardID string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors\" title=\"Add task\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg></button><!-- Column Menu --><div class=\"relative\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"p-1.5 text-theme-muted hover:text-theme-primary hover:bg-theme-secondary rounded-md transition-all duration-300\" title=\"Add task\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg></button><!-- Column Menu --><div class=\"relative\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -105,7 +105,7 @@ func Column(column models.Column, boardID string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z\"></path></svg></button><div id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"p-1.5 text-theme-muted hover:text-theme-primary hover:bg-theme-secondary rounded-md transition-all duration-300\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z\"></path></svg></button><div id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -118,7 +118,7 @@ func Column(column models.Column, boardID string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10\"><button class=\"block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\">Edit Column</button> <button class=\"block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100\">Clear All Tasks</button><hr class=\"my-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"hidden absolute right-0 mt-2 w-40 bg-theme-tertiary border border-theme-secondary rounded-md shadow-lg py-1 z-10 transition-colors duration-300\"><button class=\"block w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300\">Edit Column</button> <button class=\"block w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300\">Clear All Tasks</button><hr class=\"my-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -204,7 +204,7 @@ func Column(column models.Column, boardID string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><div><input type=\"text\" name=\"title\" placeholder=\"Task title...\" required class=\"w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\"></div><div><textarea name=\"description\" placeholder=\"Description (optional)...\" rows=\"2\" class=\"w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none\"></textarea></div><div><select name=\"priority\" class=\"w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3\"><option value=\"Low\">Low Priority</option> <option value=\"Medium\" selected>Medium Priority</option> <option value=\"High\">High Priority</option> <option value=\"Urgent\">Urgent</option></select> <input type=\"datetime-local\" name=\"deadline\" class=\"w-full px-2 py-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-full\" style=\"max-width: 100%; min-width: 0;\"></div><div class=\"flex space-x-2\"><button type=\"submit\" class=\"flex-1 bg-blue-600 text-white text-sm py-2 px-3 rounded-md hover:bg-blue-700 transition-colors\">Add Task</button> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><div><input type=\"text\" name=\"title\" placeholder=\"Task title...\" required class=\"w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\"></div><div><textarea name=\"description\" placeholder=\"Description (optional)...\" rows=\"2\" class=\"w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none\"></textarea></div><div><select name=\"priority\" class=\"w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3\"><option value=\"Low\">Low Priority</option> <option value=\"Medium\" selected>Medium Priority</option> <option value=\"High\">High Priority</option> <option value=\"Urgent\">Urgent</option></select> <input type=\"datetime-local\" name=\"deadline\" class=\"w-full px-2 py-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-full\" style=\"max-width: 100%; min-width: 0;\"></div><div class=\"flex space-x-2\"><button type=\"submit\" class=\"flex-1 bg-terracotta-600 dark:bg-yinmn-blue-600 text-white text-sm py-2 px-3 rounded-md hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-colors\">Add Task</button> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

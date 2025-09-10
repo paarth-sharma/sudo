@@ -4,13 +4,13 @@ import "sudo/internal/models"
 import "fmt"
 
 templ Column(column models.Column, boardID string) {
-    <div class="flex-shrink-0 w-80" data-column-id={column.ID.String()}>
+    <div class="kanban-column" data-column-id={column.ID.String()}>
         <div class="column-content h-full">
             <!-- Column Header -->
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-2">
-                    <h3 class="font-semibold text-gray-900">{column.Title}</h3>
-                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
+                    <h3 class="font-semibold text-theme-primary transition-colors duration-300">{column.Title}</h3>
+                    <span class="bg-theme-secondary text-theme-primary px-2 py-1 rounded-full text-xs font-medium transition-colors duration-300">
                         {fmt.Sprintf("%d", len(column.Tasks))}
                     </span>
                 </div>
@@ -19,7 +19,7 @@ templ Column(column models.Column, boardID string) {
                     <!-- Add Task Button -->
                     <button 
                         onclick={ showAddTaskFormScript(column.ID.String()) }
-                        class="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
+                        class="p-1.5 text-theme-muted hover:text-theme-primary hover:bg-theme-secondary rounded-md transition-all duration-300"
                         title="Add task"
                     >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,16 +31,16 @@ templ Column(column models.Column, boardID string) {
                     <div class="relative">
                         <button 
                             onclick={ toggleColumnMenuScript(column.ID.String()) }
-                            class="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
+                            class="p-1.5 text-theme-muted hover:text-theme-primary hover:bg-theme-secondary rounded-md transition-all duration-300"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                             </svg>
                         </button>
                         
-                        <div id={`column-menu-` + column.ID.String()} class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10">
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Column</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Clear All Tasks</button>
+                        <div id={`column-menu-` + column.ID.String()} class="hidden absolute right-0 mt-2 w-40 bg-theme-tertiary border border-theme-secondary rounded-md shadow-lg py-1 z-10 transition-colors duration-300">
+                            <button class="block w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300">Edit Column</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300">Clear All Tasks</button>
                             <hr class="my-1"/>
                             <button 
                                 onclick={ deleteColumnScript(column.ID.String()) }
@@ -106,7 +106,7 @@ templ Column(column models.Column, boardID string) {
                     <div class="flex space-x-2">
                         <button 
                             type="submit"
-                            class="flex-1 bg-blue-600 text-white text-sm py-2 px-3 rounded-md hover:bg-blue-700 transition-colors"
+                            class="flex-1 bg-terracotta-600 dark:bg-yinmn-blue-600 text-white text-sm py-2 px-3 rounded-md hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-colors"
                         >
                             Add Task
                         </button>

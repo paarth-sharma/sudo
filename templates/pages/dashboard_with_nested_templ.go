@@ -49,7 +49,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen bg-gray-50\"><!-- Global Header with Dashboard Title -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen bg-theme-primary transition-colors duration-300\"><!-- Global Header with Dashboard Title -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -57,64 +57,64 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- Dashboard Subtitle --><div class=\"bg-white border-b\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2\"><span class=\"text-sm text-gray-500\">Suck It Up and Do It</span></div></div><!-- Main Content --><main class=\"max-w-7xl mx-auto py-6 sm:px-6 lg:px-8\"><div class=\"px-4 py-6 sm:px-0\"><!-- Quick Stats --><div class=\"grid grid-cols-1 md:grid-cols-4 gap-6 mb-8\"><!-- Total Boards (Main + Nested) --><div class=\"bg-white rounded-lg shadow-sm p-6 border border-gray-200\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-blue-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2zM8 7v10M16 7v10\"></path></svg></div><div class=\"ml-4\"><p class=\"text-2xl font-semibold text-gray-900\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- Dashboard Subtitle --><div class=\"bg-theme-tertiary border-b border-theme-secondary transition-colors duration-300\"><div class=\"container-responsive py-2\"><span class=\"text-sm text-theme-secondary transition-colors duration-300\">Suck It Up and Do It</span></div></div><!-- Main Content --><main class=\"container-responsive py-6\"><div class=\"py-6\"><!-- Quick Stats --><div class=\"dashboard-stats-grid\"><!-- Total Boards (Main + Nested) --><div class=\"bg-theme-tertiary rounded-lg shadow-sm p-6 border border-theme-secondary transition-colors duration-300\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-terracotta-600 dark:text-yinmn-blue-400 transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2zM8 7v10M16 7v10\"></path></svg></div><div class=\"ml-4\"><p data-stat=\"total-boards\" class=\"text-2xl font-semibold text-theme-primary transition-colors duration-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(mainBoards)+len(nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 38, Col: 140}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 38, Col: 201}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><p class=\"text-sm text-gray-600\">Total Boards</p></div></div></div><!-- Active Tasks --><div class=\"bg-white rounded-lg shadow-sm p-6 border border-gray-200\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-green-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></div><div class=\"ml-4\"><p class=\"text-2xl font-semibold text-gray-900\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><p class=\"text-sm text-theme-secondary transition-colors duration-300\">Total Boards</p></div></div></div><!-- Active Tasks --><div class=\"bg-theme-tertiary rounded-lg shadow-sm p-6 border border-theme-secondary transition-colors duration-300\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-green-600 dark:text-green-400 transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></div><div class=\"ml-4\"><p data-stat=\"active-tasks\" class=\"text-2xl font-semibold text-theme-primary transition-colors duration-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", getTotalTasksFromBothLists(mainBoards, nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 53, Col: 157}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 53, Col: 218}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p><p class=\"text-sm text-gray-600\">Active Tasks</p></div></div></div><!-- Due Soon --><div class=\"bg-white rounded-lg shadow-sm p-6 border border-gray-200\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-yellow-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></div><div class=\"ml-4\"><p class=\"text-2xl font-semibold text-gray-900\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p><p class=\"text-sm text-theme-secondary transition-colors duration-300\">Active Tasks</p></div></div></div><!-- Due Soon --><div class=\"bg-theme-tertiary rounded-lg shadow-sm p-6 border border-theme-secondary transition-colors duration-300\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-yellow-600 dark:text-yellow-400 transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></div><div class=\"ml-4\"><p data-stat=\"due-soon\" class=\"text-2xl font-semibold text-theme-primary transition-colors duration-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", getOverdueTasksFromBothLists(mainBoards, nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 68, Col: 159}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 68, Col: 216}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p><p class=\"text-sm text-gray-600\">Due Soon</p></div></div></div><!-- Collaborators --><div class=\"bg-white rounded-lg shadow-sm p-6 border border-gray-200\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-purple-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z\"></path></svg></div><div class=\"ml-4\"><p class=\"text-2xl font-semibold text-gray-900\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p><p class=\"text-sm text-theme-secondary transition-colors duration-300\">Due Soon</p></div></div></div><!-- Collaborators --><div class=\"bg-theme-tertiary rounded-lg shadow-sm p-6 border border-theme-secondary transition-colors duration-300\"><div class=\"flex items-center\"><div class=\"flex-shrink-0\"><svg class=\"w-8 h-8 text-purple-600 dark:text-purple-400 transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z\"></path></svg></div><div class=\"ml-4\"><p data-stat=\"collaborators\" class=\"text-2xl font-semibold text-theme-primary transition-colors duration-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", getTotalCollaboratorsFromBothLists(mainBoards, nestedBoards)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 83, Col: 165}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard_with_nested.templ`, Line: 83, Col: 227}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p><p class=\"text-sm text-gray-600\">Collaborators</p></div></div></div></div><!-- Nested Boards Section -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p><p class=\"text-sm text-theme-secondary transition-colors duration-300\">Collaborators</p></div></div></div></div><!-- Nested Boards Section -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(nestedBoards) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"mb-8 p-6 bg-gray-50 border border-gray-200 rounded-lg\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-xl font-semibold text-gray-900 flex items-center\"><svg class=\"w-6 h-6 mr-2 text-gray-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10\"></path></svg> Sub-boards (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"mb-8 p-6 bg-theme-secondary border border-theme-primary rounded-lg transition-colors duration-300\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-xl font-semibold text-theme-primary flex items-center transition-colors duration-300\"><svg class=\"w-6 h-6 mr-2 text-theme-secondary transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10\"></path></svg> Sub-boards (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -277,7 +277,7 @@ func DashboardWithNested(mainBoards []models.Board, nestedBoards []models.Board)
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<!-- Main Boards Section --><div class=\"mb-8\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-semibold text-gray-900 flex items-center\"><svg class=\"w-6 h-6 mr-2 text-gray-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2zM8 7v10M16 7v10\"></path></svg> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<!-- Main Boards Section --><div class=\"mb-8\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-semibold text-theme-primary flex items-center transition-colors duration-300\"><svg class=\"w-6 h-6 mr-2 text-theme-secondary transition-colors duration-300\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2zM8 7v10M16 7v10\"></path></svg> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -565,7 +565,7 @@ func DashboardCreateBoardModal() templ.Component {
 			templ_7745c5c3_Var29 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<div id=\"create-board-modal\" class=\"hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50\"><div class=\"relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white\"><div class=\"flex items-center justify-between pb-3 border-b\"><h3 class=\"text-lg font-semibold text-gray-900\">Create New Board</h3><button onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/boards\" hx-target=\"#boards-grid\" hx-swap=\"beforeend\" hx-on::after-request=\"document.getElementById('create-board-modal').classList.add('hidden'); document.getElementById('empty-state')?.classList.add('hidden');\" class=\"mt-4 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Board Title</label> <input type=\"text\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Enter board title\"></div><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Description (Optional)</label> <textarea name=\"description\" rows=\"3\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none\" placeholder=\"Brief description of your board\"></textarea></div><div class=\"flex space-x-3 pt-4 border-t\"><button type=\"submit\" class=\"flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500\">Create Board</button> <button type=\"button\" onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors focus:outline-none\">Cancel</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<div id=\"create-board-modal\" class=\"hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50\"><div class=\"relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white\"><div class=\"flex items-center justify-between pb-3 border-b\"><h3 class=\"text-lg font-semibold text-gray-900\">Create New Board</h3><button onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-gray-600\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><form hx-post=\"/boards\" hx-target=\"#boards-grid\" hx-swap=\"beforeend\" hx-on::after-request=\"document.getElementById('create-board-modal').classList.add('hidden'); document.getElementById('empty-state')?.classList.add('hidden');\" class=\"mt-4 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Board Title</label> <input type=\"text\" name=\"title\" required class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent\" placeholder=\"Enter board title\"></div><div><label class=\"block text-sm font-medium text-gray-700 mb-1\">Description (Optional)</label> <textarea name=\"description\" rows=\"3\" class=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none\" placeholder=\"Brief description of your board\"></textarea></div><div class=\"flex space-x-3 pt-4 border-t\"><button type=\"submit\" class=\"flex-1 bg-terracotta-600 dark:bg-yinmn-blue-600 text-white py-2 px-4 rounded-md hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500\">Create Board</button> <button type=\"button\" onclick=\"document.getElementById('create-board-modal').classList.add('hidden')\" class=\"px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors focus:outline-none\">Cancel</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

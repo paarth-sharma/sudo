@@ -21,6 +21,7 @@ templ GlobalTaskModal(boards []models.Board) {
                 id="global-task-form"
                 hx-post="/tasks"
                 hx-trigger="submit"
+                hx-on::after-request="handleGlobalTaskCreation(event)"
                 class="p-6 space-y-6"
             >
                 <!-- Board Selection -->
@@ -163,7 +164,7 @@ templ GlobalTaskModal(boards []models.Board) {
                     </button>
                     <button 
                         type="submit"
-                        class="px-4 py-2 bg-blue-600 text-white border border-transparent rounded-md hover:bg-blue-700 transition-colors"
+                        class="px-4 py-2 bg-terracotta-600 dark:bg-yinmn-blue-600 text-white border border-transparent rounded-md hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-colors"
                     >
                         Create Task
                     </button>
@@ -179,10 +180,14 @@ templ GlobalTaskModal(boards []models.Board) {
             // Reset column and assignee dropdowns
             const columnSelect = document.getElementById('global-task-column');
             const assigneeSelect = document.getElementById('global-task-assignee');
-            columnSelect.disabled = true;
-            assigneeSelect.disabled = true;
-            columnSelect.innerHTML = '<option value="">Select a board first...</option>';
-            assigneeSelect.innerHTML = '<option value="">Select a board first...</option>';
+            if (columnSelect) {
+                columnSelect.disabled = true;
+                columnSelect.innerHTML = '<option value="">Select a board first...</option>';
+            }
+            if (assigneeSelect) {
+                assigneeSelect.disabled = true;
+                assigneeSelect.innerHTML = '<option value="">Select a board first...</option>';
+            }
         }
         
         function loadBoardColumns(boardId) {
@@ -233,12 +238,100 @@ templ GlobalTaskModal(boards []models.Board) {
         }
         
         // Handle form submission
-        document.getElementById('global-task-form').addEventListener('htmx:afterRequest', function(event) {
+        function handleGlobalTaskCreation(event) {
+            console.log('handleGlobalTaskCreation called', event.detail);
             if (event.detail.xhr.status === 200) {
+                console.log('Task creation successful, updating dashboard stats');
+                
+                // Trigger dashboard stats update FIRST if we're on dashboard
+                if (window.location.pathname === '/dashboard' || window.location.pathname === '/') {
+                    console.log('Updating dashboard stats...');
+                    updateDashboardStats();
+                } else {
+                    console.log('Not on dashboard, skipping stats update');
+                }
+                
+                // Update task counts dynamically instead of reloading the page
+                updateAllTaskCounts();
+                
+                // Show success notification if available
+                if (typeof showNotification === 'function') {
+                    showNotification('Task created successfully!', 'success');
+                }
+                
+                // Close modal LAST
                 closeGlobalTaskModal();
-                // Show success message or refresh page
-                window.location.reload();
+            } else {
+                console.log('Task creation failed with status:', event.detail.xhr.status);
             }
-        });
+        }
+        
+        // Function to update all task counts across the application
+        function updateAllTaskCounts() {
+            // Update column task counts if we're on a board page
+            document.querySelectorAll('[data-column-id]').forEach(column => {
+                const columnId = column.dataset.columnId;
+                if (typeof updateTaskCount === 'function') {
+                    updateTaskCount(columnId);
+                }
+                if (typeof updateEmptyState === 'function') {
+                    updateEmptyState(columnId);
+                }
+            });
+            
+            // Update sub-board button visibility
+            if (typeof checkTasksAndUpdateButton === 'function') {
+                setTimeout(checkTasksAndUpdateButton, 200);
+            }
+        }
+        
+        // Function to update dashboard statistics
+        function updateDashboardStats() {
+            console.log('updateDashboardStats called');
+            // Simple client-side increment for active tasks since we just created one
+            const activeTasksElement = document.querySelector('[data-stat="active-tasks"]');
+            console.log('Active tasks element found:', activeTasksElement);
+            if (activeTasksElement) {
+                const currentCount = parseInt(activeTasksElement.textContent) || 0;
+                console.log('Current count:', currentCount, 'New count:', currentCount + 1);
+                activeTasksElement.textContent = currentCount + 1;
+            } else {
+                console.log('Active tasks element not found!');
+            }
+        }
+        
+        // Helper function to update individual dashboard stat
+        function updateDashboardStat(type, value) {
+            // Look for the stat element based on common patterns
+            const selectors = [
+                `[data-stat="${type}"]`,
+                `#${type}`,
+                `.${type} .text-2xl`,
+                `.dashboard-stats-grid .text-2xl`
+            ];
+            
+            for (const selector of selectors) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.textContent = value;
+                    return;
+                }
+            }
+            
+            // Fallback: try to find by adjacent text content
+            const statElements = document.querySelectorAll('.text-2xl');
+            statElements.forEach(el => {
+                const parent = el.closest('.bg-theme-tertiary, .dashboard-stats-grid > div');
+                if (parent) {
+                    const text = parent.textContent.toLowerCase();
+                    if ((type === 'total-boards' && text.includes('total boards')) ||
+                        (type === 'active-tasks' && text.includes('active tasks')) ||
+                        (type === 'due-soon' && text.includes('due soon')) ||
+                        (type === 'collaborators' && text.includes('collaborators'))) {
+                        el.textContent = value;
+                    }
+                }
+            });
+        }
     </script>
 }

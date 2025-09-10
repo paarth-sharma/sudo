@@ -191,23 +191,37 @@ templ SearchModal(boards []models.Board) {
         }
         
         function handleSearchKeys(event) {
-            const results = document.querySelectorAll('.search-result');
+            // Get all navigable items (quick actions + search results)
+            const quickActions = Array.from(document.querySelectorAll('#search-results button, #search-results a'));
+            const searchResults = Array.from(document.querySelectorAll('.search-result'));
+            const allNavigableItems = [...quickActions, ...searchResults];
             
             switch (event.key) {
                 case 'ArrowDown':
                     event.preventDefault();
-                    selectedIndex = Math.min(selectedIndex + 1, results.length - 1);
-                    updateSelection(results);
+                    selectedIndex = Math.min(selectedIndex + 1, allNavigableItems.length - 1);
+                    updateNavigationSelection(allNavigableItems);
                     break;
                 case 'ArrowUp':
                     event.preventDefault();
                     selectedIndex = Math.max(selectedIndex - 1, -1);
-                    updateSelection(results);
+                    updateNavigationSelection(allNavigableItems);
                     break;
                 case 'Enter':
                     event.preventDefault();
-                    if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-                        selectResult(selectedIndex);
+                    if (selectedIndex >= 0 && selectedIndex < allNavigableItems.length) {
+                        const selectedItem = allNavigableItems[selectedIndex];
+                        if (selectedItem.tagName === 'BUTTON') {
+                            selectedItem.click();
+                        } else if (selectedItem.tagName === 'A') {
+                            selectedItem.click();
+                        } else {
+                            // It's a search result
+                            const resultIndex = searchResults.indexOf(selectedItem);
+                            if (resultIndex >= 0) {
+                                selectResult(resultIndex);
+                            }
+                        }
                     }
                     break;
                 case 'Escape':
@@ -217,10 +231,21 @@ templ SearchModal(boards []models.Board) {
             }
         }
         
-        function updateSelection(results) {
-            results.forEach((result, index) => {
-                result.classList.toggle('bg-gray-100', index === selectedIndex);
+        function updateNavigationSelection(allItems) {
+            allItems.forEach((item, index) => {
+                if (index === selectedIndex) {
+                    item.classList.add('bg-gray-100');
+                    // Scroll into view if needed
+                    item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                } else {
+                    item.classList.remove('bg-gray-100');
+                }
             });
+        }
+        
+        // Legacy function for backward compatibility
+        function updateSelection(results) {
+            updateNavigationSelection(results);
         }
         
         function selectResult(index) {
@@ -247,6 +272,7 @@ templ SearchModal(boards []models.Board) {
             document.getElementById('global-search').value = '';
             document.getElementById('dynamic-search-results').classList.add('hidden');
             document.getElementById('no-results').classList.add('hidden');
+            selectedIndex = -1; // Reset selection
         }
         
         function openCreateTaskModal() {
@@ -259,12 +285,21 @@ templ SearchModal(boards []models.Board) {
             document.getElementById('create-board-modal')?.classList.remove('hidden');
         }
         
+        // Global function to open search modal (called from header)
+        function openGlobalSearch() {
+            document.getElementById('search-modal').classList.remove('hidden');
+            document.getElementById('global-search').focus();
+            selectedIndex = -1; // Reset selection when opening
+        }
+        
+        // Make the function available globally
+        window.openGlobalSearch = openGlobalSearch;
+        
         // Global keyboard shortcut to open search
         document.addEventListener('keydown', function(event) {
             if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
                 event.preventDefault();
-                document.getElementById('search-modal').classList.remove('hidden');
-                document.getElementById('global-search').focus();
+                openGlobalSearch();
             }
         });
     </script>
