@@ -1,0 +1,43 @@
+package layouts
+
+import "time"
+import "strconv"
+
+templ Base(title string) {
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>{title}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet"/>
+        <link href="/static/css/styles.css" rel="stylesheet"/>
+        <script src="/static/js/htmx.min.js"></script>
+        <script src="/static/js/sortable.min.js"></script>
+        <!-- Onboarding Libraries -->
+        <script src="/static/js/driver.js"></script>
+        <link rel="stylesheet" href="/static/css/driver.css"/>
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+        <script>
+            // Dark mode initialization
+            (function() {
+                const darkMode = localStorage.getItem('darkMode') === 'true' || 
+                               (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (darkMode) {
+                    document.documentElement.classList.add('dark');
+                }
+            })();
+        </script>
+    </head>
+    <body class="min-h-screen bg-theme-primary text-theme-primary transition-all duration-300">
+        { children... }
+        
+
+        <script src={ "/static/js/app.js?v=" + strconv.FormatInt(time.Now().Unix(), 10) }></script>
+        <script src={ "/static/js/realtime.js?v=" + strconv.FormatInt(time.Now().Unix(), 10) }></script>
+        <script src={ "/static/js/onboarding.js?v=" + strconv.FormatInt(time.Now().Unix(), 10) }></script>
+    </body>
+    </html>
+}

@@ -1,0 +1,716 @@
+package pages
+
+import (
+    "sudo/internal/models"
+    "sudo/templates/layouts"
+    "sudo/templates/components"
+    "fmt"
+)
+
+templ Settings(user models.User, boards []models.Board, contacts []map[string]interface{}) {
+    @layouts.Base("Settings - SUDO Kanban") {
+        <div class="min-h-screen bg-theme-primary transition-colors duration-300">
+            <!-- Header -->
+            <header class="bg-theme-tertiary shadow-sm border-b border-theme-secondary transition-colors duration-300">
+                <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-14 sm:h-16">
+                        <div class="flex items-center space-x-2 sm:space-x-4">
+                            <a href="/dashboard" class="text-theme-muted hover:text-theme-primary transition-colors duration-300">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
+                            </a>
+                            <h1 class="text-lg sm:text-2xl font-bold text-theme-primary transition-colors duration-300">Settings</h1>
+                        </div>
+                        <!-- Theme Toggle Button -->
+                        <button
+                            onclick="toggleDarkMode()"
+                            class="p-1.5 sm:p-2 rounded-lg bg-theme-secondary hover:bg-theme-primary border border-theme-primary hover:border-theme-secondary text-theme-primary hover:text-theme-tertiary transition-all duration-300 group"
+                            title="Toggle Dark/Light Mode"
+                            aria-label="Toggle Dark/Light Mode">
+                            <!-- Light mode icon (moon) - shown in light mode -->
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                            </svg>
+
+                            <!-- Dark mode icon (sun) - shown in dark mode -->
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block transition-all duration-300 group-hover:scale-110 group-hover:rotate-180"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div class="px-4 py-6 sm:px-0">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Sidebar Navigation -->
+                        <div class="lg:col-span-1">
+                            <nav class="bg-theme-tertiary rounded-lg shadow-sm p-4 border border-theme-secondary transition-colors duration-300">
+                                <button
+                                    onclick="showSection('profile')"
+                                    id="nav-profile"
+                                    class="w-full text-left px-4 py-3 rounded-md mb-2 font-medium transition-colors nav-btn active"
+                                >
+                                    Profile Settings
+                                </button>
+                                <button
+                                    onclick="showSection('contacts')"
+                                    id="nav-contacts"
+                                    class="w-full text-left px-4 py-3 rounded-md font-medium transition-colors nav-btn"
+                                >
+                                    Contact Management
+                                </button>
+                                <button
+                                    onclick="showSection('danger')"
+                                    id="nav-danger"
+                                    class="w-full text-left px-4 py-3 rounded-md font-medium transition-colors nav-btn text-red-600 dark:text-red-400"
+                                >
+                                    Danger Zone
+                                </button>
+                            </nav>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div class="lg:col-span-2">
+                            <!-- Profile Settings Section -->
+                            <div id="section-profile" class="settings-section">
+                                <div class="bg-theme-tertiary rounded-lg shadow-sm p-6 border border-theme-secondary transition-colors duration-300">
+                                    <h2 class="text-xl font-semibold text-theme-primary mb-6 transition-colors duration-300">Profile Settings</h2>
+
+                                    <!-- Profile Picture -->
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-medium text-theme-primary mb-3 transition-colors duration-300">Profile Picture</label>
+                                        <div class="flex flex-col sm:flex-row items-start sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+                                            <div class="w-20 h-20 bg-terracotta-600 dark:bg-yinmn-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0 transition-colors duration-300 mx-auto sm:mx-0">
+                                                if user.AvatarURL != "" {
+                                                    <img src={user.AvatarURL} alt="Profile" class="w-20 h-20 rounded-full object-cover"/>
+                                                } else if user.Name != "" {
+                                                    {user.GetInitials()}
+                                                } else {
+                                                    {user.GetSafeEmail()[:2]}
+                                                }
+                                            </div>
+                                            <div class="flex-1 w-full space-y-4">
+                                                <!-- URL Upload Form -->
+                                                <form
+                                                    hx-post="/settings/profile"
+                                                    hx-on::after-request="if(event.detail.successful) { showSuccess('Profile picture updated'); setTimeout(() => location.reload(), 500); }"
+                                                    class="space-y-2"
+                                                >
+                                                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                                                        <input
+                                                            type="url"
+                                                            name="avatar_url"
+                                                            placeholder="Enter image URL"
+                                                            class="flex-1 px-3 py-2 bg-theme-secondary border border-theme-primary rounded-md focus:ring-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 focus:border-transparent text-theme-primary transition-colors duration-300"
+                                                        />
+                                                        <button
+                                                            type="submit"
+                                                            class="w-full sm:w-auto px-4 py-2 bg-terracotta-600 dark:bg-yinmn-blue-600 text-white rounded-md hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-colors duration-300 whitespace-nowrap"
+                                                        >
+                                                            Upload
+                                                        </button>
+                                                    </div>
+                                                    <p class="text-xs text-theme-muted transition-colors duration-300">Paste an image URL to set your profile picture</p>
+                                                </form>
+
+                                                <!-- Local File Upload -->
+                                                <div class="pt-2 border-t border-theme-secondary transition-colors duration-300">
+                                                    <input
+                                                        type="file"
+                                                        id="avatar-file"
+                                                        accept="image/*"
+                                                        class="hidden"
+                                                        onchange="handleFileUpload(event)"
+                                                    />
+                                                    <button
+                                                        onclick="document.getElementById('avatar-file').click()"
+                                                        class="w-full px-4 py-2 bg-theme-secondary border border-theme-primary text-theme-primary rounded-md hover:bg-theme-primary hover:text-theme-tertiary transition-colors duration-300 file-upload-btn"
+                                                    >
+                                                        Choose File from Device
+                                                    </button>
+                                                    <p class="text-xs text-theme-muted mt-1 transition-colors duration-300">Images will be automatically resized and compressed. For best results, use images under 1MB.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Name -->
+                                    <form
+                                        hx-post="/settings/profile"
+                                        hx-on::after-request="if(event.detail.successful) { showSuccess('Profile updated successfully'); setTimeout(() => location.reload(), 500); }"
+                                        class="space-y-4"
+                                    >
+                                        <div>
+                                            <label for="name" class="block text-sm font-medium text-theme-primary mb-2 transition-colors duration-300">
+                                                Full Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="name"
+                                                name="name"
+                                                value={user.Name}
+                                                class="w-full px-3 py-2 bg-theme-secondary border border-theme-primary rounded-md focus:ring-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 focus:border-transparent text-theme-primary transition-colors duration-300"
+                                            />
+                                        </div>
+
+                                        <!-- Email (Read-only) -->
+                                        <div>
+                                            <label for="email" class="block text-sm font-medium text-theme-primary mb-2 transition-colors duration-300">
+                                                Email Address
+                                            </label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                value={user.GetSafeEmail()}
+                                                class="w-full px-3 py-2 bg-theme-secondary border border-theme-primary rounded-md text-theme-primary transition-colors duration-300 readonly-input"
+                                                readonly
+                                            />
+                                            <p class="text-xs text-theme-muted mt-1 transition-colors duration-300">Email cannot be changed</p>
+                                        </div>
+
+                                        <div class="flex justify-end pt-4">
+                                            <button
+                                                type="submit"
+                                                class="w-full sm:w-auto px-6 py-2 bg-terracotta-600 dark:bg-yinmn-blue-600 text-white rounded-md hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-colors duration-300"
+                                            >
+                                                Save Changes
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Contact Management Section -->
+                            <div id="section-contacts" class="settings-section hidden">
+                                <div class="bg-theme-tertiary rounded-lg shadow-sm p-6 border border-theme-secondary transition-colors duration-300">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-3 sm:space-y-0">
+                                        <h2 class="text-xl font-semibold text-theme-primary transition-colors duration-300">Contact Management</h2>
+                                        <button
+                                            onclick="document.getElementById('invite-modal').classList.remove('hidden')"
+                                            class="w-full sm:w-auto px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-800 transition-colors duration-300 text-sm whitespace-nowrap"
+                                        >
+                                            Invite New Contact
+                                        </button>
+                                    </div>
+
+                                    <!-- Contacts List -->
+                                    <div class="space-y-4">
+                                        if len(contacts) == 0 {
+                                            <div class="text-center py-12">
+                                                <svg class="mx-auto h-12 w-12 text-theme-muted transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                </svg>
+                                                <h3 class="mt-2 text-sm font-medium text-theme-primary transition-colors duration-300">No contacts yet</h3>
+                                                <p class="mt-1 text-sm text-theme-muted transition-colors duration-300">Invite members to your boards to start collaborating.</p>
+                                            </div>
+                                        } else {
+                                            for _, contact := range contacts {
+                                                @ContactCard(contact, boards)
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Danger Zone Section -->
+                            <div id="section-danger" class="settings-section hidden">
+                                <div class="bg-theme-tertiary rounded-lg shadow-sm p-6 border-2 border-red-600 dark:border-red-500 transition-colors duration-300">
+                                    <div class="flex items-start space-x-3 mb-4">
+                                        <svg class="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                        </svg>
+                                        <div class="flex-1">
+                                            <h2 class="text-xl font-semibold text-red-600 dark:text-red-400 mb-2 transition-colors duration-300">Danger Zone</h2>
+                                            <p class="text-sm text-theme-muted transition-colors duration-300">Irreversible and destructive actions</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Delete Account -->
+                                    <div class="border border-red-300 dark:border-red-700 rounded-lg p-5 bg-red-50 dark:bg-red-950/30 transition-colors duration-300">
+                                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+                                            <div class="flex-1">
+                                                <h3 class="text-lg font-semibold text-red-700 dark:text-red-300 transition-colors duration-300">Delete Account</h3>
+                                                <p class="text-sm text-theme-secondary mt-1 transition-colors duration-300">
+                                                    Permanently delete your account and all associated data including:
+                                                </p>
+                                                <ul class="text-sm text-theme-muted mt-2 ml-4 list-disc space-y-1 transition-colors duration-300">
+                                                    <li>All boards you own (including nested boards)</li>
+                                                    <li>All tasks, columns, and comments</li>
+                                                    <li>Board memberships and invitations</li>
+                                                    <li>Activity logs and presence data</li>
+                                                    <li>Profile information and settings</li>
+                                                </ul>
+                                                <p class="text-sm text-red-600 dark:text-red-400 font-semibold mt-3 transition-colors duration-300">
+                                                    ⚠️ This action cannot be undone!
+                                                </p>
+                                            </div>
+                                            <button
+                                                onclick="openDeleteAccountModal()"
+                                                class="w-full sm:w-auto px-6 py-2.5 bg-red-600 dark:bg-red-700 text-white font-semibold rounded-md hover:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300 border-2 border-red-700 dark:border-red-600 whitespace-nowrap"
+                                            >
+                                                Delete Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Delete Account Confirmation Modal -->
+            <div id="delete-account-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div class="bg-theme-tertiary rounded-lg shadow-xl max-w-md w-full p-6 border-2 border-red-600 dark:border-red-500 transition-colors duration-300">
+                    <div class="flex items-start space-x-3 mb-4">
+                        <svg class="w-8 h-8 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <h3 class="text-xl font-bold text-red-600 dark:text-red-400 transition-colors duration-300">Confirm Account Deletion</h3>
+                            <p class="text-sm text-theme-secondary mt-2 transition-colors duration-300">
+                                This will permanently delete your account and all associated data. This action cannot be undone.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="delete-confirmation" class="block text-sm font-medium text-theme-primary mb-2 transition-colors duration-300">
+                            Type <span class="font-mono font-bold text-red-600 dark:text-red-400">DELETE</span> to confirm:
+                        </label>
+                        <input
+                            type="text"
+                            id="delete-confirmation"
+                            placeholder="Type DELETE to confirm"
+                            class="w-full px-3 py-2 bg-theme-secondary border-2 border-red-400 dark:border-red-600 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent text-theme-primary transition-colors duration-300"
+                        />
+                        <p id="delete-error" class="text-sm text-red-600 dark:text-red-400 mt-2 hidden transition-colors duration-300"></p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                        <button
+                            onclick="closeDeleteAccountModal()"
+                            class="flex-1 px-4 py-2 bg-theme-secondary border border-theme-primary text-theme-primary rounded-md hover:bg-theme-primary hover:text-theme-tertiary transition-colors duration-300"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onclick="confirmDeleteAccount()"
+                            id="confirm-delete-btn"
+                            class="flex-1 px-4 py-2 bg-red-600 dark:bg-red-700 text-white font-semibold rounded-md hover:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Delete My Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invite Modal -->
+            @components.InviteModal(boards, "")
+
+            <!-- Success Notification -->
+            <div id="success-notification" class="hidden fixed top-4 right-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 px-4 py-3 rounded z-50 transition-colors duration-300">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span id="success-message">Success!</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // File upload handler
+            async function handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    event.target.value = ''; // Reset file input
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file');
+                    event.target.value = ''; // Reset file input
+                    return;
+                }
+
+                // Show loading state
+                const uploadBtn = document.querySelector('.file-upload-btn');
+                if (uploadBtn) {
+                    uploadBtn.disabled = true;
+                    uploadBtn.textContent = 'Uploading...';
+                }
+
+                // Create an image element to resize if needed
+                const img = new Image();
+                img.onload = async function() {
+                    // Calculate dimensions to keep image under 400KB when base64 encoded
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDimension = 800; // Reasonable size for profile pictures
+
+                    // Resize if too large
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = (height / width) * maxDimension;
+                            width = maxDimension;
+                        } else {
+                            width = (width / height) * maxDimension;
+                            height = maxDimension;
+                        }
+                    }
+
+                    // Create canvas and resize
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to base64 with quality adjustment
+                    const base64Data = canvas.toDataURL(file.type, 0.8);
+
+                    // Check size
+                    if (base64Data.length > 500000) {
+                        alert('Image is still too large after compression. Please use a smaller image or upload to an image hosting service.');
+                        if (uploadBtn) {
+                            uploadBtn.disabled = false;
+                            uploadBtn.textContent = 'Choose File from Device';
+                        }
+                        event.target.value = '';
+                        return;
+                    }
+
+                    // Send to server
+                    try {
+                        const response = await fetch('/settings/upload-avatar', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ image_data: base64Data })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showSuccess('Profile picture uploaded successfully');
+                            setTimeout(() => location.reload(), 500);
+                        } else {
+                            alert('Failed to upload profile picture: ' + (data.error || 'Unknown error'));
+                            if (uploadBtn) {
+                                uploadBtn.disabled = false;
+                                uploadBtn.textContent = 'Choose File from Device';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Upload error:', error);
+                        alert('Failed to upload profile picture: ' + error.message);
+                        if (uploadBtn) {
+                            uploadBtn.disabled = false;
+                            uploadBtn.textContent = 'Choose File from Device';
+                        }
+                    }
+
+                    // Reset file input
+                    event.target.value = '';
+                };
+
+                // Read file as data URL and load into image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function showSection(section) {
+                // Hide all sections
+                document.querySelectorAll('.settings-section').forEach(el => el.classList.add('hidden'));
+                // Remove active class from all nav buttons
+                document.querySelectorAll('.nav-btn').forEach(el => {
+                    el.classList.remove('active', 'bg-blue-100', 'text-blue-700');
+                    el.classList.add('text-gray-700', 'hover:bg-gray-100');
+                });
+
+                // Show selected section
+                document.getElementById('section-' + section).classList.remove('hidden');
+                // Add active class to selected nav button
+                const navBtn = document.getElementById('nav-' + section);
+                navBtn.classList.add('active', 'bg-blue-100', 'text-blue-700');
+                navBtn.classList.remove('text-gray-700', 'hover:bg-gray-100');
+            }
+
+            function showSuccess(message) {
+                const notification = document.getElementById('success-notification');
+                const messageEl = document.getElementById('success-message');
+                messageEl.textContent = message;
+                notification.classList.remove('hidden');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 3000);
+            }
+
+            function toggleContactDetails(contactId) {
+                const details = document.getElementById('contact-details-' + contactId);
+                details.classList.toggle('hidden');
+            }
+
+            function removeContact(contactId, contactName) {
+                if (confirm(`Are you sure you want to remove ${contactName} from all your boards?`)) {
+                    htmx.ajax('POST', '/settings/contacts/remove', {
+                        values: {contact_id: contactId},
+                        target: '#contact-' + contactId,
+                        swap: 'outerHTML'
+                    }).then(() => {
+                        showSuccess('Contact removed successfully');
+                        setTimeout(() => location.reload(), 1000);
+                    });
+                }
+            }
+
+            function removeFromBoard(contactId, boardId, contactName, boardTitle) {
+                if (confirm(`Remove ${contactName} from "${boardTitle}"?`)) {
+                    htmx.ajax('POST', '/settings/contacts/remove-from-board', {
+                        values: {contact_id: contactId, board_id: boardId}
+                    }).then(() => {
+                        showSuccess('Contact removed from board');
+                        setTimeout(() => location.reload(), 1000);
+                    });
+                }
+            }
+
+            // Delete Account Modal Functions
+            function openDeleteAccountModal() {
+                document.getElementById('delete-account-modal').classList.remove('hidden');
+                document.getElementById('delete-confirmation').value = '';
+                document.getElementById('delete-error').classList.add('hidden');
+            }
+
+            function closeDeleteAccountModal() {
+                document.getElementById('delete-account-modal').classList.add('hidden');
+                document.getElementById('delete-confirmation').value = '';
+                document.getElementById('delete-error').classList.add('hidden');
+            }
+
+            async function confirmDeleteAccount() {
+                const confirmation = document.getElementById('delete-confirmation').value;
+                const errorEl = document.getElementById('delete-error');
+                const btnEl = document.getElementById('confirm-delete-btn');
+
+                // Validate confirmation
+                if (confirmation !== 'DELETE') {
+                    errorEl.textContent = 'Please type DELETE exactly to confirm';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+
+                // Disable button and show loading
+                btnEl.disabled = true;
+                btnEl.textContent = 'Deleting...';
+
+                try {
+                    const response = await fetch('/settings/delete-account', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ confirmation: confirmation })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Success - redirect to home page
+                        alert('Your account has been permanently deleted. You will now be redirected to the home page.');
+                        window.location.href = '/';
+                    } else {
+                        // Error
+                        errorEl.textContent = data.error || 'Failed to delete account';
+                        errorEl.classList.remove('hidden');
+                        btnEl.disabled = false;
+                        btnEl.textContent = 'Delete My Account';
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    errorEl.textContent = 'An error occurred. Please try again.';
+                    errorEl.classList.remove('hidden');
+                    btnEl.disabled = false;
+                    btnEl.textContent = 'Delete My Account';
+                }
+            }
+
+            // Initialize with profile section active
+            document.addEventListener('DOMContentLoaded', function() {
+                showSection('profile');
+
+                // Event delegation for dynamically created buttons
+                document.body.addEventListener('click', function(e) {
+                    // View Boards button
+                    if (e.target.classList.contains('view-boards-btn') || e.target.closest('.view-boards-btn')) {
+                        const btn = e.target.classList.contains('view-boards-btn') ? e.target : e.target.closest('.view-boards-btn');
+                        const contactId = btn.dataset.contactId;
+                        toggleContactDetails(contactId);
+                    }
+
+                    // Remove Contact button
+                    if (e.target.classList.contains('remove-contact-btn') || e.target.closest('.remove-contact-btn')) {
+                        const btn = e.target.classList.contains('remove-contact-btn') ? e.target : e.target.closest('.remove-contact-btn');
+                        const contactId = btn.dataset.contactId;
+                        const contactName = btn.dataset.contactName;
+                        removeContact(contactId, contactName);
+                    }
+
+                    // Remove from Board button
+                    if (e.target.classList.contains('remove-from-board-btn') || e.target.closest('.remove-from-board-btn')) {
+                        const btn = e.target.classList.contains('remove-from-board-btn') ? e.target : e.target.closest('.remove-from-board-btn');
+                        const contactId = btn.dataset.contactId;
+                        const boardId = btn.dataset.boardId;
+                        const contactName = btn.dataset.contactName;
+                        const boardTitle = btn.dataset.boardTitle;
+                        removeFromBoard(contactId, boardId, contactName, boardTitle);
+                    }
+                });
+            });
+        </script>
+
+        <style>
+            .nav-btn.active {
+                background-color: rgba(209, 87, 51, 0.1);
+                color: #D15733;
+            }
+            .dark .nav-btn.active {
+                background-color: rgba(67, 97, 238, 0.2);
+                color: #6B7FE8;
+            }
+            .nav-btn:not(.active) {
+                color: var(--text-primary);
+            }
+            .nav-btn:not(.active):hover {
+                background-color: var(--bg-secondary);
+            }
+        </style>
+    }
+}
+
+templ ContactCard(contact map[string]interface{}, boards []models.Board) {
+    <div id={"contact-" + fmt.Sprintf("%v", contact["user_id"])} class="border border-theme-secondary rounded-lg p-4 hover:border-theme-primary transition-colors duration-300 bg-theme-secondary">
+        <div class="flex flex-col sm:flex-row items-start justify-between space-y-3 sm:space-y-0">
+            <div class="flex items-center space-x-3 flex-1 w-full sm:w-auto">
+                <div class="w-12 h-12 bg-purple-600 dark:bg-purple-700 rounded-full flex items-center justify-center text-white font-bold transition-colors duration-300 flex-shrink-0">
+                    if avatarURL, ok := contact["avatar_url"].(string); ok && avatarURL != "" {
+                        <img src={avatarURL} alt="Avatar" class="w-12 h-12 rounded-full object-cover"/>
+                    } else if name, ok := contact["name"].(string); ok && name != "" {
+                        {name[:1]}
+                    } else if email, ok := contact["email"].(string); ok && email != "" {
+                        {email[:1]}
+                    } else {
+                        ?
+                    }
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-semibold text-theme-primary transition-colors duration-300 truncate">
+                        if name, ok := contact["name"].(string); ok && name != "" {
+                            {name}
+                        } else if email, ok := contact["email"].(string); ok {
+                            {email}
+                        } else {
+                            Unknown User
+                        }
+                    </h3>
+                    <p class="text-sm text-theme-secondary transition-colors duration-300 truncate">
+                        if email, ok := contact["email"].(string); ok {
+                            {email}
+                        }
+                    </p>
+                    <p class="text-xs text-theme-muted mt-1 transition-colors duration-300">
+                        Member of {fmt.Sprintf("%v", contact["boards_count"])} board(s)
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-row sm:flex-row items-center space-x-2 w-full sm:w-auto">
+                <button
+                    type="button"
+                    data-contact-id={fmt.Sprintf("%v", contact["user_id"])}
+                    class="flex-1 sm:flex-none px-3 py-1 text-sm text-terracotta-600 dark:text-yinmn-blue-500 hover:bg-terracotta-50 dark:hover:bg-yinmn-blue-900/30 rounded-md transition-colors duration-300 view-boards-btn whitespace-nowrap"
+                >
+                    View Boards
+                </button>
+                <button
+                    type="button"
+                    data-contact-id={fmt.Sprintf("%v", contact["user_id"])}
+                    data-contact-name={fmt.Sprintf("%v", contact["name"])}
+                    class="flex-1 sm:flex-none px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors duration-300 remove-contact-btn whitespace-nowrap"
+                >
+                    Remove
+                </button>
+            </div>
+        </div>
+
+        <!-- Board Details (Hidden by default) -->
+        <div id={"contact-details-" + fmt.Sprintf("%v", contact["user_id"])} class="hidden mt-4 pt-4 border-t border-theme-secondary transition-colors duration-300">
+            <h4 class="text-sm font-medium text-theme-primary mb-2 transition-colors duration-300">Boards:</h4>
+            <div class="space-y-2">
+                if boardsList, ok := contact["boards"].([]map[string]interface{}); ok {
+                    for _, board := range boardsList {
+                        <div class="flex items-center justify-between bg-theme-tertiary p-2 rounded border border-theme-secondary transition-colors duration-300">
+                            <div class="flex-1">
+                                <span class="text-sm text-theme-primary transition-colors duration-300">
+                                    if boardID, ok := board["board_id"].(string); ok {
+                                        // Find board title from boards list
+                                        {getBoardTitle(boardID, boards)}
+                                    }
+                                </span>
+                                <span class="text-xs text-theme-muted ml-2 transition-colors duration-300">
+                                    ({fmt.Sprintf("%v", board["role"])})
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                data-contact-id={fmt.Sprintf("%v", contact["user_id"])}
+                                data-board-id={fmt.Sprintf("%v", board["board_id"])}
+                                data-contact-name={fmt.Sprintf("%v", contact["name"])}
+                                data-board-title={getBoardTitle(fmt.Sprintf("%v", board["board_id"]), boards)}
+                                class="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 remove-from-board-btn transition-colors duration-300"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+func getBoardTitle(boardID string, boards []models.Board) string {
+    for _, board := range boards {
+        if board.ID.String() == boardID {
+            return board.Title
+        }
+    }
+    return "Unknown Board"
+}

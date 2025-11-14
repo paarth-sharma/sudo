@@ -1,0 +1,11 @@
+{
+  "name": "sudo",
+  "version": "1.0.0",
+  "scripts": {
+    "build-css": "tailwindcss -i ./static/css/input.css -o ./static/css/styles.css --watch",
+    "build": "templ generate && go build -o bin/server cmd/server/main.go"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.0"
+  }
+}

@@ -1,0 +1,307 @@
+package components
+
+import "sudo/internal/models"
+
+templ SearchModal(boards []models.Board) {
+    <div id="search-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center pt-16 z-50">
+        <div id="search-modal-content" class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">
+            <div class="p-4 border-b border-gray-200">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="global-search" 
+                        placeholder="Search tasks, boards, and team members..."
+                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                        onkeyup="performGlobalSearch(this.value)"
+                        onkeydown="handleSearchKeys(event)"
+                    />
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <button 
+                            onclick="document.getElementById('search-modal').classList.add('hidden')"
+                            class="text-gray-400 hover:text-gray-600"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="max-h-96 overflow-y-auto">
+                <!-- Search Results -->
+                <div id="search-results" class="p-4">
+                    <!-- Quick Actions -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <button 
+                                onclick="openCreateTaskModal()"
+                                class="w-full flex items-center px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md"
+                            >
+                                <svg class="w-5 h-5 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Create new task
+                            </button>
+                            <button
+                                id="search-create-board-btn"
+                                onclick="openCreateBoardModal()"
+                                class="w-full flex items-center px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md"
+                            >
+                                <svg class="w-5 h-5 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                                Create new board
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Boards -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">Recent Boards</h3>
+                        <div class="space-y-2">
+                            for _, board := range boards[:min(5, len(boards))] {
+                                <a 
+                                    href={"/boards/" + board.ID.String()}
+                                    class="flex items-center px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                                    onclick="closeSearch()"
+                                >
+                                    <div class="w-5 h-5 mr-3 bg-blue-500 rounded flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-medium truncate">{board.Title}</div>
+                                        if board.Description != "" {
+                                            <div class="text-sm text-gray-500 truncate">{board.Description}</div>
+                                        }
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Search Results Container -->
+                    <div id="dynamic-search-results" class="hidden">
+                        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">Search Results</h3>
+                        <div id="search-results-content" class="space-y-2">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- No Results -->
+                    <div id="no-results" class="hidden text-center py-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No results found</h3>
+                        <p class="mt-1 text-sm text-gray-500">Try searching with different keywords</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="border-t border-gray-200 px-4 py-3">
+                <div class="flex items-center justify-between text-xs text-gray-500">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <kbd class="inline-flex items-center px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">↑</kbd>
+                            <kbd class="inline-flex items-center px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs ml-1">↓</kbd>
+                            <span class="ml-2">to navigate</span>
+                        </div>
+                        <div class="flex items-center">
+                            <kbd class="inline-flex items-center px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Enter</kbd>
+                            <span class="ml-2">to select</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <kbd class="inline-flex items-center px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Esc</kbd>
+                        <span class="ml-2">to close</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let searchResults = [];
+        let selectedIndex = -1;
+        
+        function performGlobalSearch(query) {
+            const resultsContainer = document.getElementById('search-results-content');
+            const dynamicResults = document.getElementById('dynamic-search-results');
+            const noResults = document.getElementById('no-results');
+            
+            if (query.length < 2) {
+                dynamicResults.classList.add('hidden');
+                noResults.classList.add('hidden');
+                return;
+            }
+            
+            // Simulate API search call
+            fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                searchResults = data.results || [];
+                selectedIndex = -1;
+                
+                if (searchResults.length === 0) {
+                    dynamicResults.classList.add('hidden');
+                    noResults.classList.remove('hidden');
+                    return;
+                }
+                
+                noResults.classList.add('hidden');
+                dynamicResults.classList.remove('hidden');
+                
+                resultsContainer.innerHTML = searchResults.map((result, index) => {
+                    const icon = getResultIcon(result.type);
+                    return `
+                        <div class="search-result flex items-center px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer" 
+                             data-index="${index}" 
+                             onclick="selectResult(${index})">
+                            ${icon}
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium truncate">${result.title}</div>
+                                <div class="text-sm text-gray-500 truncate">${result.description || result.board_title || ''}</div>
+                            </div>
+                            <div class="text-xs text-gray-400 ml-2">${result.type}</div>
+                        </div>
+                    `;
+                }).join('');
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                dynamicResults.classList.add('hidden');
+                noResults.classList.remove('hidden');
+            });
+        }
+        
+        function getResultIcon(type) {
+            const icons = {
+                task: '<svg class="w-5 h-5 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+                board: '<svg class="w-5 h-5 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>',
+                user: '<svg class="w-5 h-5 mr-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>'
+            };
+            return icons[type] || icons.task;
+        }
+        
+        function handleSearchKeys(event) {
+            // Get all navigable items (quick actions + search results)
+            const quickActions = Array.from(document.querySelectorAll('#search-results button, #search-results a'));
+            const searchResults = Array.from(document.querySelectorAll('.search-result'));
+            const allNavigableItems = [...quickActions, ...searchResults];
+            
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    selectedIndex = Math.min(selectedIndex + 1, allNavigableItems.length - 1);
+                    updateNavigationSelection(allNavigableItems);
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    selectedIndex = Math.max(selectedIndex - 1, -1);
+                    updateNavigationSelection(allNavigableItems);
+                    break;
+                case 'Enter':
+                    event.preventDefault();
+                    if (selectedIndex >= 0 && selectedIndex < allNavigableItems.length) {
+                        const selectedItem = allNavigableItems[selectedIndex];
+                        if (selectedItem.tagName === 'BUTTON') {
+                            selectedItem.click();
+                        } else if (selectedItem.tagName === 'A') {
+                            selectedItem.click();
+                        } else {
+                            // It's a search result
+                            const resultIndex = searchResults.indexOf(selectedItem);
+                            if (resultIndex >= 0) {
+                                selectResult(resultIndex);
+                            }
+                        }
+                    }
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    closeSearch();
+                    break;
+            }
+        }
+        
+        function updateNavigationSelection(allItems) {
+            allItems.forEach((item, index) => {
+                if (index === selectedIndex) {
+                    item.classList.add('bg-gray-100');
+                    // Scroll into view if needed
+                    item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                } else {
+                    item.classList.remove('bg-gray-100');
+                }
+            });
+        }
+        
+        // Legacy function for backward compatibility
+        function updateSelection(results) {
+            updateNavigationSelection(results);
+        }
+        
+        function selectResult(index) {
+            const result = searchResults[index];
+            if (!result) return;
+            
+            switch (result.type) {
+                case 'task':
+                    window.location.href = `/boards/${result.board_id}#task-${result.id}`;
+                    break;
+                case 'board':
+                    window.location.href = `/boards/${result.id}`;
+                    break;
+                case 'user':
+                    // Handle user profile or mention
+                    break;
+            }
+            
+            closeSearch();
+        }
+        
+        function closeSearch() {
+            document.getElementById('search-modal').classList.add('hidden');
+            document.getElementById('global-search').value = '';
+            document.getElementById('dynamic-search-results').classList.add('hidden');
+            document.getElementById('no-results').classList.add('hidden');
+            selectedIndex = -1; // Reset selection
+        }
+        
+        function openCreateTaskModal() {
+            closeSearch();
+            document.getElementById('global-task-modal')?.classList.remove('hidden');
+        }
+        
+        function openCreateBoardModal() {
+            closeSearch();
+            document.getElementById('create-board-modal')?.classList.remove('hidden');
+        }
+        
+        // Global function to open search modal (called from header)
+        function openGlobalSearch() {
+            document.getElementById('search-modal').classList.remove('hidden');
+            document.getElementById('global-search').focus();
+            selectedIndex = -1; // Reset selection when opening
+        }
+        
+        // Make the function available globally
+        window.openGlobalSearch = openGlobalSearch;
+        
+        // Global keyboard shortcut to open search
+        document.addEventListener('keydown', function(event) {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+                event.preventDefault();
+                openGlobalSearch();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,425 @@
+package components
+
+import "sudo/internal/models"
+
+templ GlobalTaskModal(boards []models.Board) {
+    <div id="global-task-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Create New Task</h3>
+                <button 
+                    onclick="closeGlobalTaskModal()"
+                    class="text-gray-400 hover:text-gray-600"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form
+                id="global-task-form"
+                hx-post="/tasks"
+                hx-trigger="submit"
+                hx-on::after-request="handleGlobalTaskCreation(event)"
+                hx-on::before-request="handleGlobalTaskSubmit(event)"
+                hx-on::response-error="handleGlobalTaskError(event)"
+                class="p-6 space-y-6"
+            >
+                <!-- Board Selection -->
+                <div>
+                    <label for="global-task-board" class="block text-sm font-medium text-gray-700 mb-2">
+                        Board *
+                    </label>
+                    <select 
+                        id="global-task-board" 
+                        name="board_id" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onchange="loadBoardColumns(this.value)"
+                    >
+                        <option value="">Select a board...</option>
+                        for _, board := range boards {
+                            <option value={board.ID.String()}>{board.Title}</option>
+                        }
+                    </select>
+                </div>
+                
+                <!-- Task Title -->
+                <div>
+                    <label for="global-task-title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Task Title *
+                    </label>
+                    <input 
+                        type="text" 
+                        id="global-task-title" 
+                        name="title" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        placeholder="Enter task title..."
+                    />
+                </div>
+                
+                <!-- Task Description -->
+                <div>
+                    <label for="global-task-description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    <textarea 
+                        id="global-task-description" 
+                        name="description" 
+                        rows="4" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        placeholder="Describe the task in detail..."
+                    ></textarea>
+                </div>
+                
+                <!-- Column and Priority Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Column Selection -->
+                    <div>
+                        <label for="global-task-column" class="block text-sm font-medium text-gray-700 mb-2">
+                            Column *
+                        </label>
+                        <select 
+                            id="global-task-column" 
+                            name="column_id" 
+                            required 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            disabled
+                        >
+                            <option value="">Select a board first...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Priority -->
+                    <div>
+                        <label for="global-task-priority" class="block text-sm font-medium text-gray-700 mb-2">
+                            Priority *
+                        </label>
+                        <select
+                            id="global-task-priority"
+                            name="priority"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="">Select priority...</option>
+                            <option value="Low">Low Priority</option>
+                            <option value="Medium">Medium Priority</option>
+                            <option value="High">High Priority</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Assignees and Deadline Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Multiple Assignees -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Assign to (multiple) *
+                        </label>
+                        <div id="global-task-assignees-container" class="border border-gray-300 rounded-md p-2 max-h-40 overflow-y-auto bg-gray-50">
+                            <p class="text-sm text-gray-500 p-2">Select a board first...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Deadline -->
+                    <div>
+                        <label for="global-task-deadline" class="block text-sm font-medium text-gray-700 mb-2">
+                            Deadline *
+                        </label>
+                        <input
+                            type="datetime-local"
+                            id="global-task-deadline"
+                            name="deadline"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                    </div>
+                </div>
+                
+                <!-- Tags -->
+                <div>
+                    <label for="global-task-tags" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tags (comma-separated)
+                    </label>
+                    <input
+                        type="text"
+                        id="global-task-tags"
+                        name="tags"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="frontend, bug, urgent... (optional)"
+                    />
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button 
+                        type="button" 
+                        onclick="closeGlobalTaskModal()"
+                        class="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        id="global-task-submit-btn"
+                        type="submit"
+                        class="px-4 py-2 bg-terracotta-600 dark:bg-yinmn-blue-600 text-white border border-transparent rounded-md hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Create Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function closeGlobalTaskModal() {
+            document.getElementById('global-task-modal').classList.add('hidden');
+            document.getElementById('global-task-form').reset();
+            // Reset column dropdown and assignees container
+            const columnSelect = document.getElementById('global-task-column');
+            const assigneesContainer = document.getElementById('global-task-assignees-container');
+            if (columnSelect) {
+                columnSelect.disabled = true;
+                columnSelect.innerHTML = '<option value="">Select a board first...</option>';
+            }
+            if (assigneesContainer) {
+                assigneesContainer.innerHTML = '<p class="text-sm text-gray-500 p-2">Select a board first...</p>';
+                assigneesContainer.classList.add('bg-gray-50');
+                assigneesContainer.classList.remove('bg-white');
+            }
+            // Reset submit button state
+            resetGlobalTaskSubmitButton();
+        }
+
+        function handleGlobalTaskSubmit(event) {
+            // Validate all required fields (tags is optional)
+            const board = document.getElementById('global-task-board').value;
+            const title = document.getElementById('global-task-title').value.trim();
+            const column = document.getElementById('global-task-column').value;
+            const priority = document.getElementById('global-task-priority').value;
+            const deadline = document.getElementById('global-task-deadline').value;
+
+            // Check if at least one assignee is selected
+            const assigneeCheckboxes = document.querySelectorAll('.global-assignee-checkbox:checked');
+            const hasAssignee = assigneeCheckboxes.length > 0;
+
+            const missingFields = [];
+            if (!board) missingFields.push('Board');
+            if (!title) missingFields.push('Task Title');
+            if (!column) missingFields.push('Column');
+            if (!priority) missingFields.push('Priority');
+            if (!hasAssignee) missingFields.push('At least one Assignee');
+            if (!deadline) missingFields.push('Deadline');
+
+            if (missingFields.length > 0) {
+                event.preventDefault();
+                event.detail.shouldSubmit = false;
+
+                // Show error notification
+                if (typeof showNotification === 'function') {
+                    showNotification(`Please fill in the following required fields: ${missingFields.join(', ')}`, 'error');
+                } else {
+                    // Fallback to alert if showNotification is not available
+                    alert(`Please fill in the following required fields:\n\n${missingFields.map(f => '• ' + f).join('\n')}`);
+                }
+                return;
+            }
+
+            // Disable submit button during submission
+            const submitBtn = document.getElementById('global-task-submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating...';
+            }
+        }
+
+        function handleGlobalTaskError(event) {
+            console.log('Task creation error:', event.detail);
+            resetGlobalTaskSubmitButton();
+
+            // Show error notification if available
+            if (typeof showNotification === 'function') {
+                showNotification('Failed to create task. Please check all required fields.', 'error');
+            }
+        }
+
+        function resetGlobalTaskSubmitButton() {
+            const submitBtn = document.getElementById('global-task-submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Task';
+            }
+        }
+        
+        function loadBoardColumns(boardId) {
+            const columnSelect = document.getElementById('global-task-column');
+            const assigneesContainer = document.getElementById('global-task-assignees-container');
+
+            if (!boardId) {
+                columnSelect.disabled = true;
+                columnSelect.innerHTML = '<option value="">Select a board first...</option>';
+                assigneesContainer.innerHTML = '<p class="text-sm text-gray-500 p-2">Select a board first...</p>';
+                return;
+            }
+
+            // Fetch columns for the selected board
+            fetch(`/api/boards/${boardId}/columns`, {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                columnSelect.innerHTML = '<option value="">Select a column...</option>';
+                data.columns?.forEach(column => {
+                    columnSelect.innerHTML += `<option value="${column.id}">${column.title}</option>`;
+                });
+                columnSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error loading columns:', error);
+                columnSelect.innerHTML = '<option value="">Error loading columns</option>';
+            });
+
+            // Fetch board members for assignee checkboxes
+            fetch(`/api/boards/${boardId}/members`, {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.members && data.members.length > 0) {
+                    assigneesContainer.innerHTML = '';
+                    assigneesContainer.classList.remove('bg-gray-50');
+                    assigneesContainer.classList.add('bg-white');
+                    data.members.forEach(member => {
+                        const label = document.createElement('label');
+                        label.className = 'flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer';
+                        label.innerHTML = `
+                            <input
+                                type="checkbox"
+                                name="assignee_ids[]"
+                                value="${member.user_id}"
+                                class="global-assignee-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"
+                            />
+                            <span class="text-sm text-gray-700">${member.user_name}</span>
+                        `;
+                        assigneesContainer.appendChild(label);
+                    });
+                } else {
+                    assigneesContainer.innerHTML = '<p class="text-sm text-gray-500 p-2">No members available</p>';
+                    assigneesContainer.classList.add('bg-gray-50');
+                    assigneesContainer.classList.remove('bg-white');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading board members:', error);
+                assigneesContainer.innerHTML = '<p class="text-sm text-red-500 p-2">Error loading members</p>';
+            });
+        }
+        
+        // Handle form submission
+        function handleGlobalTaskCreation(event) {
+            console.log('handleGlobalTaskCreation called', event.detail);
+            if (event.detail.xhr.status === 200) {
+                console.log('Task creation successful, updating dashboard stats');
+
+                // Trigger dashboard stats update FIRST if we're on dashboard
+                if (window.location.pathname === '/dashboard' || window.location.pathname === '/') {
+                    console.log('Updating dashboard stats...');
+                    updateDashboardStats();
+                } else {
+                    console.log('Not on dashboard, skipping stats update');
+                }
+
+                // Update task counts dynamically instead of reloading the page
+                updateAllTaskCounts();
+
+                // Show success notification if available
+                if (typeof showNotification === 'function') {
+                    showNotification('Task created successfully!', 'success');
+                }
+
+                // Close modal LAST
+                closeGlobalTaskModal();
+            } else {
+                console.log('Task creation failed with status:', event.detail.xhr.status);
+                // Reset button state on failure
+                resetGlobalTaskSubmitButton();
+
+                // Show error notification if available
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to create task. Please check all required fields.', 'error');
+                }
+            }
+        }
+        
+        // Function to update all task counts across the application
+        function updateAllTaskCounts() {
+            // Update column task counts if we're on a board page
+            document.querySelectorAll('[data-column-id]').forEach(column => {
+                const columnId = column.dataset.columnId;
+                if (typeof updateTaskCount === 'function') {
+                    updateTaskCount(columnId);
+                }
+                if (typeof updateEmptyState === 'function') {
+                    updateEmptyState(columnId);
+                }
+            });
+            
+            // Update sub-board button visibility
+            if (typeof checkTasksAndUpdateButton === 'function') {
+                setTimeout(checkTasksAndUpdateButton, 200);
+            }
+        }
+        
+        // Function to update dashboard statistics
+        function updateDashboardStats() {
+            console.log('updateDashboardStats called');
+            // Simple client-side increment for active tasks since we just created one
+            const activeTasksElement = document.querySelector('[data-stat="active-tasks"]');
+            console.log('Active tasks element found:', activeTasksElement);
+            if (activeTasksElement) {
+                const currentCount = parseInt(activeTasksElement.textContent) || 0;
+                console.log('Current count:', currentCount, 'New count:', currentCount + 1);
+                activeTasksElement.textContent = currentCount + 1;
+            } else {
+                console.log('Active tasks element not found!');
+            }
+        }
+        
+        // Helper function to update individual dashboard stat
+        function updateDashboardStat(type, value) {
+            // Look for the stat element based on common patterns
+            const selectors = [
+                `[data-stat="${type}"]`,
+                `#${type}`,
+                `.${type} .text-2xl`,
+                `.dashboard-stats-grid .text-2xl`
+            ];
+            
+            for (const selector of selectors) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.textContent = value;
+                    return;
+                }
+            }
+            
+            // Fallback: try to find by adjacent text content
+            const statElements = document.querySelectorAll('.text-2xl');
+            statElements.forEach(el => {
+                const parent = el.closest('.bg-theme-tertiary, .dashboard-stats-grid > div');
+                if (parent) {
+                    const text = parent.textContent.toLowerCase();
+                    if ((type === 'total-boards' && text.includes('total boards')) ||
+                        (type === 'active-tasks' && text.includes('active tasks')) ||
+                        (type === 'due-soon' && text.includes('due soon')) ||
+                        (type === 'collaborators' && text.includes('collaborators'))) {
+                        el.textContent = value;
+                    }
+                }
+            });
+        }
+    </script>
+}

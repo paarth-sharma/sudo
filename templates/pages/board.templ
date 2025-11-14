@@ -1,0 +1,138 @@
+package pages
+
+import "sudo/internal/models"
+import "sudo/templates/layouts"
+import "sudo/templates/components"
+
+templ Board(board models.Board, allUserBoards []models.Board) {
+    @layouts.Base(board.Title + " - SUDO Kanban") {
+        <div class="min-h-screen bg-gray-50">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <div class="flex items-center space-x-4">
+                            <a href="/dashboard" class="text-gray-500 hover:text-gray-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
+                            </a>
+                            <div>
+                                <h1 class="text-xl font-semibold text-gray-900">{board.Title}</h1>
+                                if board.Description != "" {
+                                    <p class="text-sm text-gray-600">{board.Description}</p>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <!-- Add Column Button -->
+                            <button 
+                                onclick="document.getElementById('add-column-modal').classList.remove('hidden')"
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add Column
+                            </button>
+                            
+                            <!-- Invite Members Button -->
+                            <button 
+                                onclick="document.getElementById('invite-modal').classList.remove('hidden')"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" stroke="none" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
+                                    <path d="M4 18c0-2.66 5.33-4 8-4 1.5 0 3.5.3 5.5 1v3H4v-0z"/>
+                                    <circle cx="19" cy="14" r="3.5" fill="#3B82F6"/>
+                                    <path d="M19 10v8M15 14h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                Invite
+                            </button>
+                            
+                            <!-- Board Menu -->
+                            <div class="relative">
+                                <button 
+                                    onclick="toggleBoardMenu()"
+                                    class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                    </svg>
+                                </button>
+                                
+                                <div id="board-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Board</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Board Settings</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Export Board</a>
+                                    <hr class="my-1"/>
+                                    <button 
+                                        hx-post="/auth/logout"
+                                        hx-confirm="Are you sure you want to log out?"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Board Content -->
+            <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div class="px-4 py-6 sm:px-0">
+                    <div class="flex gap-6 overflow-x-auto pb-6">
+                        <div id="board-columns" class="flex gap-6">
+                            for _, column := range board.Columns {
+                                @components.Column(column, board.ID.String(), board.Members)
+                            }
+                        </div>
+                        
+                        <!-- Add Column Placeholder - Always on the right -->
+                        <div class="flex-shrink-0 w-80">
+                            <button 
+                                onclick="document.getElementById('add-column-modal').classList.remove('hidden')"
+                                class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <div class="text-center">
+                                    <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium">Add Column</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Modals -->
+            @components.AddColumnModal(board.ID.String())
+            @components.InviteModal(allUserBoards, board.ID.String())
+            @components.TaskModal()
+
+            <!-- Onboarding Components -->
+            @components.WelcomeModal()
+            @components.CompletionModal()
+        </div>
+        
+        <script>
+            function toggleBoardMenu() {
+                const menu = document.getElementById('board-menu');
+                menu.classList.toggle('hidden');
+            }
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const menu = document.getElementById('board-menu');
+                const button = event.target.closest('button');
+                if (!button || button.onclick !== toggleBoardMenu) {
+                    menu.classList.add('hidden');
+                }
+            });
+        </script>
+    }
+}

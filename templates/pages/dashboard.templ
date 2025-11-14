@@ -1,0 +1,397 @@
+package pages
+
+import (
+    "fmt"
+    "time"
+    "sudo/internal/models"
+    "sudo/templates/layouts"
+    "sudo/templates/components"
+)
+
+templ Dashboard(boards []models.Board) {
+    @layouts.Base("Dashboard - SUDO Kanban") {
+        <div class="min-h-screen bg-gray-50">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <div class="flex items-center">
+                            <h1 class="text-2xl font-bold text-gray-900">SUDO</h1>
+                            <span class="ml-3 text-sm text-gray-500">Suck It Up and Do It</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <!-- Search -->
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    placeholder="Search boards..." 
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    onkeyup="filterBoards(this.value)"
+                                />
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <!-- Invite Member Button -->
+                            <button
+                                onclick="document.getElementById('invite-modal').classList.remove('hidden')"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Invite Members
+                            </button>
+
+                            <!-- Create Board Button -->
+                            <button
+                                id="create-board-btn"
+                                onclick="document.getElementById('create-board-modal').classList.remove('hidden')"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Create Board
+                            </button>
+                            
+                            <!-- User Menu -->
+                            <div class="relative">
+                                <button 
+                                    onclick="toggleUserMenu()"
+                                    class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                >
+                                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                                
+                                <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                    <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.stopPropagation();">Settings</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.stopPropagation();">Notifications</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.stopPropagation();">Help & Support</a>
+                                    <hr class="my-1"/>
+                                    <button
+                                        hx-post="/auth/logout"
+                                        hx-confirm="Are you sure you want to log out?"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                        onclick="event.stopPropagation();"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 overflow-visible">
+                <div class="px-4 py-6 sm:px-0 overflow-visible">
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-2xl font-semibold text-gray-900">{fmt.Sprintf("%d", len(boards))}</p>
+                                    <p class="text-sm text-gray-600">Total Boards</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-2xl font-semibold text-gray-900">{fmt.Sprintf("%d", getTotalTasks(boards))}</p>
+                                    <p class="text-sm text-gray-600">Active Tasks</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-2xl font-semibold text-gray-900">{fmt.Sprintf("%d", getOverdueTasks(boards))}</p>
+                                    <p class="text-sm text-gray-600">Due Soon</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-2xl font-semibold text-gray-900">{fmt.Sprintf("%d", getTotalColumns(boards))}</p>
+                                    <p class="text-sm text-gray-600">Collaborators</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Boards Grid -->
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-medium text-gray-900">Your Boards</h2>
+                            <div class="flex items-center space-x-2">
+                                <button 
+                                    onclick="toggleView('grid')"
+                                    id="grid-view-btn"
+                                    class="p-2 text-gray-400 hover:text-gray-600 view-btn active"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                    </svg>
+                                </button>
+                                <button 
+                                    onclick="toggleView('list')"
+                                    id="list-view-btn"
+                                    class="p-2 text-gray-400 hover:text-gray-600 view-btn"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="boards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-visible">
+                            if len(boards) == 0 {
+                                <div class="col-span-full">
+                                    @EmptyState()
+                                </div>
+                            } else {
+                                for _, board := range boards {
+                                    @BoardCard(board)
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Create Board Modal -->
+            @CreateBoardModal()
+
+            <!-- Invite Modal -->
+            @components.InviteModal(boards, "")
+
+            <!-- Onboarding Modals -->
+            @components.WelcomeModal()
+            @components.CompletionModal()
+        </div>
+        
+        <script>
+            function toggleUserMenu() {
+                const menu = document.getElementById('user-menu');
+                menu.classList.toggle('hidden');
+            }
+            
+            function toggleView(view) {
+                const container = document.getElementById('boards-container');
+                const gridBtn = document.getElementById('grid-view-btn');
+                const listBtn = document.getElementById('list-view-btn');
+                
+                if (view === 'grid') {
+                    container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-visible';
+                    gridBtn.classList.add('active', 'text-blue-600');
+                    gridBtn.classList.remove('text-gray-400');
+                    listBtn.classList.remove('active', 'text-blue-600');
+                    listBtn.classList.add('text-gray-400');
+                } else {
+                    container.className = 'space-y-4 overflow-visible';
+                    listBtn.classList.add('active', 'text-blue-600');
+                    listBtn.classList.remove('text-gray-400');
+                    gridBtn.classList.remove('active', 'text-blue-600');
+                    gridBtn.classList.add('text-gray-400');
+                }
+            }
+            
+            function filterBoards(query) {
+                const boards = document.querySelectorAll('#boards-container > div');
+                const searchTerm = query.toLowerCase();
+                
+                boards.forEach(board => {
+                    const title = board.querySelector('h3').textContent.toLowerCase();
+                    const description = board.querySelector('p') ? board.querySelector('p').textContent.toLowerCase() : '';
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        board.style.display = 'block';
+                    } else {
+                        board.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Close menus when clicking outside
+            document.addEventListener('click', function(event) {
+                const userMenu = document.getElementById('user-menu');
+                const userButton = event.target.closest('[onclick="toggleUserMenu()"]');
+                const clickedInsideMenu = event.target.closest('#user-menu');
+
+                // Only close if clicking outside both the button and the menu
+                if (!userButton && !clickedInsideMenu) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+        </script>
+    }
+}
+
+templ EmptyState() {
+    <div id="empty-state-container" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-theme-muted transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-theme-primary transition-colors duration-300">No boards</h3>
+        <p class="mt-1 text-sm text-theme-secondary transition-colors duration-300">Get started by creating your first board.</p>
+        <div class="mt-6">
+            <button
+                onclick="document.getElementById('create-board-modal').classList.remove('hidden')"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 transition-all duration-300"
+            >
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Create Board
+            </button>
+        </div>
+    </div>
+}
+
+templ CreateBoardModal() {
+    <div id="create-board-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Create New Board</h3>
+                <button 
+                    onclick="document.getElementById('create-board-modal').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form 
+                hx-post="/boards" 
+                hx-target="#boards-container" 
+                hx-swap="afterbegin"
+                hx-on::after-request="document.getElementById('create-board-modal').classList.add('hidden'); this.reset()"
+                hx-trigger="submit"
+                class="p-6 space-y-4"
+            >
+                <div>
+                    <label for="board-title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Board Title
+                    </label>
+                    <input
+                        id="board-title-input"
+                        type="text" 
+                        id="board-title" 
+                        name="title" 
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="My Awesome Project"
+                    />
+                </div>
+                
+                <div>
+                    <label for="board-description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description (Optional)
+                    </label>
+                    <textarea 
+                        id="board-description" 
+                        name="description" 
+                        rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Describe what this board is for..."
+                    ></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button 
+                        type="button"
+                        onclick="document.getElementById('create-board-modal').classList.add('hidden')"
+                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                        Create Board
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+func getTotalTasks(boards []models.Board) int {
+    total := 0
+    for _, board := range boards {
+        for _, column := range board.Columns {
+            for _, task := range column.Tasks {
+                if !task.Completed {
+                    total++
+                }
+            }
+        }
+    }
+    return total
+}
+
+func getOverdueTasks(boards []models.Board) int {
+    dueSoon := 0
+    now := time.Now()
+    sevenDaysFromNow := now.AddDate(0, 0, 7)
+    for _, board := range boards {
+        for _, column := range board.Columns {
+            for _, task := range column.Tasks {
+                if task.Deadline != nil && !task.Completed {
+                    // Include tasks that are due within the next 7 days (including overdue)
+                    if task.Deadline.Before(sevenDaysFromNow) || task.Deadline.Equal(sevenDaysFromNow) {
+                        dueSoon++
+                    }
+                }
+            }
+        }
+    }
+    return dueSoon
+}
+
+func getTotalColumns(boards []models.Board) int {
+    total := 0
+    for _, board := range boards {
+        total += len(board.Columns)
+    }
+    return total
+}

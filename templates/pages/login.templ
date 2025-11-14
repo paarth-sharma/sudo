@@ -1,0 +1,76 @@
+package pages
+
+import "sudo/templates/layouts"
+
+templ Login() {
+    @layouts.Base("Login - Kanban Board") {
+        <!-- Theme-aware login background with gradient -->
+        <div class="min-h-screen flex items-center justify-center transition-all duration-500 bg-gradient-to-br from-terracotta-400 via-timberwolf-300 to-brown-sugar-400 dark:from-gunmetal-800 dark:via-gunmetal-600 dark:to-yinmn-blue-700">
+            <!-- Login card with theme support -->
+            <div class="max-w-md w-full bg-theme-tertiary rounded-xl shadow-2xl p-8 border border-theme-secondary transition-all duration-300">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-theme-primary mb-2 transition-colors duration-300">SUDO - Suck It Up and Do it</h1>
+                    <p class="text-theme-secondary transition-colors duration-300">Sign in with your email</p>
+                </div>
+                
+                <form hx-post="/auth/send-otp" hx-target="#auth-container" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-theme-primary mb-2 transition-colors duration-300">
+                            Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required
+                            class="form-input"
+                            placeholder="Enter your email"
+                        />
+                    </div>
+                    
+                    <button 
+                        type="submit"
+                        class="w-full bg-terracotta-500 dark:bg-yinmn-blue-500 text-white py-3 px-4 rounded-lg hover:bg-terracotta-600 dark:hover:bg-yinmn-blue-600 focus:ring-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 focus:ring-offset-2 transition-all duration-300 font-medium"
+                    >
+                        Send Login Code
+                    </button>
+                </form>
+                
+                <div id="auth-container" class="mt-6"></div>
+                
+                <!-- Theme Toggle -->
+                <div class="text-center mt-6">
+                    <button
+                        onclick="toggleDarkMode()"
+                        class="p-2 rounded-lg bg-theme-secondary hover:bg-theme-primary border border-theme-primary hover:border-theme-secondary text-theme-primary hover:text-theme-tertiary transition-all duration-300 group"
+                        title="Toggle Dark/Light Mode"
+                        aria-label="Toggle Dark/Light Mode">
+                        <!-- Light mode icon (moon) - shown in light mode -->
+                        <svg class="w-5 h-5 block dark:hidden transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+
+                        <!-- Dark mode icon (sun) - shown in dark mode -->
+                        <svg class="w-5 h-5 hidden dark:block transition-all duration-300 group-hover:scale-110 group-hover:rotate-180"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+}

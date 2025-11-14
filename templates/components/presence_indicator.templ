@@ -1,0 +1,191 @@
+package components
+
+import "sudo/internal/models"
+import "fmt"
+
+// PresenceIndicatorsWithStatus shows users with online/offline status (green/gray dots)
+templ PresenceIndicatorsWithStatus(userPresences []models.UserPresenceStatus) {
+    <div id="presence-indicators" class="relative flex items-center space-x-2 group">
+        <span class="text-sm text-theme-muted transition-colors duration-300">
+            { fmt.Sprintf("%d online", countOnlineUsers(userPresences)) }
+        </span>
+        <div class="flex -space-x-1">
+            for i, userPresence := range userPresences {
+                if i < 5 {
+                    <div
+                        class="relative inline-block"
+                        title={ getUserStatusTitle(userPresence) }
+                    >
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium border-2 border-theme-tertiary transition-colors duration-300 overflow-hidden bg-terracotta-600 dark:bg-yinmn-blue-600">
+                            if userPresence.User.AvatarURL != "" {
+                                <img src={userPresence.User.AvatarURL} alt={userPresence.User.GetDisplayName()} class="w-full h-full object-cover"/>
+                            } else {
+                                { userPresence.User.GetInitials() }
+                            }
+                        </div>
+                        <!-- Status indicator dot - green for online, gray for offline -->
+                        if userPresence.Status == "online" {
+                            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-theme-tertiary rounded-full transition-colors duration-300"></div>
+                        } else {
+                            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-gray-400 border-2 border-theme-tertiary rounded-full transition-colors duration-300"></div>
+                        }
+                    </div>
+                } else if i == 5 {
+                    <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs font-medium border-2 border-theme-tertiary transition-colors duration-300">
+                        +{ fmt.Sprintf("%d", len(userPresences) - 5) }
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Hover List showing all users with their status -->
+        if len(userPresences) > 0 {
+            <div class="absolute top-full right-0 mt-2 w-64 bg-theme-tertiary border border-theme-secondary rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div class="p-3">
+                    <div class="text-xs font-semibold text-theme-muted mb-2 uppercase tracking-wide">Board Users</div>
+                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                        for _, userPresence := range userPresences {
+                            <div class="flex items-center space-x-3 p-2 rounded-md hover:bg-theme-secondary transition-colors duration-300">
+                                <div class="relative flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium overflow-hidden bg-terracotta-600 dark:bg-yinmn-blue-600 transition-colors duration-300">
+                                        if userPresence.User.AvatarURL != "" {
+                                            <img src={userPresence.User.AvatarURL} alt={userPresence.User.GetDisplayName()} class="w-full h-full object-cover"/>
+                                        } else {
+                                            { userPresence.User.GetInitials() }
+                                        }
+                                    </div>
+                                    <!-- Status indicator - green for online, gray for offline -->
+                                    if userPresence.Status == "online" {
+                                        <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-theme-tertiary rounded-full transition-colors duration-300"></div>
+                                    } else {
+                                        <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-gray-400 border-2 border-theme-tertiary rounded-full transition-colors duration-300"></div>
+                                    }
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center space-x-2">
+                                        <p class="text-sm font-medium text-theme-primary truncate transition-colors duration-300">{ userPresence.User.GetDisplayName() }</p>
+                                        if userPresence.Status == "offline" {
+                                            <span class="text-xs text-gray-500">(offline)</span>
+                                        }
+                                    </div>
+                                    <p class="text-xs text-theme-muted truncate transition-colors duration-300">{ userPresence.User.Email }</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+// Helper function to count only online users
+func countOnlineUsers(userPresences []models.UserPresenceStatus) int {
+    count := 0
+    for _, up := range userPresences {
+        if up.Status == "online" {
+            count++
+        }
+    }
+    return count
+}
+
+// Helper function to get status title for tooltip
+func getUserStatusTitle(userPresence models.UserPresenceStatus) string {
+    if userPresence.Status == "online" {
+        return userPresence.User.GetDisplayName() + " (online)"
+    }
+    return userPresence.User.GetDisplayName() + " (offline)"
+}
+
+// Legacy component for backward compatibility
+templ PresenceIndicators(onlineUsers []models.User) {
+    <div id="presence-indicators" class="relative flex items-center space-x-2 group">
+        <span class="text-sm text-theme-muted transition-colors duration-300">
+            { fmt.Sprintf("%d online", len(onlineUsers)) }
+        </span>
+        <div class="flex -space-x-1">
+            for i, user := range onlineUsers {
+                if i < 5 {
+                    <div
+                        class="relative inline-block"
+                        title={ user.GetDisplayName() }
+                    >
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium border-2 border-theme-tertiary transition-colors duration-300 overflow-hidden bg-terracotta-600 dark:bg-yinmn-blue-600">
+                            if user.AvatarURL != "" {
+                                <img src={user.AvatarURL} alt={user.GetDisplayName()} class="w-full h-full object-cover"/>
+                            } else {
+                                { user.GetInitials() }
+                            }
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-theme-tertiary rounded-full transition-colors duration-300"></div>
+                    </div>
+                } else if i == 5 {
+                    <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs font-medium border-2 border-theme-tertiary transition-colors duration-300">
+                        +{ fmt.Sprintf("%d", len(onlineUsers) - 5) }
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Hover List showing all online users -->
+        if len(onlineUsers) > 0 {
+            <div class="absolute top-full right-0 mt-2 w-64 bg-theme-tertiary border border-theme-secondary rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div class="p-3">
+                    <div class="text-xs font-semibold text-theme-muted mb-2 uppercase tracking-wide">Online Users</div>
+                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                        for _, user := range onlineUsers {
+                            <div class="flex items-center space-x-3 p-2 rounded-md hover:bg-theme-secondary transition-colors duration-300">
+                                <div class="relative flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium overflow-hidden bg-terracotta-600 dark:bg-yinmn-blue-600 transition-colors duration-300">
+                                        if user.AvatarURL != "" {
+                                            <img src={user.AvatarURL} alt={user.GetDisplayName()} class="w-full h-full object-cover"/>
+                                        } else {
+                                            { user.GetInitials() }
+                                        }
+                                    </div>
+                                    <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-theme-tertiary rounded-full transition-colors duration-300"></div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-theme-primary truncate transition-colors duration-300">{ user.GetDisplayName() }</p>
+                                    <p class="text-xs text-theme-muted truncate transition-colors duration-300">{ user.Email }</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+css cursorPosition(x, y int) {
+	left: { fmt.Sprintf("%dpx", x) };
+	top: { fmt.Sprintf("%dpx", y) };
+}
+
+templ LiveCursor(userID, userName string, x, y int) {
+    <div
+        id={ fmt.Sprintf("cursor-%s", userID) }
+        class={ cursorPosition(x, y), "fixed pointer-events-none z-50 transition-all duration-100 ease-out" }
+    >
+        <svg width="24" height="24" viewBox="0 0 24 24" class="drop-shadow-lg">
+            <path d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.7841 12.3673H5.65376Z" 
+                  fill="#3B82F6" stroke="white" stroke-width="1"/>
+        </svg>
+        <div class="ml-6 -mt-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap">
+            { userName }
+        </div>
+    </div>
+}
+
+templ TypingIndicator(userName string) {
+    <div class="flex items-center space-x-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+        <div class="flex space-x-1">
+            <div class="w-1 h-1 bg-blue-600 rounded-full animate-bounce"></div>
+            <div class="w-1 h-1 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-1 h-1 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+        </div>
+        <span>{ userName } is typing...</span>
+    </div>
+}

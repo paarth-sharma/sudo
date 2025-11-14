@@ -1,0 +1,52 @@
+# Prevent secrets and sensitive files from being copied into Docker image
+.env
+.env.*
+*.env
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Build artifacts (will be built inside container)
+bin/
+tmp/
+
+# Node modules (will be installed in container)
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+*_test.go
+test/
+tests/
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+
+# Docker files
+docker-compose*.yml
+Dockerfile*
+!Dockerfile
+
+# Render config
+render.yaml

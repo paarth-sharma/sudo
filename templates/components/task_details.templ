@@ -1,0 +1,325 @@
+// templates/components/task_details_modal.templ
+package components
+
+import (
+    "time"
+    "sudo/internal/models"
+    "github.com/google/uuid"
+)
+
+templ TaskDetailsModal(task models.Task, members []models.BoardMember) {
+    @handleAssigneeChangeScript()
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" id="task-modal">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-900">Task Details</h3>
+                <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="py-4">
+                <!-- Task Title -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                    <input 
+                        type="text" 
+                        value={ task.Title }
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        id="task-title">
+                </div>
+                
+                <!-- Task Description -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea 
+                        rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        id="task-description">{ task.Description }</textarea>
+                </div>
+                
+                <!-- Priority and Deadline Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Priority -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                        <select 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            id="task-priority">
+                            <option value="Low" selected?={ task.Priority == "Low" }>Low</option>
+                            <option value="Medium" selected?={ task.Priority == "Medium" }>Medium</option>
+                            <option value="High" selected?={ task.Priority == "High" }>High</option>
+                            <option value="Urgent" selected?={ task.Priority == "Urgent" }>Urgent</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Deadline -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Deadline</label>
+                        <input 
+                            type="datetime-local"
+                            value={ formatDeadlineForInput(task.Deadline) }
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            id="task-deadline">
+                    </div>
+                </div>
+                
+                <!-- Multiple Assignees -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Assignees</label>
+                    <div class="border border-gray-300 rounded-md p-3 max-h-60 overflow-y-auto bg-white">
+                        if len(members) == 0 {
+                            <p class="text-sm text-gray-500">No members available</p>
+                        } else {
+                            for _, member := range members {
+                                if member.User != nil {
+                                    <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                                        <label class="flex items-center flex-1 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                class="task-assignee-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"
+                                                data-task-id={ task.ID.String() }
+                                                data-user-id={ member.User.ID.String() }
+                                                data-user-name={ member.User.GetDisplayName() }
+                                                checked?={isAssignedTo(task, member.User.ID)}
+                                                onchange="handleAssigneeChange(this)"
+                                            />
+                                            <span class="text-sm text-gray-700">{ member.User.GetDisplayName() }</span>
+                                        </label>
+                                        <!-- Individual completion status -->
+                                        if isAssignedTo(task, member.User.ID) {
+                                            <div class="flex items-center space-x-2" id={ "completion-" + member.User.ID.String() }>
+                                                <input
+                                                    type="checkbox"
+                                                    class="task-assignee-complete-checkbox rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                                    data-task-id={ task.ID.String() }
+                                                    data-user-id={ member.User.ID.String() }
+                                                    checked?={isCompletedBy(task, member.User.ID)}
+                                                    title="Mark complete for this assignee"
+                                                    onchange="handleAssigneeCompletionChange(this)"
+                                                />
+                                                <span class="text-xs text-gray-500">Done</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+                
+                <!-- Status -->
+                <div class="mb-6">
+                    <label class="flex items-center">
+                        <input 
+                            type="checkbox"
+                            checked?={ task.Completed }
+                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            id="task-completed">
+                        <span class="ml-2 text-sm text-gray-700">Mark as completed</span>
+                    </label>
+                </div>
+                
+                <!-- Task Info -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">Created:</span>
+                            <span class="text-gray-900">{ task.CreatedAt.Format("Jan 2, 2006") }</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Updated:</span>
+                            <span class="text-gray-900">{ task.UpdatedAt.Format("Jan 2, 2006") }</span>
+                        </div>
+                        if task.CompletedAt != nil {
+                            <div class="col-span-2">
+                                <span class="text-gray-500">Completed:</span>
+                                <span class="text-green-600">{ task.CompletedAt.Format("Jan 2, 2006 at 3:04 PM") }</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="flex items-center justify-between pt-4 border-t">
+                <div class="flex space-x-2">
+                    <button 
+                        data-task-id={ task.ID.String() }
+                        data-action="convert-to-subboard"
+                        class="task-action-btn inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        Convert to Sub-board
+                    </button>
+                    
+                    <button 
+                        onclick="copyTaskLink()"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copy Link
+                    </button>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button 
+                        onclick="closeTaskModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        data-task-id={ task.ID.String() }
+                        data-action="save-changes"
+                        class="task-action-btn px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Save Changes
+                    </button>
+                    <button
+                        type="button"
+                        onclick={ deleteTaskScript(task.ID.String()) }
+                        data-task-id={ task.ID.String() }
+                        data-action="delete"
+                        class="task-action-btn px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+// Helper function for formatting deadline for datetime-local input
+func formatDeadlineForInput(deadline *time.Time) string {
+    if deadline == nil {
+        return ""
+    }
+    return deadline.Format("2006-01-02T15:04")
+}
+
+// Helper function to check if a user is assigned to the task
+func isAssignedTo(task models.Task, userID uuid.UUID) bool {
+    // Check in new Assignees array
+    for _, assignee := range task.Assignees {
+        if assignee.UserID == userID {
+            return true
+        }
+    }
+    // Fallback to old AssignedTo field for backward compatibility
+    if task.AssignedTo != nil && *task.AssignedTo == userID {
+        return true
+    }
+    return false
+}
+
+// Helper function to check if a user has completed their assignment
+func isCompletedBy(task models.Task, userID uuid.UUID) bool {
+    for _, assignee := range task.Assignees {
+        if assignee.UserID == userID {
+            return assignee.Completed
+        }
+    }
+    return false
+}
+
+script deleteTaskScript(taskID string) {
+    deleteTask(taskID);
+}
+
+script handleAssigneeChangeScript() {
+    window.handleAssigneeChange = function(checkbox) {
+        const taskId = checkbox.dataset.taskId;
+        const userId = checkbox.dataset.userId;
+        const isChecked = checkbox.checked;
+
+        if (isChecked) {
+            // Add assignee
+            fetch(`/api/tasks/${taskId}/assignees`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `user_id=${userId}`,
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Assignee added successfully');
+                    // Reload the modal to show completion checkbox
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    checkbox.checked = false;
+                    alert('Failed to add assignee');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding assignee:', error);
+                checkbox.checked = false;
+                alert('Failed to add assignee');
+            });
+        } else {
+            // Remove assignee
+            fetch(`/api/tasks/${taskId}/assignees/${userId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Assignee removed successfully');
+                    // Reload the modal to hide completion checkbox
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    checkbox.checked = true;
+                    alert('Failed to remove assignee');
+                }
+            })
+            .catch(error => {
+                console.error('Error removing assignee:', error);
+                checkbox.checked = true;
+                alert('Failed to remove assignee');
+            });
+        }
+    };
+
+    window.handleAssigneeCompletionChange = function(checkbox) {
+        const taskId = checkbox.dataset.taskId;
+        const userId = checkbox.dataset.userId;
+        const completed = checkbox.checked;
+
+        fetch(`/api/tasks/${taskId}/assignee-completion`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `completed=${completed}`,
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Completion status updated successfully');
+                // Show success feedback
+                if (typeof showNotification === 'function') {
+                    showNotification(completed ? 'Marked as complete' : 'Marked as incomplete', 'success');
+                }
+            } else {
+                checkbox.checked = !completed;
+                alert('Failed to update completion status');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating completion:', error);
+            checkbox.checked = !completed;
+            alert('Failed to update completion status');
+        });
+    };
+}
+

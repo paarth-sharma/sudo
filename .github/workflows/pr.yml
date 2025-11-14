@@ -1,0 +1,111 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          go mod download
+          go install github.com/a-h/templ/cmd/templ@v0.3.943
+          npm ci
+
+      - name: Check code formatting
+        run: |
+          go fmt ./...
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Code is not formatted. Please run 'go fmt ./...'"
+            exit 1
+          fi
+
+      - name: Generate Templ files
+        run: templ generate
+
+      - name: Build TailwindCSS
+        run: npx tailwindcss -i ./static/css/input.css -o ./static/css/styles.css --minify
+
+      - name: Run tests with coverage
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Check test coverage
+        run: |
+          go tool cover -func=coverage.out | tail -1
+          COVERAGE=$(go tool cover -func=coverage.out | tail -1 | awk '{print $3}' | sed 's/%//')
+          echo "Test coverage: $COVERAGE%"
+
+      - name: Build application
+        run: go build -v -o bin/sudo-kanban cmd/server/main.go
+
+      - name: Check for vulnerabilities
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            let coverageInfo = '';
+
+            try {
+              if (fs.existsSync('coverage.out')) {
+                const coverage = fs.readFileSync('coverage.out', 'utf8');
+                coverageInfo = '\n\nCoverage report generated.';
+              }
+            } catch (error) {
+              console.log('No coverage file found');
+            }
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `Build and tests completed successfully.${coverageInfo}\n\nCheck the Actions tab for detailed results.`
+            })
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'

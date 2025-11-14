@@ -1,0 +1,1654 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Font Configuration */
+* {
+  font-family: 'JetBrainsMono Nerd Font Mono', 'JetBrains Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
+}
+
+/* Custom Theme Variables */
+:root {
+  /* Column Height Configuration */
+  --column-base-min-height: 174px; /* One task card + drop zone + padding (94px + 64px + 16px) */
+  
+  /* Light Mode Colors */
+  --color-timberwolf: #ddd1c7;
+  --color-timberwolf-50: #f8f6f4;
+  --color-timberwolf-100: #f1ece8;
+  --color-timberwolf-200: #eae3dd;
+  --color-timberwolf-300: #e3d9d1;
+  --color-timberwolf-400: #bca592;
+  --color-timberwolf-500: #ddd1c7;
+  --color-timberwolf-600: #9c7a5f;
+  --color-timberwolf-700: #685240;
+  --color-timberwolf-800: #342920;
+  --color-timberwolf-900: #1a1410;
+
+  --color-asparagus: #698f3f;
+  --color-asparagus-50: #e1ecd4;
+  --color-asparagus-100: #c3daaa;
+  --color-asparagus-200: #a4c77f;
+  --color-asparagus-300: #86b455;
+  --color-asparagus-400: #698f3f;
+  --color-asparagus-500: #537132;
+  --color-asparagus-600: #3e5525;
+  --color-asparagus-700: #293919;
+  --color-asparagus-800: #151c0c;
+  --color-asparagus-900: #0a0e06;
+
+  --color-brown-sugar: #a1674a;
+  --color-brown-sugar-50: #eee0d9;
+  --color-brown-sugar-100: #dcc1b4;
+  --color-brown-sugar-200: #cba28e;
+  --color-brown-sugar-300: #ba8368;
+  --color-brown-sugar-400: #a1674a;
+  --color-brown-sugar-500: #81523b;
+  --color-brown-sugar-600: #603e2c;
+  --color-brown-sugar-700: #40291e;
+  --color-brown-sugar-800: #20150f;
+  --color-brown-sugar-900: #100a07;
+
+  --color-jet: #34312d;
+  --color-jet-50: #d9d6d3;
+  --color-jet-100: #b2ada7;
+  --color-jet-200: #8c847a;
+  --color-jet-300: #605b53;
+  --color-jet-400: #34312d;
+  --color-jet-500: #292724;
+  --color-jet-600: #1f1d1b;
+  --color-jet-700: #151412;
+  --color-jet-800: #0a0a09;
+  --color-jet-900: #050504;
+
+  --color-eerie-black: #252627;
+  --color-eerie-black-50: #d2d4d5;
+  --color-eerie-black-100: #a6a8ab;
+  --color-eerie-black-200: #797d81;
+  --color-eerie-black-300: #4f5254;
+  --color-eerie-black-400: #252627;
+  --color-eerie-black-500: #1e1f20;
+  --color-eerie-black-600: #161718;
+  --color-eerie-black-700: #0f0f10;
+  --color-eerie-black-800: #070808;
+  --color-eerie-black-900: #040404;
+
+  /* Light mode semantic colors */
+  --bg-primary: var(--color-timberwolf);
+  --bg-secondary: var(--color-timberwolf-200);
+  --bg-tertiary: #ffffff;
+  --text-primary: var(--color-jet);
+  --text-secondary: var(--color-jet-400);
+  --text-muted: var(--color-jet-200);
+  --border-primary: var(--color-timberwolf-400);
+  --border-secondary: var(--color-timberwolf-300);
+}
+
+.dark {
+  /* Dark Mode Colors */
+  --color-yinmn-blue: #3d5a80;
+  --color-yinmn-blue-50: #d4ddea;
+  --color-yinmn-blue-100: #a8bcd5;
+  --color-yinmn-blue-200: #7d9ac0;
+  --color-yinmn-blue-300: #5279ab;
+  --color-yinmn-blue-400: #3d5a80;
+  --color-yinmn-blue-500: #314866;
+  --color-yinmn-blue-600: #25364c;
+  --color-yinmn-blue-700: #192433;
+  --color-yinmn-blue-800: #0c1219;
+  --color-yinmn-blue-900: #060a0d;
+
+  --color-powder-blue: #98c1d9;
+  --color-powder-blue-50: #eaf2f7;
+  --color-powder-blue-100: #d5e6f0;
+  --color-powder-blue-200: #c0d9e8;
+  --color-powder-blue-300: #accde0;
+  --color-powder-blue-400: #98c1d9;
+  --color-powder-blue-500: #61a0c5;
+  --color-powder-blue-600: #3b7ca1;
+  --color-powder-blue-700: #28526b;
+  --color-powder-blue-800: #142936;
+  --color-powder-blue-900: #0a141b;
+
+  --color-gunmetal: #293241;
+  --color-gunmetal-50: #cdd4e0;
+  --color-gunmetal-100: #9ca9c1;
+  --color-gunmetal-200: #6a7fa2;
+  --color-gunmetal-300: #485873;
+  --color-gunmetal-400: #293241;
+  --color-gunmetal-500: #212835;
+  --color-gunmetal-600: #191e28;
+  --color-gunmetal-700: #10141a;
+  --color-gunmetal-800: #080a0d;
+  --color-gunmetal-900: #040507;
+
+  --color-light-cyan: #e0fbfc;
+  --color-light-cyan-50: #f9fefe;
+  --color-light-cyan-100: #f2fdfe;
+  --color-light-cyan-200: #ecfcfd;
+  --color-light-cyan-300: #e5fcfc;
+  --color-light-cyan-400: #e0fbfc;
+  --color-light-cyan-500: #88f0f3;
+  --color-light-cyan-600: #32e5eb;
+  --color-light-cyan-700: #11a7ad;
+  --color-light-cyan-800: #095456;
+  --color-light-cyan-900: #04292b;
+
+  --color-burnt-sienna: #ee6c4d;
+  --color-burnt-sienna-50: #fce2dc;
+  --color-burnt-sienna-100: #f8c5b8;
+  --color-burnt-sienna-200: #f5a895;
+  --color-burnt-sienna-300: #f28b71;
+  --color-burnt-sienna-400: #ee6c4d;
+  --color-burnt-sienna-500: #e73f16;
+  --color-burnt-sienna-600: #ae3010;
+  --color-burnt-sienna-700: #74200b;
+  --color-burnt-sienna-800: #3a1005;
+  --color-burnt-sienna-900: #1d0802;
+
+  /* Dark mode semantic colors */
+  --bg-primary: var(--color-gunmetal);
+  --bg-secondary: var(--color-gunmetal-600);
+  --bg-tertiary: var(--color-gunmetal-700);
+  --text-primary: var(--color-light-cyan);
+  --text-secondary: var(--color-powder-blue-200);
+  --text-muted: var(--color-powder-blue-300);
+  --border-primary: var(--color-gunmetal-400);
+  --border-secondary: var(--color-gunmetal-500);
+}
+
+/* Base body styling with theme support */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme-aware utility classes */
+.bg-theme-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-theme-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-theme-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.text-theme-primary {
+  color: var(--text-primary);
+}
+
+.text-theme-secondary {
+  color: var(--text-secondary);
+}
+
+.text-theme-muted {
+  color: var(--text-muted);
+}
+
+.border-theme-primary {
+  border-color: var(--border-primary);
+}
+
+.border-theme-secondary {
+  border-color: var(--border-secondary);
+}
+
+/* Theme toggle is now integrated into the global header */
+
+/* Custom styles for SUDO Kanban */
+
+/* Priority badges - Keep consistent colors across themes */
+.priority-badge {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.priority-urgent {
+    @apply bg-red-100 text-red-800;
+}
+
+.priority-high {
+    @apply bg-orange-100 text-orange-800;
+}
+
+.priority-medium {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.priority-low {
+    @apply bg-green-100 text-green-800;
+}
+
+/* Priority badges dark mode - same colors for consistency */
+.dark .priority-urgent {
+    @apply bg-red-100 text-red-800;
+}
+
+.dark .priority-high {
+    @apply bg-orange-100 text-orange-800;
+}
+
+.dark .priority-medium {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.dark .priority-low {
+    @apply bg-green-100 text-green-800;
+}
+
+/* Task card hover effects - Theme aware */
+.task-card {
+    @apply p-3 rounded-lg shadow-sm border cursor-move hover:shadow-md transition-all duration-300;
+    background-color: #ffffff; /* Always off-white/white */
+    border-color: var(--border-secondary);
+}
+
+.task-card:hover {
+    @apply transform -translate-y-1;
+    background-color: #ffffff; /* Keep off-white on hover */
+    border-color: var(--text-primary); /* Dark outline based on theme */
+    border-width: 2px; /* Slightly thicker border on hover */
+}
+
+.dark .task-card {
+    background-color: #f8f9fa; /* Light off-white in dark mode */
+    border-color: var(--border-secondary);
+}
+
+.dark .task-card:hover {
+    background-color: #f8f9fa; /* Keep light off-white on hover */
+    border-color: var(--text-primary); /* Dark outline in dark mode */
+    border-width: 2px; /* Slightly thicker border on hover */
+}
+
+/* Task card text - Always black for visibility on white background */
+.task-card .text-theme-primary,
+.task-card .text-theme-secondary,
+.task-card .text-theme-muted {
+    color: #000000 !important; /* Black text for all task card text */
+}
+
+.dark .task-card .text-theme-primary,
+.dark .task-card .text-theme-secondary,
+.dark .task-card .text-theme-muted {
+    color: #000000 !important; /* Black text for all task card text in dark mode too */
+}
+
+/* Drag and drop states */
+.sortable-ghost {
+    @apply opacity-40;
+    background: rgba(59, 130, 246, 0.1) !important;
+    border: 2px dashed rgba(59, 130, 246, 0.4) !important;
+    transform: scale(0.95) !important;
+}
+
+.sortable-chosen {
+    @apply transform scale-105 shadow-lg;
+    cursor: grabbing !important;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+.sortable-drag {
+    @apply transform rotate-2;
+    cursor: grabbing !important;
+    z-index: 9999;
+}
+
+/* Enhanced dropzone styles */
+.tasks-container {
+    @apply relative;
+    min-height: var(--column-base-min-height);
+    padding: 8px;
+    transition: all 0.2s ease;
+    flex: 1;
+}
+
+.tasks-container > * + * {
+    margin-top: 12px;
+}
+
+/* Empty state dropzone - Theme aware */
+.empty-state-dropzone {
+    @apply mt-auto;
+    padding: 8px;
+    color: var(--text-muted);
+}
+
+.dark .empty-state-dropzone {
+    color: var(--text-muted);
+}
+
+/* Column layout adjustments - Theme aware */
+.column-content {
+    @apply flex flex-col rounded-lg p-4 transition-colors duration-300;
+    min-height: var(--column-base-min-height);
+    background-color: var(--bg-secondary);
+}
+
+.dark .column-content {
+    background-color: var(--bg-secondary);
+}
+
+[data-sortable="tasks"] {
+    @apply relative transition-all duration-200;
+    min-height: var(--column-base-min-height);
+    padding: 8px;
+}
+
+/* Visual feedback during drag */
+[data-sortable="tasks"].drag-active {
+    min-height: var(--column-base-min-height);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 2px dashed rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+}
+
+/* Visual feedback for entire column during drag */
+.drag-active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(59, 130, 246, 0.05) 100%);
+}
+
+/* Empty column drop indicator */
+[data-sortable="tasks"]:empty::after {
+    content: "Drop tasks here";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(107, 114, 128, 0.6);
+    font-size: 0.875rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+[data-sortable="tasks"].drag-active:empty::after {
+    content: "Drop task here";
+    color: rgba(59, 130, 246, 0.8);
+    font-weight: 500;
+}
+
+/* Prevent text selection during dragging */
+body.dragging {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+body.dragging * {
+    cursor: grabbing !important;
+}
+
+/* Task card hover effects during drag */
+.drag-active [data-task-id]:not(.sortable-ghost):not(.sortable-chosen):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Column styles - Theme aware */
+.column {
+    @apply rounded-lg p-4 min-h-96 transition-colors duration-300;
+    background-color: var(--bg-secondary);
+}
+
+.column-header {
+    @apply flex items-center justify-between mb-4 pb-2 border-b transition-colors duration-300;
+    border-color: var(--border-secondary);
+}
+
+.dark .column {
+    background-color: var(--bg-secondary);
+}
+
+.dark .column-header {
+    border-color: var(--border-secondary);
+}
+
+/* Button styles - Theme aware */
+.btn-primary {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300;
+}
+
+.btn-secondary {
+    @apply inline-flex items-center px-4 py-2 border shadow-sm text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300;
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+}
+
+.btn-danger {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300;
+}
+
+.dark .btn-secondary {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.dark .btn-secondary:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+}
+
+/* Form styles - Always white background with black text */
+.form-input {
+    @apply w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300;
+    background-color: #ffffff; /* Always white background */
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
+}
+
+.form-textarea {
+    @apply w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-300;
+    background-color: #ffffff; /* Always white background */
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
+}
+
+.form-select {
+    @apply w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300;
+    background-color: #ffffff; /* Always white background */
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
+    font-family: 'JetBrainsMono Nerd Font Mono', 'JetBrains Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
+}
+
+.dark .form-input,
+.dark .form-textarea,
+.dark .form-select {
+    background-color: #ffffff; /* Keep white background in dark mode */
+    border-color: var(--border-secondary);
+    color: #000000; /* Keep black text in dark mode */
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder,
+.dark .form-input::placeholder,
+.dark .form-textarea::placeholder {
+    color: #666666; /* Gray placeholder text for visibility */
+}
+
+/* Search bar specific styling */
+#persistent-search::placeholder {
+    color: var(--text-muted);
+}
+
+.dark #persistent-search::placeholder {
+    color: var(--text-muted);
+}
+
+/* Modal styles - Theme aware */
+.modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+    @apply rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto transition-colors duration-300;
+    background-color: #ffffff; /* Always white background */
+}
+
+.modal-header {
+    @apply flex items-center justify-between p-6 border-b transition-colors duration-300;
+    border-color: var(--border-secondary);
+    color: #000000; /* Always black text */
+}
+
+.modal-body {
+    @apply p-6;
+    color: #000000; /* Always black text */
+    padding: 2rem !important; /* Extra padding to prevent outline clipping */
+}
+
+.modal-footer {
+    @apply flex justify-end space-x-3 p-6 border-t transition-colors duration-300;
+    border-color: var(--border-secondary);
+}
+
+.dark .modal-content {
+    background-color: #ffffff; /* Keep white background in dark mode */
+}
+
+.dark .modal-header,
+.dark .modal-footer {
+    border-color: var(--border-secondary);
+}
+
+.dark .modal-header,
+.dark .modal-body {
+    color: #000000; /* Always black text in dark mode */
+}
+
+/* Loading states */
+.loading {
+    @apply animate-pulse;
+}
+
+.loading-spinner {
+    @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
+}
+
+/* Notification styles - Theme aware */
+.notification-success {
+    @apply bg-green-50 border border-green-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #065f46;
+}
+
+.notification-error {
+    @apply bg-red-50 border border-red-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #7f1d1d;
+}
+
+.notification-warning {
+    @apply bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #78350f;
+}
+
+.notification-info {
+    @apply bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 transition-all duration-300;
+    color: #1e3a8a;
+}
+
+/* Dark mode notifications */
+.dark .notification-success {
+    @apply bg-green-900 border-green-700;
+    color: #bbf7d0;
+}
+
+.dark .notification-error {
+    @apply bg-red-900 border-red-700;
+    color: #fecaca;
+}
+
+.dark .notification-warning {
+    @apply bg-yellow-900 border-yellow-700;
+    color: #fde68a;
+}
+
+.dark .notification-info {
+    @apply bg-blue-900 border-blue-700;
+    color: #bfdbfe;
+}
+
+/* Board grid styles - Theme aware */
+.board-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.board-card {
+    @apply rounded-lg shadow-sm border p-6 hover:shadow-md transition-all duration-300 cursor-pointer;
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+    overflow: visible !important;
+    min-height: 200px;
+}
+
+.board-card:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+    transform: translateY(-2px);
+}
+
+.dark .board-card {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.dark .board-card:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+}
+
+/* Board menu dropdown - ensure it can overflow */
+.board-menu {
+    position: absolute !important;
+    z-index: 9999 !important;
+}
+
+/* Ensure grid containers and all parent containers allow overflow */
+#boards-container,
+#boards-container > *,
+main,
+.bg-gray-50 {
+    overflow: visible !important;
+}
+
+/* Responsive kanban board */
+.kanban-board {
+    @apply flex space-x-6 overflow-x-auto pb-6;
+}
+
+.kanban-column {
+    @apply flex-shrink-0 w-80 flex flex-col;
+    height: auto; /* Ensure natural height calculation */
+}
+
+.column-content {
+    @apply flex flex-col;
+    height: auto; /* Allow natural height */
+}
+
+.tasks-container {
+    @apply flex flex-col flex-1;
+    min-height: var(--column-base-min-height); /* Base minimum height from CSS custom property */
+    transition: min-height 0.2s ease; /* Faster, smoother transition */
+    height: auto; /* Allow natural expansion */
+}
+
+.empty-state-dropzone {
+    @apply mt-auto; /* Push to bottom */
+    flex-shrink: 0; /* Don't shrink */
+    height: 100px; /* Increased height for better text spacing */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Override the template heights to make them consistent */
+.empty-state-dropzone > div {
+    height: 100px !important; /* Force consistent height */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* User avatar - Theme aware */
+.user-avatar {
+    @apply w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-300;
+}
+
+.dark .user-avatar {
+    background-color: var(--color-yinmn-blue);
+}
+
+/* Status indicators */
+.status-online {
+    @apply w-3 h-3 bg-green-400 border-2 border-white rounded-full;
+}
+
+.status-offline {
+    @apply w-3 h-3 bg-gray-400 border-2 border-white rounded-full;
+}
+
+.status-busy {
+    @apply w-3 h-3 bg-red-400 border-2 border-white rounded-full;
+}
+
+/* Deadline indicators */
+.deadline-overdue {
+    @apply text-red-600;
+}
+
+.deadline-due-today {
+    @apply text-orange-600;
+}
+
+.deadline-due-soon {
+    @apply text-yellow-600;
+}
+
+.deadline-future {
+    @apply text-gray-500;
+}
+
+/* Empty states - Theme aware */
+.empty-state {
+    @apply text-center py-12 transition-colors duration-300;
+}
+
+.empty-state-icon {
+    @apply mx-auto h-12 w-12 mb-4 transition-colors duration-300;
+    color: var(--text-muted);
+}
+
+.empty-state-title {
+    @apply text-lg font-medium mb-2 transition-colors duration-300;
+    color: var(--text-primary);
+}
+
+.empty-state-description {
+    @apply mb-6 transition-colors duration-300;
+    color: var(--text-secondary);
+}
+
+.dark .empty-state-icon {
+    color: var(--text-muted);
+}
+
+.dark .empty-state-title {
+    color: var(--text-primary);
+}
+
+.dark .empty-state-description {
+    color: var(--text-secondary);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Scrollbar styles */
+.scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(156 163 175);
+    border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(107 114 128);
+}
+
+/* Animation utilities */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-in-out;
+}
+
+.scale-in {
+    animation: scaleIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Focus styles */
+.focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+/* Gradient backgrounds */
+.gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .kanban-board {
+        @apply space-x-4;
+    }
+    
+    .kanban-column {
+        @apply w-72;
+    }
+    
+    .modal-content {
+        @apply mx-2;
+    }
+    
+    .board-grid {
+        @apply grid-cols-1;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-break {
+        page-break-before: always;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .task-card {
+        @apply border-2 border-gray-800;
+    }
+    
+    .priority-badge {
+        @apply border border-gray-800;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .task-card,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .form-input,
+    .form-textarea,
+    .form-select {
+        transition: none;
+    }
+    
+    .fade-in,
+    .slide-in,
+    .scale-in {
+        animation: none;
+    }
+}
+
+/* User profile dropdown - Proper text color for light and dark modes */
+#user-menu .text-theme-primary {
+    color: var(--text-primary) !important; /* Use theme-aware text color */
+}
+
+.dark #user-menu .text-theme-primary {
+    color: var(--text-primary) !important; /* Use theme-aware text color in dark mode */
+}
+
+/* Ensure the menu background is properly visible */
+#user-menu {
+    background-color: var(--bg-tertiary) !important;
+}
+
+/* Override all form input text colors - ultra aggressive approach */
+html.dark input,
+html.dark textarea,
+html.dark select,
+.dark input,
+.dark textarea, 
+.dark select {
+    color: #000000 !important;
+}
+
+/* Also override in light mode to be safe */
+html input,
+html textarea,
+html select,
+input,
+textarea,
+select {
+    color: #000000 !important;
+    font-family: 'JetBrainsMono Nerd Font Mono', 'JetBrains Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace !important;
+}
+
+/* Additional targeting for specific form elements that might be more specific */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea,
+select {
+    color: #000000 !important;
+    font-family: 'JetBrainsMono Nerd Font Mono', 'JetBrains Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace !important;
+}
+
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="datetime-local"],
+.dark textarea,
+.dark select {
+    color: #000000 !important;
+    font-family: 'JetBrainsMono Nerd Font Mono', 'JetBrains Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace !important;
+}
+
+/* Exception for readonly inputs and editable inputs with text-theme-primary - use theme colors for better visibility */
+input[readonly].readonly-input,
+input[readonly].text-theme-primary,
+input.text-theme-primary {
+    color: var(--text-primary) !important;
+}
+
+.dark input[readonly].readonly-input,
+.dark input[readonly].text-theme-primary,
+.dark input.text-theme-primary {
+    color: var(--text-primary) !important;
+}
+
+/* Responsive design updates for theme */
+@media (max-width: 768px) {
+    .dark-mode-toggle {
+        @apply bottom-4 right-4 p-2;
+    }
+    
+    .dark-mode-toggle svg {
+        @apply w-5 h-5;
+    }
+}
+
+/* Smooth transitions for all theme-aware elements */
+* {
+    transition-property: background-color, border-color, color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --border-primary: #000000;
+        --border-secondary: #333333;
+    }
+    
+    .dark {
+        --border-primary: #ffffff;
+        --border-secondary: #cccccc;
+    }
+}
+
+/* Responsive Container Classes - Better Space Utilization */
+.container-responsive {
+    @apply mx-auto px-4;
+    max-width: 100%;
+}
+
+/* Responsive breakpoints with better space usage */
+@media (min-width: 640px) {
+    .container-responsive {
+        @apply px-6;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .container-responsive {
+        @apply px-8;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container-responsive {
+        @apply px-12;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container-responsive {
+        @apply px-16;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 1536px) {
+    .container-responsive {
+        @apply px-20;
+        max-width: 100%;
+    }
+}
+
+/* Kanban board responsive columns */
+.kanban-board-container {
+    @apply flex gap-4 overflow-x-auto pb-6;
+}
+
+@media (min-width: 1024px) {
+    .kanban-board-container {
+        @apply gap-6;
+    }
+}
+
+@media (min-width: 1280px) {
+    .kanban-board-container {
+        @apply gap-8;
+    }
+}
+
+/* Responsive column widths */
+.kanban-column {
+    @apply flex-shrink-0;
+    width: 280px;
+}
+
+@media (min-width: 768px) {
+    .kanban-column {
+        width: 300px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .kanban-column {
+        width: 320px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .kanban-column {
+        width: 350px;
+    }
+}
+
+/* Dashboard grid responsiveness */
+.dashboard-stats-grid {
+    @apply grid gap-3 mb-8;
+    grid-template-columns: repeat(2, 1fr); /* 2x2 grid on mobile */
+}
+
+@media (min-width: 640px) {
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        @apply gap-4;
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        @apply gap-6;
+    }
+}
+
+@media (min-width: 1280px) {
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        @apply gap-8;
+    }
+}
+
+/* ========================================
+   ONBOARDING SYSTEM STYLES
+   ======================================== */
+
+/* Pulsing Hotspot Animation */
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+@keyframes pulse-ring-dark {
+    0% {
+        box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(96, 165, 250, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(96, 165, 250, 0);
+    }
+}
+
+.onboarding-hotspot {
+    position: relative;
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    border-radius: 0.5rem;
+}
+
+.dark .onboarding-hotspot {
+    animation: pulse-ring-dark 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Onboarding Overlay - SVG-based spotlight effect */
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Allow clicks through to highlighted elements */
+    z-index: 9998 !important; /* Below highlighted elements (z-index: 9999) */
+    transition: opacity 0.3s ease;
+}
+
+.onboarding-overlay svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Highlighted Element - Works with SVG spotlight */
+.onboarding-highlight {
+    position: relative !important;
+    z-index: 9999 !important;
+
+    /* Glowing border effect */
+    outline: 3px solid #3b82f6 !important;
+    outline-offset: 4px !important;
+    border-radius: 0.5rem !important;
+
+    /* Animated pulsing glow */
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1),
+                0 0 20px rgba(59, 130, 246, 0.3) !important;
+    animation: onboarding-pulse-glow 2s ease-in-out infinite !important;
+
+    transition: outline 0.3s ease !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.dark .onboarding-highlight {
+    outline-color: #60a5fa !important;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1),
+                0 0 20px rgba(96, 165, 250, 0.4) !important;
+}
+
+/* Pulsing glow animation */
+@keyframes onboarding-pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1),
+                    0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2),
+                    0 0 30px rgba(59, 130, 246, 0.5),
+                    0 0 40px rgba(59, 130, 246, 0.2);
+    }
+}
+
+/* Shimmer effect overlay for highlighted elements */
+.onboarding-highlight::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: 0.5rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Animated pointer icon */
+.onboarding-pointer {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10002;
+    font-size: 2rem;
+    animation: pointer-bounce 0.6s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes pointer-bounce {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(8px, 8px);
+    }
+}
+
+/* Tooltip Arrow Positioning Helper */
+#tooltip-arrow {
+    position: absolute;
+}
+
+#tooltip-arrow[data-placement^='top'] {
+    bottom: -4px;
+}
+
+#tooltip-arrow[data-placement^='bottom'] {
+    top: -4px;
+}
+
+#tooltip-arrow[data-placement^='left'] {
+    right: -4px;
+}
+
+#tooltip-arrow[data-placement^='right'] {
+    left: -4px;
+}
+
+/* Fade-in animation for tooltips */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tooltip positioning and z-index */
+#onboarding-tooltip {
+    z-index: 10000 !important; /* Above everything else */
+    position: fixed !important;
+    pointer-events: auto !important;
+}
+
+.onboarding-tooltip {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Progress Indicator Animations */
+.progress-checkmark {
+    animation: checkmarkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkmarkPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Modal entrance animations */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#welcome-modal > div,
+#completion-modal > div {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Responsive adjustments for onboarding */
+@media (max-width: 768px) {
+    #onboarding-tooltip {
+        max-width: 90vw;
+    }
+
+    #onboarding-progress {
+        bottom: 1rem;
+        right: 1rem;
+        max-width: calc(100vw - 2rem);
+    }
+
+    .onboarding-hotspot {
+        animation: pulse-ring 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+}
+
+/* Progress indicator above everything */
+#onboarding-progress {
+    z-index: 10001 !important;
+}
+
+/* Mobile: Simplify animations for better performance */
+@media (prefers-reduced-motion: reduce) {
+    .onboarding-hotspot,
+    .dark .onboarding-hotspot {
+        animation: none;
+        border: 2px solid #3b82f6;
+    }
+
+    .dark .onboarding-hotspot {
+        border-color: #60a5fa;
+    }
+
+    #welcome-modal > div,
+    #completion-modal > div,
+    .onboarding-tooltip {
+        animation: none;
+    }
+}
+
+/* ==================== DRIVER.JS CUSTOM STYLING ==================== */
+
+/* Driver.js Dark Mode Support */
+.dark .driver-popover {
+    background-color: #1f2937 !important;
+    color: #f3f4f6 !important;
+    border: 1px solid #374151;
+}
+
+.dark .driver-popover-title {
+    color: #ffffff !important;
+}
+
+.dark .driver-popover-description {
+    color: #d1d5db !important;
+}
+
+.dark .driver-popover-footer {
+    border-top-color: #374151 !important;
+}
+
+.dark .driver-popover-next-btn {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.dark .driver-popover-next-btn:hover {
+    background-color: #2563eb !important;
+}
+
+.dark .driver-popover-prev-btn {
+    color: #9ca3af !important;
+}
+
+.dark .driver-popover-prev-btn:hover {
+    color: #f3f4f6 !important;
+    background-color: #374151 !important;
+}
+
+.dark .driver-popover-close-btn {
+    color: #9ca3af !important;
+}
+
+.dark .driver-popover-close-btn:hover {
+    color: #f3f4f6 !important;
+}
+
+.dark .driver-popover-arrow-side-left,
+.dark .driver-popover-arrow-side-right,
+.dark .driver-popover-arrow-side-top,
+.dark .driver-popover-arrow-side-bottom {
+    border-color: #1f2937 !important;
+}
+
+/* Custom Driver.js Styling for Better UX */
+.driver-popover {
+    border-radius: 0.75rem !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+.driver-popover-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.driver-popover-description {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}
+
+.driver-popover-description kbd {
+    padding: 0.125rem 0.375rem;
+    font-size: 0.75rem;
+    background-color: #e5e7eb;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    border: 1px solid #d1d5db;
+}
+
+.dark .driver-popover-description kbd {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+.driver-popover-next-btn {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    transition: all 0.2s ease !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    text-shadow: none !important; /* Prevent text duplication */
+    transform: none !important; /* Reset any transforms that might duplicate */
+    backface-visibility: hidden !important; /* Prevent text rendering issues */
+}
+
+/* Remove any pseudo-elements that might duplicate text */
+.driver-popover-next-btn::before,
+.driver-popover-next-btn::after {
+    content: none !important;
+    display: none !important;
+}
+
+.driver-popover-next-btn:hover {
+    background-color: #2563eb !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    backface-visibility: hidden !important;
+}
+
+.driver-popover-prev-btn {
+    color: #6b7280 !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.driver-popover-prev-btn:hover {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+}
+
+.driver-popover-footer {
+    padding-top: 0.75rem !important;
+    margin-top: 0.75rem !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+.driver-popover-progress-text {
+    font-size: 0.75rem !important;
+    color: #6b7280 !important;
+    font-weight: 500 !important;
+}
+
+.dark .driver-popover-progress-text {
+    color: #9ca3af !important;
+}
+
+/* Smooth animations for Driver.js */
+.driver-popover {
+    animation: driverFadeIn 0.3s ease-out !important;
+}
+
+@keyframes driverFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Highlighted element styling - minimal, just rely on spotlight */
+.driver-active-element {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative !important;
+    z-index: 10001 !important; /* Above overlay */
+}
+
+.dark .driver-active-element {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Overlay - Don't override Driver.js's SVG overlay! */
+.driver-overlay {
+    /* Driver.js creates an SVG with cutout - don't add solid background */
+    transition: all 0.3s ease !important;
+}
+
+/* Only adjust the SVG path fill color if needed */
+.driver-overlay path {
+    /* Driver.js sets this via JS, but we can enhance it */
+}
+
+.dark .driver-overlay path {
+    /* Slightly darker in dark mode */
+}
+
+/* Close button styling */
+.driver-popover-close-btn {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 0.375rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.driver-popover-close-btn:hover {
+    background-color: #f3f4f6 !important;
+}
+
+.dark .driver-popover-close-btn:hover {
+    background-color: #374151 !important;
+}
+
+/* Progress bar styling */
+.driver-popover-progress-bar {
+    background-color: #e5e7eb !important;
+    height: 4px !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+    margin-bottom: 1rem !important;
+}
+
+.dark .driver-popover-progress-bar {
+    background-color: #374151 !important;
+}
+
+.driver-popover-progress-bar-fill {
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%) !important;
+    height: 100% !important;
+    transition: width 0.3s ease !important;
+    border-radius: 9999px !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+    .driver-popover {
+        max-width: calc(100vw - 2rem) !important;
+        margin: 1rem !important;
+    }
+
+    .driver-popover-title {
+        font-size: 0.9375rem !important;
+    }
+
+    .driver-popover-description {
+        font-size: 0.8125rem !important;
+    }
+
+    .driver-popover-next-btn,
+    .driver-popover-prev-btn {
+        font-size: 0.8125rem !important;
+        padding: 0.4375rem 0.875rem !important;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .driver-popover,
+    .driver-active-element,
+    .driver-overlay {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* Focus states for keyboard navigation */
+.driver-popover-next-btn:focus,
+.driver-popover-prev-btn:focus,
+.driver-popover-close-btn:focus {
+    outline: 2px solid #3b82f6 !important;
+    outline-offset: 2px !important;
+}
+
+.dark .driver-popover-next-btn:focus,
+.dark .driver-popover-prev-btn:focus,
+.dark .driver-popover-close-btn:focus {
+    outline-color: #60a5fa !important;
+}

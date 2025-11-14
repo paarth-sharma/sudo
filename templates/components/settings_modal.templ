@@ -1,0 +1,251 @@
+package components
+
+import "sudo/internal/models"
+
+templ SettingsModal(board models.Board) {
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Board Settings</h3>
+                <button 
+                    onclick="document.getElementById('settings-modal').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <!-- Board Details Section -->
+                <div class="mb-8">
+                    <h4 class="text-md font-semibold text-gray-900 mb-4">Board Information</h4>
+                    <form 
+                        hx-put={"/boards/" + board.ID.String()}
+                        hx-on::after-request="showSaveSuccess()"
+                        class="space-y-4"
+                    >
+                        <div>
+                            <label for="board-title" class="block text-sm font-medium text-gray-700 mb-2">
+                                Board Title
+                            </label>
+                            <input 
+                                type="text" 
+                                id="board-title" 
+                                name="title" 
+                                value={board.Title}
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label for="board-description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Description
+                            </label>
+                            <textarea 
+                                id="board-description" 
+                                name="description" 
+                                rows="3" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >{board.Description}</textarea>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button 
+                                type="submit"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                            >
+                                Save Board Details
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Theme Preferences Section -->
+                <div class="mb-8 border-t border-gray-200 pt-6">
+                    <h4 class="text-md font-semibold text-gray-900 mb-4">Theme Preferences</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Color Theme</label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <input 
+                                        type="radio" 
+                                        name="theme" 
+                                        value="light" 
+                                        class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                                        onchange="setTheme('light')"
+                                    />
+                                    <span class="ml-2 text-sm text-gray-700">Light (Beige)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input 
+                                        type="radio" 
+                                        name="theme" 
+                                        value="dark" 
+                                        class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                                        onchange="setTheme('dark')"
+                                    />
+                                    <span class="ml-2 text-sm text-gray-700">Dark (Graphite)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input 
+                                        type="radio" 
+                                        name="theme" 
+                                        value="system" 
+                                        class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                                        onchange="setTheme('system')"
+                                    />
+                                    <span class="ml-2 text-sm text-gray-700">System</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    onchange="toggleCompactMode(this.checked)"
+                                />
+                                <span class="ml-2 text-sm text-gray-700">Compact Mode</span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    onchange="toggleAnimations(this.checked)"
+                                />
+                                <span class="ml-2 text-gray-700 text-sm">Enable Animations</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notification Settings -->
+                <div class="mb-8 border-t border-gray-200 pt-6">
+                    <h4 class="text-md font-semibold text-gray-900 mb-4">Notifications</h4>
+                    <div class="space-y-3">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                            <span class="ml-2 text-sm text-gray-700">Email notifications for task assignments</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                            <span class="ml-2 text-sm text-gray-700">Browser notifications for due dates</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                            <span class="ml-2 text-sm text-gray-700">Daily digest emails</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Help & Onboarding -->
+                <div class="mb-8 border-t border-gray-200 pt-6">
+                    <h4 class="text-md font-semibold text-gray-900 mb-4">Help & Onboarding</h4>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h5 class="text-sm font-medium text-blue-900">Take the Tour</h5>
+                                    <p class="text-sm text-blue-700">New to SUDO? Take a quick interactive tour to learn the basics.</p>
+                                </div>
+                                <button
+                                    onclick="restartTour(); document.getElementById('settings-modal').classList.add('hidden');"
+                                    class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
+                                >
+                                    Start Tour
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Press <kbd class="px-2 py-1 text-xs bg-gray-200 rounded">?</kbd> anytime { "for" } keyboard shortcuts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h4 class="text-md font-semibold text-red-900 mb-4">Danger Zone</h4>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h5 class="text-sm font-medium text-red-800">Delete Board</h5>
+                                <p class="text-sm text-red-600">This action cannot be undone. This will permanently delete the board and all its data.</p>
+                            </div>
+                            <button 
+                                onclick={ templ.ComponentScript{Call: "deleteBoard('" + board.ID.String() + "')"} }
+                                class="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors"
+                            >
+                                Delete Board
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success notification -->
+    <div id="save-success" class="hidden fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Settings saved successfully!</span>
+        </div>
+    </div>
+    
+    <script>
+        function showSaveSuccess() {
+            const notification = document.getElementById('save-success');
+            notification.classList.remove('hidden');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+        
+        function setTheme(theme) {
+            if (theme === 'system') {
+                localStorage.removeItem('darkMode');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.toggle('dark', prefersDark);
+            } else {
+                localStorage.setItem('darkMode', theme === 'dark' ? 'true' : 'false');
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+            }
+        }
+        
+        function toggleCompactMode(enabled) {
+            document.body.classList.toggle('compact-mode', enabled);
+            localStorage.setItem('compactMode', enabled);
+        }
+        
+        function toggleAnimations(enabled) {
+            document.body.classList.toggle('no-animations', !enabled);
+            localStorage.setItem('animationsEnabled', enabled);
+        }
+        
+        // Initialize theme radio buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode');
+            const themeRadios = document.querySelectorAll('input[name="theme"]');
+            
+            if (darkMode === null) {
+                document.querySelector('input[value="system"]').checked = true;
+            } else if (darkMode === 'true') {
+                document.querySelector('input[value="dark"]').checked = true;
+            } else {
+                document.querySelector('input[value="light"]').checked = true;
+            }
+        });
+    </script>
+}

@@ -1,0 +1,164 @@
+package components
+
+import "sudo/internal/models"
+import "time"
+import "fmt"
+
+templ ActivityFeed(activities []models.Activity) {
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-4 py-3 border-b border-gray-200">
+            <h3 class="text-sm font-medium text-gray-900">Recent Activity</h3>
+        </div>
+        
+        <div class="max-h-96 overflow-y-auto">
+            if len(activities) == 0 {
+                <div class="p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h4 class="mt-2 text-sm font-medium text-gray-900">No recent activity</h4>
+                    <p class="mt-1 text-sm text-gray-500">Activity will appear here when team members make changes</p>
+                </div>
+            } else {
+                <div class="divide-y divide-gray-200">
+                    for _, activity := range activities {
+                        <div class="p-4 hover:bg-gray-50 transition-colors">
+                            <div class="flex space-x-3">
+                                <!-- User Avatar -->
+                                <div class="flex-shrink-0">
+                                    if activity.User != nil {
+                                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                            if activity.User.Name != "" {
+                                                {activity.User.Name[:1]}
+                                            } else if len(activity.User.Email) >= 2 {
+                                                {activity.User.Email[:2]}
+                                            } else {
+                                                U
+                                            }
+                                        </div>
+                                    } else {
+                                        <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            </svg>
+                                        </div>
+                                    }
+                                </div>
+                                
+                                <!-- Activity Content -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm">
+                                        <span class="font-medium text-gray-900">
+                                            if activity.User != nil {
+                                                {activity.User.GetDisplayName()}
+                                            } else {
+                                                System
+                                            }
+                                        </span>
+                                        <span class="text-gray-600 ml-1">{activity.Description}</span>
+                                    </div>
+                                    
+                                    <div class="mt-2 flex items-center text-xs text-gray-500">
+                                        <time datetime={activity.CreatedAt.Format("2006-01-02T15:04:05Z07:00")}>
+                                            {formatActivityTime(activity.CreatedAt)}
+                                        </time>
+                                    </div>
+                                </div>
+                                
+                                <!-- Activity Icon -->
+                                <div class="flex-shrink-0">
+                                    @getActivityIcon(activity.Action)
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        
+        if len(activities) > 0 {
+            <div class="px-4 py-3 border-t border-gray-200">
+                <a 
+                    href="/activity" 
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                    View all activity
+                </a>
+            </div>
+        }
+    </div>
+}
+
+
+func getActivityIcon(activityType string) templ.Component {
+    switch activityType {
+    case "task_created", "task_updated":
+        return templ.Raw(`<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>`)
+    case "task_completed":
+        return templ.Raw(`<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>`)
+    case "task_deleted", "board_deleted", "column_deleted":
+        return templ.Raw(`<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>`)
+    case "task_moved":
+        return templ.Raw(`<svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+        </svg>`)
+    case "board_created", "column_created":
+        return templ.Raw(`<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>`)
+    case "member_invited", "member_joined":
+        return templ.Raw(`<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+        </svg>`)
+    case "member_left", "member_removed":
+        return templ.Raw(`<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6z"></path>
+        </svg>`)
+    default:
+        return templ.Raw(`<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>`)
+    }
+}
+
+func formatActivityTime(createdAt time.Time) string {
+    now := time.Now()
+    diff := now.Sub(createdAt)
+    
+    switch {
+    case diff < time.Minute:
+        return "Just now"
+    case diff < time.Hour:
+        minutes := int(diff.Minutes())
+        if minutes == 1 {
+            return "1 minute ago"
+        }
+        return fmt.Sprintf("%d minutes ago", minutes)
+    case diff < 24*time.Hour:
+        hours := int(diff.Hours())
+        if hours == 1 {
+            return "1 hour ago"
+        }
+        return fmt.Sprintf("%d hours ago", hours)
+    case diff < 7*24*time.Hour:
+        days := int(diff.Hours() / 24)
+        if days == 1 {
+            return "Yesterday"
+        }
+        return fmt.Sprintf("%d days ago", days)
+    case diff < 30*24*time.Hour:
+        weeks := int(diff.Hours() / (24 * 7))
+        if weeks == 1 {
+            return "1 week ago"
+        }
+        return fmt.Sprintf("%d weeks ago", weeks)
+    default:
+        return createdAt.Format("Jan 2, 2006")
+    }
+}

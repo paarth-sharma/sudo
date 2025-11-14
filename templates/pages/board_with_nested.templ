@@ -1,0 +1,74 @@
+package pages
+
+import "sudo/internal/models"
+import "sudo/templates/layouts"
+import "sudo/templates/components"
+
+templ BoardWithNested(board models.Board, parentBoard *models.Board, nestedBoards []models.Board, user models.User, onlineUsers []models.User, allUserBoards []models.Board) {
+    @layouts.Base(board.Title + " - SUDO Kanban") {
+        <div id="board-container" class="min-h-screen bg-theme-primary transition-colors duration-300" 
+             data-board-id={ board.ID.String() }
+             data-user-id={ user.ID.String() }  
+             data-user-name={ user.GetDisplayName() }>
+            <!-- Global Header -->
+            @components.GlobalHeader(board.Title, &board, parentBoard, onlineUsers, user)
+            
+            <!-- Board Content -->
+            <main class="container-responsive py-6">
+                <div>
+                    <!-- Nested Board Navigation -->
+                    @components.NestedBoardNavigation(board, parentBoard, nestedBoards)
+                    
+                    <!-- Kanban Board -->
+                    <div class="py-6">
+                        <div class="kanban-board-container">
+                            <div id="board-columns" class="flex gap-6">
+                                for _, column := range board.Columns {
+                                    <div data-column-id={ column.ID.String() }>
+                                        @components.Column(column, board.ID.String(), board.Members)
+                                    </div>
+                                }
+                            </div>
+                            
+                            <!-- Add Column Placeholder - Always on the right -->
+                            <div class="flex-shrink-0 w-80">
+                                <button 
+                                    onclick="document.getElementById('add-column-modal').classList.remove('hidden')"
+                                    class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <div class="text-center">
+                                        <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        <span class="text-sm font-medium">Add Column</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Modals -->
+            @components.AddColumnModal(board.ID.String())
+            @components.InviteModal(allUserBoards, board.ID.String())
+            @components.TaskModal()
+            @components.CreateNestedBoardModal(board.ID.String())
+            @components.SearchModal([]models.Board{})
+            @components.GlobalTaskModal([]models.Board{board})
+
+            <!-- Onboarding Components -->
+            @components.WelcomeModal()
+            @components.CompletionModal()
+        </div>
+        
+        <script>
+            // Board-specific functionality
+            // (Global header functions are defined in the global_header component)
+        </script>
+    }
+}
+
+script deleteBoardFromMenuScript(boardID string) {
+    deleteBoard(boardID);
+}

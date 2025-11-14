@@ -1,0 +1,423 @@
+package components
+
+import "sudo/internal/models"
+
+templ GlobalHeader(title string, currentBoard *models.Board, parentBoard *models.Board, onlineUsers []models.User, currentUser models.User) {
+    <header class="bg-theme-tertiary shadow-sm border-b border-theme-secondary sticky top-0 z-40 transition-colors duration-300">
+        <div class="container-responsive">
+            <!-- Mobile Layout (default) -->
+            <div class="md:hidden">
+                <!-- Top Row: Profile + Theme Toggle (LEFT) | SUDO (RIGHT) -->
+                <div class="flex items-center justify-between h-14 px-2">
+                    <!-- Left: Profile Picture and Theme Toggle -->
+                    <div class="flex items-center space-x-2">
+                        <!-- User Profile Picture -->
+                        <button
+                            onclick="toggleUserMenu()"
+                            class="bg-terracotta-600 dark:bg-yinmn-blue-600 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-theme-primary focus:ring-terracotta-400 dark:focus:ring-yinmn-blue-400 transition-all duration-300"
+                        >
+                            <span class="sr-only">Open user menu</span>
+                            <div class="h-8 w-8 rounded-full bg-terracotta-600 dark:bg-yinmn-blue-600 flex items-center justify-center transition-colors duration-300">
+                                if currentUser.AvatarURL != "" {
+                                    <img src={currentUser.AvatarURL} alt="Profile" class="w-8 h-8 rounded-full object-cover"/>
+                                } else if currentUser.Name != "" {
+                                    <span class="text-sm font-medium text-white">{currentUser.GetInitials()}</span>
+                                } else {
+                                    <span class="text-sm font-medium text-white">{currentUser.GetSafeEmail()[:2]}</span>
+                                }
+                            </div>
+                        </button>
+
+                        <!-- Theme Toggle -->
+                        <button
+                            onclick="toggleDarkMode()"
+                            class="p-2 rounded-lg bg-theme-secondary hover:bg-theme-primary border border-theme-primary hover:border-theme-secondary text-theme-primary hover:text-theme-tertiary transition-all duration-300 group"
+                            title="Toggle Dark/Light Mode"
+                            aria-label="Toggle Dark/Light Mode">
+                            <svg class="w-5 h-5 block dark:hidden transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                            </svg>
+                            <svg class="w-5 h-5 hidden dark:block transition-all duration-300 group-hover:scale-110 group-hover:rotate-180"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Right: SUDO Text -->
+                    <div class="text-xl font-bold text-theme-primary transition-colors duration-300">
+                        SUDO
+                    </div>
+                </div>
+
+                <!-- Second Row: Search Bar (MIDDLE) -->
+                <div class="px-2 pb-2">
+                    <div class="relative">
+                        <input
+                            type="text"
+                            id="persistent-search-mobile"
+                            placeholder="Search..."
+                            class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-300"
+                            style="background-color: var(--bg-tertiary); border-color: var(--border-secondary); color: var(--text-primary);"
+                            onclick="openGlobalSearch()"
+                            onfocus="openGlobalSearch()"
+                            readonly
+                        />
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-theme-muted transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Third Row: Title, Back Button, Hamburger Menu -->
+                <div class="flex items-center justify-between h-12 px-2 border-t border-theme-secondary">
+                    <div class="flex items-center space-x-2 flex-1 min-w-0">
+                        <!-- Back Button -->
+                        if currentBoard != nil {
+                            if parentBoard != nil {
+                                <a href={ templ.SafeURL("/boards/" + parentBoard.ID.String()) } class="text-theme-muted hover:text-theme-primary transition-colors duration-300 flex-shrink-0" title="Back">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    </svg>
+                                </a>
+                            } else {
+                                <a href="/dashboard" class="text-theme-muted hover:text-theme-primary transition-colors duration-300 flex-shrink-0" title="Back">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    </svg>
+                                </a>
+                            }
+                        }
+
+                        <!-- Title -->
+                        <h1 class="text-base font-semibold text-theme-primary transition-colors duration-300 truncate">{ title }</h1>
+
+                        <!-- Sub-board Badge -->
+                        if currentBoard != nil && parentBoard != nil {
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-terracotta-100 dark:bg-yinmn-blue-800 text-terracotta-800 dark:text-yinmn-blue-100 transition-colors duration-300 flex-shrink-0">
+                                Sub
+                            </span>
+                        }
+                    </div>
+
+                    <!-- Hamburger Menu Button -->
+                    <button
+                        onclick="toggleMobileMenu()"
+                        class="p-2 rounded-lg text-theme-primary hover:bg-theme-secondary transition-all duration-300 flex-shrink-0"
+                        aria-label="Menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Dropdown -->
+                <div id="mobile-menu" class="hidden border-t border-theme-secondary bg-theme-tertiary">
+                    <div class="px-2 py-3 space-y-2">
+                        <!-- Presence Indicators -->
+                        if currentBoard != nil && len(onlineUsers) > 0 {
+                            <div class="px-3 py-2">
+                                @PresenceIndicators(onlineUsers)
+                            </div>
+                        }
+
+                        <!-- Action Buttons -->
+                        if currentBoard != nil {
+                            <button
+                                onclick="document.getElementById('add-column-modal').classList.remove('hidden'); toggleMobileMenu();"
+                                class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add Column
+                            </button>
+
+                            <button
+                                onclick="document.getElementById('invite-modal').classList.remove('hidden'); toggleMobileMenu();"
+                                class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" stroke="none" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
+                                    <path d="M4 18c0-2.66 5.33-4 8-4 1.5 0 3.5.3 5.5 1v3H4v-0z"/>
+                                    <circle cx="19" cy="14" r="3.5" fill="#3B82F6"/>
+                                    <path d="M19 10v8M15 14h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                Invite Members
+                            </button>
+                        } else {
+                            <button
+                                id="create-board-btn"
+                                onclick="document.getElementById('create-board-modal').classList.remove('hidden'); toggleMobileMenu();"
+                                class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Create Board
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Layout (md and above) -->
+            <div class="hidden md:block">
+                <div class="grid grid-cols-3 items-center h-16 gap-4">
+                    <!-- Left Side: Navigation -->
+                    <div class="flex items-center space-x-4 justify-start">
+                        <!-- Back Button -->
+                        if currentBoard != nil {
+                            if parentBoard != nil {
+                                <a href={ templ.SafeURL("/boards/" + parentBoard.ID.String()) } class="text-theme-muted hover:text-theme-primary transition-colors duration-300" title="Back to parent board">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    </svg>
+                                </a>
+                            } else {
+                                <a href="/dashboard" class="text-theme-muted hover:text-theme-primary transition-colors duration-300" title="Back to dashboard">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    </svg>
+                                </a>
+                            }
+                        }
+
+                        <!-- Title and Sub-board Badge -->
+                        <div class="flex items-center space-x-2">
+                            <h1 class="text-xl font-semibold text-theme-primary transition-colors duration-300">{ title }</h1>
+                            if currentBoard != nil && parentBoard != nil {
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-terracotta-100 dark:bg-yinmn-blue-800 text-terracotta-800 dark:text-yinmn-blue-100 transition-colors duration-300">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    Sub-board
+                                </span>
+                            }
+                        </div>
+
+                        <!-- Presence Indicators -->
+                        if currentBoard != nil && len(onlineUsers) > 0 {
+                            <div id="presence-area">
+                                @PresenceIndicators(onlineUsers)
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Center: Search Bar -->
+                    <div class="flex justify-center">
+                        <div id="search-bar-container" class="w-full max-w-md">
+                            <div class="relative">
+                            <input
+                                type="text"
+                                id="persistent-search"
+                                placeholder="Search boards, tasks..."
+                                class="w-full pl-10 pr-20 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-300"
+                                style="background-color: var(--bg-tertiary); border-color: var(--border-secondary); color: var(--text-primary);"
+                                onclick="openGlobalSearch()"
+                                onfocus="openGlobalSearch()"
+                                readonly
+                            />
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-theme-muted transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <kbd class="inline-flex items-center px-2 py-1 bg-theme-secondary border border-theme-primary rounded text-xs text-theme-muted transition-colors duration-300">Ctrl+K</kbd>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Actions and User Menu -->
+                    <div class="flex items-center space-x-3 justify-end">
+                        if currentBoard != nil {
+                            <!-- Board Actions -->
+
+                            <!-- Add Column Button -->
+                            <button
+                                onclick="document.getElementById('add-column-modal').classList.remove('hidden')"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add Column
+                            </button>
+
+                            <!-- Invite Members Button -->
+                            <button
+                                onclick="document.getElementById('invite-modal').classList.remove('hidden')"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" stroke="none" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
+                                    <path d="M4 18c0-2.66 5.33-4 8-4 1.5 0 3.5.3 5.5 1v3H4v-0z"/>
+                                    <circle cx="19" cy="14" r="3.5" fill="#3B82F6"/>
+                                    <path d="M19 10v8M15 14h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                Invite
+                            </button>
+                        } else {
+                            <!-- Dashboard Actions -->
+                            <button
+                                id="create-board-btn"
+                                onclick="document.getElementById('create-board-modal').classList.remove('hidden')"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-terracotta-600 dark:bg-yinmn-blue-600 hover:bg-terracotta-700 dark:hover:bg-yinmn-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500 dark:focus:ring-yinmn-blue-500 transition-all duration-300"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Create Board
+                            </button>
+                        }
+
+                        <!-- User Menu -->
+                        <div class="relative">
+                            <button
+                                onclick="toggleUserMenu()"
+                                class="bg-terracotta-600 dark:bg-yinmn-blue-600 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-theme-primary focus:ring-terracotta-400 dark:focus:ring-yinmn-blue-400 transition-all duration-300"
+                            >
+                                <span class="sr-only">Open user menu</span>
+                                <div class="h-8 w-8 rounded-full bg-terracotta-600 dark:bg-yinmn-blue-600 flex items-center justify-center transition-colors duration-300">
+                                    if currentUser.AvatarURL != "" {
+                                        <img src={currentUser.AvatarURL} alt="Profile" class="w-8 h-8 rounded-full object-cover"/>
+                                    } else if currentUser.Name != "" {
+                                        <span class="text-sm font-medium text-white">{currentUser.GetInitials()}</span>
+                                    } else {
+                                        <span class="text-sm font-medium text-white">{currentUser.GetSafeEmail()[:2]}</span>
+                                    }
+                                </div>
+                            </button>
+
+                            <div id="user-menu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-theme-tertiary border border-theme-secondary ring-1 ring-theme-primary ring-opacity-5 transition-colors duration-300">
+                                <div class="py-1">
+                                    <a href="/settings" class="block px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300">Settings</a>
+                                    <button
+                                        hx-post="/auth/logout"
+                                        hx-confirm="Are you sure you want to sign out?"
+                                        class="block w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300"
+                                    >
+                                        Sign out
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Theme Toggle - Rightmost position -->
+                        <button
+                            onclick="toggleDarkMode()"
+                            class="p-2 rounded-lg bg-theme-secondary hover:bg-theme-primary border border-theme-primary hover:border-theme-secondary text-theme-primary hover:text-theme-tertiary transition-all duration-300 group"
+                            title="Toggle Dark/Light Mode"
+                            aria-label="Toggle Dark/Light Mode">
+                            <!-- Light mode icon (moon) - shown in light mode -->
+                            <svg class="w-5 h-5 block dark:hidden transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                            </svg>
+
+                            <!-- Dark mode icon (sun) - shown in dark mode -->
+                            <svg class="w-5 h-5 hidden dark:block transition-all duration-300 group-hover:scale-110 group-hover:rotate-180"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Menu Dropdown (shared by both layouts) -->
+        <div id="user-menu" class="hidden origin-top-right absolute right-2 mt-2 w-48 rounded-md shadow-lg bg-theme-tertiary border border-theme-secondary ring-1 ring-theme-primary ring-opacity-5 transition-colors duration-300 z-50">
+            <div class="py-1">
+                <a href="/settings" class="block px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300">Settings</a>
+                <button
+                    hx-post="/auth/logout"
+                    hx-confirm="Are you sure you want to sign out?"
+                    class="block w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-colors duration-300"
+                >
+                    Sign out
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <script>
+        function toggleUserMenu() {
+            const menu = document.getElementById('user-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        function openGlobalSearch() {
+            document.getElementById('search-modal')?.classList.remove('hidden');
+            document.getElementById('global-search')?.focus();
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('user-menu');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const button = event.target.closest('button');
+
+            // Close user menu if clicking outside
+            if (userMenu && (!button || !button.onclick || button.onclick.toString().indexOf('toggleUserMenu') === -1)) {
+                userMenu.classList.add('hidden');
+            }
+
+            // Close mobile menu if clicking outside
+            if (mobileMenu && (!button || !button.onclick || button.onclick.toString().indexOf('toggleMobileMenu') === -1)) {
+                const isClickInsideMenu = event.target.closest('#mobile-menu');
+                if (!isClickInsideMenu) {
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+        });
+
+        // Global keyboard shortcut to open search (Cmd/Ctrl + K)
+        document.addEventListener('keydown', function(event) {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+                event.preventDefault();
+                openGlobalSearch();
+            }
+        });
+    </script>
+}
+
+script deleteBoardFromMenuScript(boardID string) {
+    deleteBoard(boardID);
+}

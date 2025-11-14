@@ -1,0 +1,75 @@
+// templates/pages/board_card.templ
+package pages
+
+import (
+    "fmt"
+    "sudo/internal/models"
+)
+
+templ BoardCard(board models.Board) {
+    <div class="board-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer overflow-visible"
+         data-board-id={ board.ID.String() }
+         onclick={ navigateToBoardScript(board.ID.String()) }>
+        <div class="flex items-start justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 truncate pr-2">{ board.Title }</h3>
+            <div class="flex items-center space-x-2">
+                if board.ParentBoardID != nil {
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        Sub-board
+                    </span>
+                }
+                <div class="relative z-50">
+                    <button class="text-gray-400 hover:text-gray-600 p-1" onclick="event.stopPropagation(); toggleBoardMenu(this)">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                        </svg>
+                    </button>
+                    <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-50 board-menu border border-gray-200">
+                        <div class="py-1">
+                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Board</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invite Members</button>
+                            <button 
+                                hx-delete={ fmt.Sprintf("/boards/%s", board.ID.String()) }
+                                hx-confirm="Are you sure you want to delete this entire board? This will permanently delete all columns and tasks. This action cannot be undone."
+                                onclick="event.stopPropagation()"
+                                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                            >
+                                Delete Board
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        if board.Description != "" {
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2">{ board.Description }</p>
+        }
+        
+        <div class="flex items-center justify-between text-sm text-gray-500">
+            <div class="flex items-center space-x-4">
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    { fmt.Sprintf("%d tasks", len(board.Columns)) }
+                </span>
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
+                    </svg>
+                    1 member
+                </span>
+            </div>
+            <span>{ board.CreatedAt.Format("Jan 2") }</span>
+        </div>
+    </div>
+}
+
+script navigateToBoardScript(boardID string) {
+    window.location.href = '/boards/' + boardID;
+}
+
+script deleteBoardScript(boardID string) {
+    deleteBoard(boardID);
+}
